@@ -1,0 +1,6 @@
+{
+  "name": "Nina's Math Quest",
+  "description": "A gamified math learning platform for Nina featuring Sulan dance elements.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
