@@ -10,6 +10,44 @@ import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 import { Notepad } from './Notepad';
 
+export function renderMathText(text: string): React.ReactNode {
+  if (typeof text !== 'string') return text;
+  
+  const fractionRegex = /(\d+)\/(\d+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+  
+  fractionRegex.lastIndex = 0;
+  
+  while ((match = fractionRegex.exec(text)) !== null) {
+    const matchIndex = match.index;
+    
+    if (matchIndex > lastIndex) {
+      parts.push(text.substring(lastIndex, matchIndex));
+    }
+    
+    const numerator = match[1];
+    const denominator = match[2];
+    
+    parts.push(
+      <span key={matchIndex} className="inline-flex flex-col items-center justify-center align-middle mx-1.5 leading-none text-[0.85em] relative -top-[1px]">
+        <span className="pb-[2px] font-black">{numerator}</span>
+        <span className="w-full h-[2.5px] bg-current rounded-full min-w-[14px]"></span>
+        <span className="pt-[2px] font-black">{denominator}</span>
+      </span>
+    );
+    
+    lastIndex = fractionRegex.lastIndex;
+  }
+  
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+  
+  return <>{parts}</>;
+}
+
 export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => void }) {
   const { addXp, addCoins, loseHeart, hearts, incrementStreak, resetStreak, currentStreak, completeLevel, language, equippedBackground } = useGame();
   const t = translations[language];
@@ -198,7 +236,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     );
   }
 
-  if (!currentQuestion) {
+  if ((hearts <= 0 || !currentQuestion) && !isCompleted && !isFailed) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative z-20">
         <HeartCrack className="w-24 h-24 text-rose-500 mb-6 drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" />
@@ -316,8 +354,8 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
             </motion.div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 sm:p-6 rounded-[2rem] rounded-bl-none shadow-2xl relative">
               <Sparkles className="absolute -top-3 -right-3 text-amber-400 w-6 h-6 sm:w-8 sm:h-8 drop-shadow-md" />
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white drop-shadow-md text-center leading-snug">
-                {currentQuestion.question[language]}
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white drop-shadow-md text-center leading-snug flex flex-wrap justify-center items-center gap-y-1">
+                {renderMathText(currentQuestion.question[language])}
               </h2>
             </div>
           </div>
@@ -346,7 +384,9 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                   btnStateClasses
                 )}
               >
-                <span className="text-center leading-tight">{option}</span>
+                <span className="text-center leading-tight flex items-center justify-center flex-wrap gap-y-1">
+                  {renderMathText(option)}
+                </span>
                 {isAnswerChecked && isCorrectOption && <Check className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
                 {isAnswerChecked && isSelected && !isCorrectOption && <X className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
               </button>
@@ -359,7 +399,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       </div>
 
       {/* Footer Area */}
-      <div className="h-32 sm:h-44 shrink-0 w-full relative">
+      <div className="h-32 sm:h-44 shrink-0 w-full relative pb-safe">
         <AnimatePresence>
           {isAnswerChecked && (
             <motion.div
@@ -368,11 +408,11 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
               exit={{ y: "100%" }}
               transition={{ type: "spring", bounce: 0.2 }}
               className={cn(
-                "absolute bottom-0 left-0 right-0 h-full p-4 sm:p-6 flex flex-col justify-center rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl border-t-2 z-30",
+                "absolute bottom-0 left-0 right-0 h-auto min-h-full p-4 sm:p-6 pb-6 sm:pb-8 flex flex-col justify-between rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl border-t-2 z-30",
                 isCorrect ? "bg-emerald-900/95 border-emerald-400" : "bg-rose-900/95 border-rose-400"
               )}
             >
-              <div className="flex flex-col h-full justify-between max-w-3xl mx-auto w-full gap-2 sm:gap-4">
+              <div className="flex flex-col justify-between max-w-3xl mx-auto w-full gap-3 sm:gap-4">
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className={cn(
                     "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 border-4 shadow-inner",
@@ -388,10 +428,10 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                       {isCorrect ? t.game.awesome : t.game.notQuite}
                     </h3>
                     <p className={cn(
-                      "font-bold text-sm sm:text-lg leading-tight line-clamp-2",
+                      "font-bold text-sm sm:text-lg leading-tight flex flex-wrap items-center gap-y-1",
                       isCorrect ? "text-emerald-100" : "text-rose-100"
                     )}>
-                      {currentQuestion.explanation[language]}
+                      {renderMathText(currentQuestion.explanation[language])}
                     </p>
                   </div>
                 </div>
