@@ -4,6 +4,7 @@ import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2
 import { motion } from 'motion/react';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
+import { audioEngine } from '../utils/audio';
 
 export function Profile() {
   const { xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar } = useGame();
@@ -53,6 +54,7 @@ export function Profile() {
   }, []);
 
   const handleInstallClick = async () => {
+    audioEngine.play('click');
     const promptEvent = (window as any).getDeferredPrompt?.();
     if (!promptEvent) return;
     

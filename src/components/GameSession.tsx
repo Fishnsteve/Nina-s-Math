@@ -10,6 +10,7 @@ import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 import { Notepad } from './Notepad';
 import { BackgroundVisuals } from './BackgroundVisuals';
+import { audioEngine } from '../utils/audio';
 
 export function renderMathText(text: string): React.ReactNode {
   if (typeof text !== 'string') return text;
@@ -88,6 +89,18 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   
   const currentQuestion = zoneQuestions[currentIndex];
 
+  useEffect(() => {
+    if (isCompleted) {
+      audioEngine.play('game_win');
+    }
+  }, [isCompleted]);
+
+  useEffect(() => {
+    if (isFailed) {
+      audioEngine.play('game_over');
+    }
+  }, [isFailed]);
+
   const handleFireConfetti = () => {
     const duration = 2000;
     const animationEnd = Date.now() + duration;
@@ -122,6 +135,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     setIsCorrect(correct);
     
     if (correct) {
+      audioEngine.play('correct');
       handleFireConfetti();
       incrementStreak();
       
@@ -137,6 +151,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         addXp(40);
       }
     } else {
+      audioEngine.play('wrong');
       setMistakes(m => m + 1);
       if (isKingdom) {
         loseHeart();
@@ -146,6 +161,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   const handleNext = () => {
+    audioEngine.play('click');
     if (isKingdom && mistakes >= 3) {
       setIsFailed(true);
       return;
@@ -357,7 +373,10 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
               <button
                 key={idx}
                 disabled={isAnswerChecked}
-                onClick={() => setSelectedAnswer(idx)}
+                onClick={() => {
+                  audioEngine.play('click');
+                  setSelectedAnswer(idx);
+                }}
                 className={cn(
                   "w-full flex flex-col items-center justify-center p-3 sm:p-5 rounded-[1.5rem] border-b-[4px] font-black text-lg sm:text-2xl transition-all duration-300 active:translate-y-1 active:border-b-0",
                   btnStateClasses

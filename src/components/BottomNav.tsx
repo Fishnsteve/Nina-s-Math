@@ -2,6 +2,7 @@ import { Map, User, Music } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { translations } from '../i18n';
 import { motion, AnimatePresence } from 'motion/react';
+import { audioEngine } from '../utils/audio';
 
 interface BottomNavProps {
   currentTab: 'map' | 'studio' | 'profile';
@@ -39,22 +40,22 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
           transition={{ type: 'spring', stiffness: 350, damping: 28 }}
         >
           <svg 
-            viewBox="-3000 0 6202.9 45.5" 
+            viewBox="-3000 -22 6202.9 46" 
             className="w-full h-full overflow-visible"
             preserveAspectRatio="none"
           >
             {/* Solid background fill to blend seamlessly with the bottom navigation bar */}
             <path 
-              d="M -3000 45.5 L 0 45.5 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 45.5 L 3202.9 150 L -3000 150 Z" 
+              d="M -3000 24 L 0 24 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 24 L 3202.9 150 L -3000 150 Z" 
               fill="#0c0d14" 
               stroke="none"
             />
             {/* Beautiful, uniform continuous neon border line */}
             <path 
-              d="M -3000 45.5 L 0 45.5 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 45.5" 
+              d="M -3000 24 L 0 24 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 24" 
               fill="none" 
               stroke={tabs[activeIndex].color} 
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               className="transition-colors duration-300"
               style={{
@@ -89,7 +90,12 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
           return (
             <button
               key={tab.id}
-              onClick={() => setTab(tab.id as any)}
+              onClick={() => {
+                if (!isActive) {
+                  audioEngine.play('nav');
+                }
+                setTab(tab.id as any);
+              }}
               className="flex-1 flex flex-col items-center justify-center h-full relative cursor-pointer outline-none focus:outline-none select-none z-30"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
@@ -123,6 +129,11 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
             </button>
           );
         })}
+      </div>
+      
+      {/* Discreet Developer Signature */}
+      <div className="text-center pb-1 text-[9px] font-semibold text-slate-700/60 font-mono tracking-widest select-none pointer-events-none">
+        made by Steven
       </div>
     </div>
   );

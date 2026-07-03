@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { translations } from '../i18n';
 import { Lock, Sparkles, Check, Diamond, Coins } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { NinaAvatar } from './NinaAvatar';
 import { BackgroundVisuals } from './BackgroundVisuals';
+import { audioEngine } from '../utils/audio';
 
 export function DanceStudio() {
   const { level, language, equippedAvatar, equippedPet, equippedBackground, equipItem, inventory, buyItem } = useGame();
   const t = translations[language];
-  const [activeTab, setActiveTab] = useState<'outfits' | 'accessories' | 'backgrounds'>('outfits');
+  const [activeTab, setActiveTab] = useState<'outfits' | 'accessories' | 'backgrounds' | 'moves'>('outfits');
+  const [isDancing, setIsDancing] = useState<string | null>(null);
 
   const outfits = [
     { id: 'hero_sulan', icon: '💃', level: 1, name: language === 'en' ? 'Sulan' : '素蘭', price: 0, currency: 'coins' as const },
@@ -38,6 +40,14 @@ export function DanceStudio() {
     { id: 'bg_cyber', icon: '🏙️', type: 'background', name: language === 'en' ? 'Cyber' : '賽博城市', price: 2500, currency: 'coins' as const },
   ];
 
+  const moves = [
+    { id: 'dance_1', name: t.studio.move1, desc: t.studio.move1Desc, level: 1 },
+    { id: 'dance_2', name: t.studio.move2, desc: t.studio.move2Desc, level: 3 },
+    { id: 'dance_3', name: t.studio.move3, desc: t.studio.move3Desc, level: 5 },
+    { id: 'dance_4', name: t.studio.move4, desc: t.studio.move4Desc, level: 7 },
+    { id: 'dance_5', name: t.studio.move5, desc: t.studio.move5Desc, level: 9 },
+  ];
+
   const getBackgroundClass = (bgId: string) => {
     switch (bgId) {
       case 'bg_forest': return 'from-emerald-900/60 to-black/80';
@@ -48,6 +58,8 @@ export function DanceStudio() {
     }
   };
 
+  const currentDanceMove = moves.find(m => m.id === isDancing);
+
   return (
     <div className="flex flex-col h-[100dvh] w-full relative transition-colors duration-1000 bg-transparent pb-24 px-4 overflow-hidden">
       
@@ -56,14 +68,33 @@ export function DanceStudio() {
         <h1 className="text-2xl sm:text-3xl font-black text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] tracking-wide">
           {t.studio.title}
         </h1>
+        {/* Dynamic Glowing Neon Subtitle */}
+        <p className={cn(
+          "text-xs sm:text-sm font-bold mt-1 transition-all duration-300 px-4 max-w-md mx-auto h-6 flex items-center justify-center",
+          currentDanceMove 
+            ? "text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)] scale-105" 
+            : "text-slate-400"
+        )}>
+          {currentDanceMove ? currentDanceMove.desc : t.studio.subtitle}
+        </p>
       </div>
 
       {/* Avatar Stage (Dynamic growing container that fits the middle space perfectly) */}
       <div className="flex-1 min-h-0 w-full flex items-center justify-center relative z-0 pointer-events-none">
         <motion.div 
           className="h-full max-h-[58dvh] aspect-square flex items-center justify-center relative"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          animate={
+            isDancing === 'dance_1' ? { rotate: [0, -12, 12, -12, 12, 0] } :
+            isDancing === 'dance_2' ? { y: [0, -40, 0, -25, 0], scale: [1, 1.1, 1] } :
+            isDancing === 'dance_3' ? { rotate: [0, 360], scale: [1, 1.3, 1] } :
+            isDancing === 'dance_4' ? { x: [0, -40, 40, -40, 0], rotate: [0, -5, 5, -5, 0] } :
+            isDancing === 'dance_5' ? { scale: [1, 1.35, 1], y: [0, -55, 0], rotate: [0, 25, -25, 25, 0] } :
+            { y: [0, -10, 0] }
+          }
+          transition={
+            isDancing ? { duration: 1.2, ease: "easeInOut" } :
+            { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          }
         >
           <NinaAvatar className="w-full h-full" />
         </motion.div>
@@ -73,11 +104,14 @@ export function DanceStudio() {
       <div className="shrink-0 w-full max-w-lg mx-auto z-10 pointer-events-auto flex flex-col items-center gap-2.5">
         
         {/* Beautiful Glassmorphic Tab Selectors */}
-        <div className="flex bg-black/60 backdrop-blur-lg p-1 rounded-full shadow-lg border border-white/10 w-fit">
+        <div className="flex bg-black/60 backdrop-blur-lg p-1 rounded-full shadow-lg border border-white/10 w-fit max-w-full overflow-x-auto scrollbar-hide hide-scrollbar">
           <button 
-            onClick={() => setActiveTab('outfits')}
+            onClick={() => {
+              audioEngine.play('click');
+              setActiveTab('outfits');
+            }}
             className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300", 
+              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300 shrink-0", 
               activeTab === 'outfits' 
                 ? "bg-pink-500 text-white shadow-[0_2px_8px_rgba(236,72,153,0.5)]" 
                 : "text-slate-300 hover:text-white"
@@ -86,9 +120,12 @@ export function DanceStudio() {
             {t.studio.outfits}
           </button>
           <button 
-            onClick={() => setActiveTab('accessories')}
+            onClick={() => {
+              audioEngine.play('click');
+              setActiveTab('accessories');
+            }}
             className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300", 
+              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300 shrink-0", 
               activeTab === 'accessories' 
                 ? "bg-emerald-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.5)]" 
                 : "text-slate-300 hover:text-white"
@@ -97,9 +134,12 @@ export function DanceStudio() {
             {language === 'en' ? 'Accessories' : '配件'}
           </button>
           <button 
-            onClick={() => setActiveTab('backgrounds')}
+            onClick={() => {
+              audioEngine.play('click');
+              setActiveTab('backgrounds');
+            }}
             className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300", 
+              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300 shrink-0", 
               activeTab === 'backgrounds' 
                 ? "bg-purple-500 text-white shadow-[0_2px_8px_rgba(139,92,246,0.5)]" 
                 : "text-slate-300 hover:text-white"
@@ -107,11 +147,25 @@ export function DanceStudio() {
           >
             {language === 'en' ? 'Backgrounds' : '背景'}
           </button>
+          <button 
+            onClick={() => {
+              audioEngine.play('click');
+              setActiveTab('moves');
+            }}
+            className={cn(
+              "px-4 py-1.5 rounded-full text-xs font-black tracking-wide transition-all duration-300 shrink-0", 
+              activeTab === 'moves' 
+                ? "bg-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.5)]" 
+                : "text-slate-300 hover:text-white"
+            )}
+          >
+            {t.studio.moves}
+          </button>
         </div>
 
         {/* Floating Circle Islands Carousel (No container, fully transparent backgrounds, small elegant bubbles) */}
         <div className="w-full relative select-none">
-          <div className="flex overflow-x-auto gap-3 py-1.5 px-6 hide-scrollbar snap-x scroll-smooth justify-start sm:justify-center">
+          <div className="flex overflow-x-auto gap-3 py-1.5 px-6 scrollbar-hide hide-scrollbar snap-x scroll-smooth justify-start sm:justify-center">
             
             {activeTab === 'outfits' && outfits.map(outfit => {
               const isUnlocked = inventory.includes(outfit.id) || outfit.price === 0;
@@ -123,9 +177,13 @@ export function DanceStudio() {
                   <button 
                     onClick={() => {
                       if (isUnlocked) {
+                        audioEngine.play('equip');
                         equipItem(outfit.id, 'character');
                       } else if (meetsLevel) {
+                        audioEngine.play('unlock');
                         buyItem(outfit.id, outfit.price, outfit.currency);
+                      } else {
+                        audioEngine.play('wrong');
                       }
                     }}
                     className={cn(
@@ -171,7 +229,10 @@ export function DanceStudio() {
               <>
                 <div className="flex flex-col items-center gap-1 shrink-0 snap-center">
                   <button 
-                    onClick={() => equipItem('', 'pet')}
+                    onClick={() => {
+                      audioEngine.play('equip');
+                      equipItem('', 'pet');
+                    }}
                     className={cn(
                       "w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border text-center transition-all relative cursor-pointer shadow-md",
                       equippedPet === '' 
@@ -195,8 +256,10 @@ export function DanceStudio() {
                       <button 
                         onClick={() => {
                           if (isUnlocked) {
+                            audioEngine.play('equip');
                             equipItem(acc.id, 'pet');
                           } else {
+                            audioEngine.play('unlock');
                             buyItem(acc.id, acc.price, acc.currency);
                           }
                         }}
@@ -243,8 +306,10 @@ export function DanceStudio() {
                   <button 
                     onClick={() => {
                       if (isUnlocked) {
+                        audioEngine.play('equip');
                         equipItem(bg.id, 'background');
                       } else {
+                        audioEngine.play('unlock');
                         buyItem(bg.id, bg.price, bg.currency);
                       }
                     }}
@@ -279,6 +344,53 @@ export function DanceStudio() {
                 </div>
               );
             })}
+
+            {activeTab === 'moves' && moves.map(move => {
+              const isUnlocked = level >= move.level;
+              return (
+                <div key={move.id} className="flex flex-col items-center gap-1 shrink-0 snap-center">
+                  <button 
+                    onClick={() => {
+                      if (isUnlocked) {
+                        audioEngine.play(move.id as any);
+                        setIsDancing(move.id);
+                        setTimeout(() => setIsDancing(null), 1200);
+                      } else {
+                        audioEngine.play('wrong');
+                      }
+                    }}
+                    className={cn(
+                      "w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border text-center transition-all relative cursor-pointer shadow-md",
+                      isDancing === move.id 
+                        ? "bg-amber-500/30 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.6)] scale-110" 
+                        : isUnlocked 
+                          ? "bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30 active:scale-95" 
+                          : "bg-black/60 border-white/5 opacity-70"
+                    )}
+                  >
+                    <span className={cn("text-xl sm:text-2xl drop-shadow", !isUnlocked && "grayscale opacity-50")}>
+                      {move.id === 'dance_1' ? '👣' :
+                       move.id === 'dance_2' ? '🪭' :
+                       move.id === 'dance_3' ? '🐉' :
+                       move.id === 'dance_4' ? '🌀' : '✨'}
+                    </span>
+                    
+                    {!isUnlocked && (
+                      <div className="absolute -bottom-0.5 -right-0.5 bg-slate-800 text-slate-400 rounded-full p-0.5 border border-white/10 shadow-md">
+                        <Lock className="w-2 h-2" />
+                      </div>
+                    )}
+                  </button>
+                  
+                  <div className="text-[9px] font-black text-white/90 leading-none text-center drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] truncate max-w-[50px]">
+                    {isUnlocked ? move.name : (
+                      <span className="text-slate-400">Lv {move.level}</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
           </div>
         </div>
       </div>
