@@ -11,6 +11,7 @@ import { WorldMap } from './components/WorldMap';
 import { GameSession } from './components/GameSession';
 import { Profile } from './components/Profile';
 import { DanceStudio } from './components/DanceStudio';
+import { BackgroundVisuals } from './components/BackgroundVisuals';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<'map' | 'studio' | 'profile'>('map');
@@ -46,9 +47,9 @@ function AppContent() {
 
   return (
     <div className={`font-sans text-slate-100 ${baseBg} min-h-screen relative overflow-hidden flex flex-col transition-colors duration-1000`}>
-      <div className={`fixed top-[-10%] left-[-10%] w-[400px] h-[400px] ${circle1} rounded-full blur-[120px] pointer-events-none z-0 transition-colors duration-1000`}></div>
-      <div className={`fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] ${circle2} rounded-full blur-[120px] pointer-events-none z-0 transition-colors duration-1000`}></div>
-      <div className={`fixed inset-0 ${bgClass} pointer-events-none z-0 transition-colors duration-1000`}></div>
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <BackgroundVisuals bgId={equippedBackground} />
+      </div>
 
       {activeZone ? (
         <GameSession zoneId={activeZone} onExit={() => setActiveZone(null)} />

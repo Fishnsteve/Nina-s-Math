@@ -9,6 +9,7 @@ import { cn } from '../lib/utils';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 import { Notepad } from './Notepad';
+import { BackgroundVisuals } from './BackgroundVisuals';
 
 export function renderMathText(text: string): React.ReactNode {
   if (typeof text !== 'string') return text;
@@ -268,33 +269,11 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   return (
-    <div className={cn("h-[100dvh] flex flex-col relative z-20 overflow-hidden bg-gradient-to-b transition-colors duration-1000", getBackgroundClass(equippedBackground))}>
+    <div className="h-[100dvh] flex flex-col relative z-20 overflow-hidden transition-colors duration-1000">
       
-      {/* Floating Particles Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 15 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-white/20 blur-[1px]"
-            style={{
-              width: Math.random() * 8 + 4 + 'px',
-              height: Math.random() * 8 + 4 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-            }}
-            animate={{
-              y: [0, Math.random() * -100 - 50],
-              x: [0, Math.random() * 40 - 20],
-              opacity: [0, 0.6, 0],
-            }}
-            transition={{
-              duration: Math.random() * 5 + 5,
-              repeat: Infinity,
-              ease: "linear",
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
+      {/* Immersive Background Visuals */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <BackgroundVisuals bgId={equippedBackground} />
       </div>
 
       {/* Game Header */}

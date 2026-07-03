@@ -5,6 +5,7 @@ import { translations } from '../i18n';
 import { Lock, Sparkles, Check, Diamond, Coins } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { NinaAvatar } from './NinaAvatar';
+import { BackgroundVisuals } from './BackgroundVisuals';
 
 export function DanceStudio() {
   const { level, language, equippedAvatar, equippedPet, equippedBackground, equipItem, inventory, buyItem } = useGame();
@@ -48,7 +49,7 @@ export function DanceStudio() {
   };
 
   return (
-    <div className={cn("h-[100dvh] w-full relative overflow-hidden bg-gradient-to-b pb-20 transition-colors duration-1000", getBackgroundClass(equippedBackground))}>
+    <div className="h-[100dvh] w-full relative overflow-hidden pb-20 transition-colors duration-1000 bg-transparent">
       {/* 2D Avatar Background - Center Focus */}
       <div className="absolute inset-0 z-0 flex items-start justify-center pointer-events-none pt-24 sm:pt-32">
         <motion.div 
