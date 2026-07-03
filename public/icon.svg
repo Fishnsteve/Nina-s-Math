@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="iconBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#241445" />
+      <stop offset="60%" stop-color="#120824" />
+      <stop offset="100%" stop-color="#090312" />
+    </radialGradient>
+    <linearGradient id="neonBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff007f" />
+      <stop offset="50%" stop-color="#9d4edd" />
+      <stop offset="100%" stop-color="#00f2fe" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff66b2" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ff66b2" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Nina's Gradients -->
+    <radialGradient id="skin" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+      <stop offset="0%" stop-color="#ffe6cc" />
+      <stop offset="70%" stop-color="#fcdbb3" />
+      <stop offset="100%" stop-color="#eab896" />
+    </radialGradient>
+    <linearGradient id="hairDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d2314" />
+      <stop offset="100%" stop-color="#1a0f0a" />
+    </linearGradient>
+    <radialGradient id="blush" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff8080" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#ff8080" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="kimonoPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb3d9" />
+      <stop offset="100%" stop-color="#ff66b2" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe600" />
+      <stop offset="100%" stop-color="#cc9900" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon Rounded Background -->
+  <rect x="12" y="12" width="488" height="488" rx="112" fill="url(#iconBg)" stroke="url(#neonBorder)" stroke-width="12" />
+  
+  <!-- Subtle Background Stars/Glow -->
+  <circle cx="256" cy="240" r="180" fill="url(#glow)" />
+  <circle cx="120" cy="120" r="3" fill="#ffffff" opacity="0.8" />
+  <circle cx="400" cy="140" r="2.5" fill="#ffffff" opacity="0.6" />
+  <circle cx="380" cy="360" r="3.5" fill="#ffffff" opacity="0.7" />
+  <circle cx="130" cy="380" r="2" fill="#ffffff" opacity="0.5" />
+
+  <!-- Nina centered and scaled nicely -->
+  <g transform="translate(106, 116) scale(1.5)">
+    <!-- Back Hair -->
+    <path d="M 70 30 Q 35 30 45 185 Q 100 200 155 185 Q 165 30 130 30 Q 100 0 70 30 Z" fill="url(#hairDark)" />
+    
+    {/* Body / Legs (Base) */}
+    {/* Left Leg */}
+    <path d="M 85 140 L 85 180 Q 85 185 92 185 L 95 185 L 95 140 Z" fill="url(#skin)" />
+    {/* Right Leg */}
+    <path d="M 105 140 L 105 185 L 108 185 Q 115 185 115 180 L 115 140 Z" fill="url(#skin)" />
+    
+    {/* Neck */}
+    <rect x="92" y="90" width="16" height="15" fill="url(#skin)" />
+
+    {/* Head */}
+    <path d="M 70 65 Q 70 30 100 30 Q 130 30 130 65 Q 130 100 100 105 Q 70 100 70 65 Z" fill="url(#skin)" />
+    
+    {/* Face Details */}
+    {/* Eyes (Cute Anime Style) */}
+    <ellipse cx="85" cy="68" rx="5" ry="8" fill="#2d1b19" />
+    <circle cx="87" cy="65" r="2" fill="#fff" />
+    <circle cx="84" cy="71" r="1" fill="#fff" />
+    
+    <ellipse cx="115" cy="68" rx="5" ry="8" fill="#2d1b19" />
+    <circle cx="113" cy="65" r="2" fill="#fff" />
+    <circle cx="116" cy="71" r="1" fill="#fff" />
+
+    {/* Eyelashes */}
+    <path d="M 79 64 Q 85 58 91 64" fill="none" stroke="#2d1b19" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M 109 64 Q 115 58 121 64" fill="none" stroke="#2d1b19" stroke-width="1.5" stroke-linecap="round" />
+
+    {/* Mouth */}
+    <path d="M 96 84 Q 100 89 104 84" fill="none" stroke="#aa5555" stroke-width="1.5" stroke-linecap="round" />
+    
+    {/* Blush */}
+    <circle cx="78" cy="78" r="6" fill="url(#blush)" />
+    <circle cx="122" cy="78" r="6" fill="url(#blush)" />
+
+    {/* Front Hair / Bangs */}
+    <path d="M 60 55 Q 75 15 100 15 Q 125 15 140 55 Q 125 45 110 50 Q 95 35 80 50 Q 70 45 60 55 Z" fill="url(#hairDark)" />
+    <path d="M 85 20 Q 100 45 110 20 Z" fill="url(#hairDark)" />
+    
+    {/* Side strands framing the face nicely */}
+    <path d="M 60 55 Q 55 90 60 130 Q 75 90 70 50 Z" fill="url(#hairDark)" />
+    <path d="M 140 55 Q 145 90 140 130 Q 125 90 130 50 Z" fill="url(#hairDark)" />
+
+    {/* Top Elaborate Bun & Updo */}
+    <path d="M 60 25 Q 100 -5 140 25 Q 150 -10 100 -20 Q 50 -10 60 25 Z" fill="url(#hairDark)" />
+    <circle cx="100" cy="5" r="28" fill="url(#hairDark)" />
+    <circle cx="82" cy="10" r="20" fill="url(#hairDark)" />
+    <circle cx="118" cy="10" r="20" fill="url(#hairDark)" />
+    
+    {/* Hair Accessories (Flowers in Bun) */}
+    <circle cx="100" cy="-5" r="8" fill="#dda0dd" />
+    <circle cx="92" cy="-2" r="7" fill="#ffb6c1" />
+    <circle cx="108" cy="-2" r="7" fill="#ffb6c1" />
+    <circle cx="100" cy="4" r="7" fill="#ffb6c1" />
+    <circle cx="100" cy="-2" r="3" fill="url(#gold)" />
+    <circle cx="75" cy="15" r="6" fill="#ffb6c1" />
+    <circle cx="125" cy="15" r="6" fill="#dda0dd" />
+    
+    {/* Dangling Gold Ornaments */}
+    <path d="M 75 20 L 70 45 M 78 20 L 74 40 M 125 20 L 130 45 M 122 20 L 126 40" stroke="url(#gold)" stroke-width="1.5" stroke-dasharray="3,2" />
+
+    {/* Face Paint / Gems */}
+    <circle cx="72" cy="73" r="1.5" fill="#fff" opacity="0.8" />
+    <circle cx="68" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+    <circle cx="128" cy="73" r="1.5" fill="#fff" opacity="0.8" />
+    <circle cx="132" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+
+    {/* Pink Kimono Details */}
+    <path d="M 65 95 Q 100 105 135 95 L 150 170 Q 100 175 50 170 Z" fill="url(#kimonoPink)" />
+    {/* Obi (Belt) */}
+    <path d="M 70 115 Q 100 125 130 115 L 132 135 Q 100 145 68 135 Z" fill="#cc0066" />
+    <circle cx="100" cy="128" r="4" fill="url(#gold)" />
+    <path d="M 68 128 Q 100 138 132 128" fill="none" stroke="url(#gold)" stroke-width="2" />
+    
+    {/* Kimono Collar */}
+    <path d="M 80 95 L 100 115 L 120 95" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" />
+    <path d="M 80 95 L 100 115 L 120 95" fill="none" stroke="#ff3377" stroke-width="2" stroke-linejoin="round" />
+
+    {/* Arms */}
+    {/* Left Arm */}
+    <path d="M 75 98 Q 50 115 45 140" fill="none" stroke="url(#skin)" stroke-width="10" stroke-linecap="round" />
+    {/* Right Arm */}
+    <path d="M 125 98 Q 150 115 155 140" fill="none" stroke="url(#skin)" stroke-width="10" stroke-linecap="round" />
+
+    {/* Sleeves */}
+    <path d="M 70 95 Q 40 120 45 145 L 65 140 Z" fill="url(#kimonoPink)" />
+    <path d="M 130 95 Q 160 120 155 145 L 135 140 Z" fill="url(#kimonoPink)" />
+  </g>
+</svg>
