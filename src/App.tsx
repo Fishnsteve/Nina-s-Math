@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GameProvider, useGame } from './context/GameContext';
 import { TopBar } from './components/TopBar';
 import { BottomNav } from './components/BottomNav';
@@ -22,6 +22,13 @@ function AppContent() {
 
   const [canInstall, setCanInstall] = useState<boolean>(!!(window as any).getDeferredPrompt?.());
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0 });
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     setCanInstall(!!(window as any).getDeferredPrompt?.());
@@ -90,7 +97,7 @@ function AppContent() {
         <GameSession zoneId={activeZone} onExit={() => setActiveZone(null)} />
       ) : (
         <>
-          <div className="relative z-10 flex flex-col h-full overflow-y-auto overflow-x-hidden flex-1">
+          <div ref={scrollContainerRef} className="relative z-10 flex flex-col h-full overflow-y-auto overflow-x-hidden flex-1">
             <TopBar />
             
             {/* Elegant Floating PWA Banner */}
@@ -141,10 +148,21 @@ function AppContent() {
               )}
             </AnimatePresence>
             
-            <main className="flex-1">
-              {activeTab === 'map' && <WorldMap onSelectZone={setActiveZone} />}
-              {activeTab === 'studio' && <DanceStudio />}
-              {activeTab === 'profile' && <Profile />}
+            <main className="flex-1 w-full flex flex-col relative">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 w-full flex flex-col"
+                >
+                  {activeTab === 'map' && <WorldMap onSelectZone={setActiveZone} />}
+                  {activeTab === 'studio' && <DanceStudio />}
+                  {activeTab === 'profile' && <Profile />}
+                </motion.div>
+              </AnimatePresence>
             </main>
           </div>
 

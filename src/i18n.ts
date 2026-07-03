@@ -64,31 +64,31 @@ export const translations = {
   zh: {
     nav: {
       map: "探險地圖",
-      shop: "妮娜的商店",
-      profile: "妮娜的檔案",
+      shop: "Nina的商店",
+      profile: "Nina的檔案",
       studio: "舞蹈教室"
     },
     topbar: {
       level: "等級",
-      xp: "經驗值"
+      xp: "XP"
     },
     map: {
-      welcome: "歡迎回來，妮娜！🌸",
+      welcome: "歡迎回來，Nina！🌸",
       locked: "需要等級",
     },
     game: {
       outOfHearts: "愛心用完囉！",
-      takeBreak: "妮娜，休息一下再出發吧。",
+      takeBreak: "Nina，休息一下再出發吧。",
       returnMap: "回到地圖",
       combo: "連擊！ (+金幣)",
-      awesome: "太棒了，妮娜！ 🌟",
+      awesome: "太棒了，Nina！ 🌟",
       notQuite: "差一點點，再試試看！",
       continue: "繼續",
       check: "確認答案",
       zoneCleared: "區域通關！",
     },
     shop: {
-      title: "妮娜的精品店 🌸",
+      title: "Nina的精品店 🌸",
       characters: "服裝",
       pets: "配件",
       backgrounds: "舞台",
@@ -96,8 +96,8 @@ export const translations = {
       equip: "裝備",
     },
     profile: {
-      title: "舞者妮娜",
-      totalXp: "總經驗值",
+      title: "舞者Nina",
+      totalXp: "總XP",
       dayStreak: "連續登入",
       totalStars: "總星數",
       questions: "答題數",
@@ -106,7 +106,7 @@ export const translations = {
       unlockedYesterday: "最近解鎖"
     },
     studio: {
-      title: "妮娜的舞蹈教室 💃",
+      title: "Nina的舞蹈教室 💃",
       subtitle: "隨著等級提升學習素蘭陣舞步！",
       locked: "解鎖等級",
       moves: "舞蹈動作",

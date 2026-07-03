@@ -21,7 +21,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
       {/* Training Grounds Section */}
       <div className="w-full max-w-lg mb-4 text-center">
         <h2 className="text-xl font-bold text-slate-300 uppercase tracking-widest">{language === 'en' ? 'Training Grounds' : '訓練場'}</h2>
-        <p className="text-sm text-slate-400 mb-8">{language === 'en' ? 'Practice concepts to earn XP' : '練習概念以獲得經驗值'}</p>
+        <p className="text-sm text-slate-400 mb-8">{language === 'en' ? 'Practice concepts to earn XP' : '練習概念以獲得 XP'}</p>
       </div>
 
       <div className="w-full max-w-lg relative mb-16">

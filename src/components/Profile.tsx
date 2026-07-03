@@ -6,8 +6,20 @@ import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 
 export function Profile() {
-  const { xp, level, currentStreak, maxStreak, stars, completedLevels, language } = useGame();
+  const { xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar } = useGame();
   const t = translations[language];
+
+  const outfitsMap = {
+    hero_sulan: language === 'en' ? 'Sulan' : '素蘭',
+    hero_pink_kimono: language === 'en' ? 'Kimono' : '和服',
+    hero_ninja: language === 'en' ? 'Ninja' : '忍者',
+    hero_flower: language === 'en' ? 'Flower' : '花朵',
+    hero_princess: language === 'en' ? 'Princess' : '公主',
+    hero_cyber: language === 'en' ? 'Cyber' : '賽博',
+  };
+
+  const costumeName = outfitsMap[equippedAvatar as keyof typeof outfitsMap] || (language === 'en' ? 'Dancer' : '舞者');
+  const profileTitle = `${costumeName} Nina`;
   
   const [canInstall, setCanInstall] = useState<boolean>(!!(window as any).getDeferredPrompt?.());
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
@@ -66,7 +78,7 @@ export function Profile() {
               {level}
             </div>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight">{t.profile.title}</h2>
+          <h2 className="text-2xl font-black text-white tracking-tight">{profileTitle}</h2>
           <p className="text-pink-300/80 font-bold text-sm tracking-widest uppercase mt-1">XP: {xp}</p>
         </div>
 

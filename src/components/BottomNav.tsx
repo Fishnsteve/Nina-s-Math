@@ -21,40 +21,66 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
   const activeIndex = tabs.findIndex((tab) => tab.id === currentTab);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#0c0d14] border-t border-white/5 pb-safe z-50 shadow-[0_-15px_35px_rgba(0,0,0,0.6)]">
-      <div className="max-w-md mx-auto h-16 relative px-4 flex justify-around items-center">
-        
-        {/* Gooey Animated Border (High-Fidelity SVG Bridge) */}
+    <div 
+      className="fixed bottom-0 left-0 right-0 bg-[#0c0d14] pb-safe z-50 transition-all duration-300"
+      style={{ 
+        boxShadow: `0 -10px 30px ${tabs[activeIndex].color}15, 0 -15px 35px rgba(0,0,0,0.6)`
+      }}
+    >
+      {/* Seamless Continuous SVG Border and Protrusion (Clipped horizontally to screen width) */}
+      <div className="absolute -top-[23.5px] left-0 right-0 h-[24px] overflow-hidden pointer-events-none z-10">
         <motion.div
-          className="absolute -top-[23px] left-0 h-[24px] w-1/3 pointer-events-none z-10"
-          animate={{ x: `${activeIndex * 100}%` }}
+          className="absolute top-0 h-[24px] pointer-events-none overflow-visible"
+          style={{ width: '6202.9px' }}
+          animate={{ 
+            left: `${activeIndex * 33.333 + 16.666}%`,
+            x: '-50%'
+          }}
           transition={{ type: 'spring', stiffness: 350, damping: 28 }}
         >
           <svg 
-            viewBox="0 0 202.9 45.5" 
-            className="w-full h-full overflow-visible" 
+            viewBox="-3000 0 6202.9 45.5" 
+            className="w-full h-full overflow-visible"
             preserveAspectRatio="none"
           >
-            {/* Solid background bridge shape */}
+            {/* Solid background fill to blend seamlessly with the bottom navigation bar */}
             <path 
-              d="M6.7,45.5c5.7,0.1,14.1-0.4,23.3-4c5.7-2.3,9.9-5,18.1-10.5c10.7-7.1,11.8-9.2,20.6-14.3c5-2.9,9.2-5.2,15.2-7 c7.1-2.1,13.3-2.3,17.6-2.1c4.2-0.2,10.5,0.1,17.6,2.1c6.1,1.8,10.2,4.1,15.2,7c8.8,5,9.9,7.1,20.6,14.3c8.3,5.5,12.4,8.2,18.1,10.5 c9.2,3.6,17.6,4.2,23.3,4H6.7z" 
+              d="M -3000 45.5 L 0 45.5 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 45.5 L 3202.9 150 L -3000 150 Z" 
               fill="#0c0d14" 
               stroke="none"
             />
-            {/* Glowing neon stroke on top edge ONLY */}
+            {/* Beautiful, uniform continuous neon border line */}
             <path 
-              d="M6.7,45.5c5.7,0.1,14.1-0.4,23.3-4c5.7-2.3,9.9-5,18.1-10.5c10.7-7.1,11.8-9.2,20.6-14.3c5-2.9,9.2-5.2,15.2-7 c7.1-2.1,13.3-2.3,17.6-2.1c4.2-0.2,10.5,0.1,17.6,2.1c6.1,1.8,10.2,4.1,15.2,7c8.8,5,9.9,7.1,20.6,14.3c8.3,5.5,12.4,8.2,18.1,10.5 c9.2,3.6,17.6,4.2,23.3,4" 
+              d="M -3000 45.5 L 0 45.5 c 5.7 0.1, 14.1-0.4, 23.3-4 c 5.7-2.3, 9.9-5, 18.1-10.5 c 10.7-7.1, 11.8-9.2, 20.6-14.3 c 5-2.9, 9.2-5.2, 15.2-7 c 7.1-2.1, 13.3-2.3, 17.6-2.1 c 4.2-0.2, 10.5,0.1, 17.6,2.1 c 6.1,1.8, 10.2,4.1, 15.2,7 c 8.8,5, 9.9,7.1, 20.6,14.3 c 8.3,5.5, 12.4,8.2, 18.1,10.5 c 9.2,3.6, 17.6,4.2, 23.3,4 L 3202.9 45.5" 
               fill="none" 
               stroke={tabs[activeIndex].color} 
               strokeWidth="2.5"
               strokeLinecap="round"
-              className="transition-all duration-300"
+              className="transition-colors duration-300"
               style={{
-                filter: `drop-shadow(0px -3px 5px ${tabs[activeIndex].color}80)`
+                filter: `drop-shadow(0px -2px 3px ${tabs[activeIndex].color}60)`
               }}
             />
           </svg>
         </motion.div>
+      </div>
+
+      <div className="max-w-md mx-auto h-16 relative px-4 flex justify-around items-center">
+        
+        {/* Unified Sliding Active Bubble background (Z-indexed above the background curve to avoid cropping) */}
+        <motion.div
+          className="absolute w-12 h-12 rounded-full z-20 shadow-[0_5px_15px_rgba(0,0,0,0.35)] pointer-events-none"
+          style={{ 
+            y: -34,
+          }}
+          animate={{ 
+            left: `${activeIndex * 33.333 + 16.666}%`,
+            x: '-50%',
+            backgroundColor: tabs[activeIndex].color,
+            boxShadow: `0 4px 18px ${tabs[activeIndex].color}70`
+          }}
+          transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+        />
 
         {tabs.map((tab, idx) => {
           const Icon = tab.icon;
@@ -64,31 +90,13 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
             <button
               key={tab.id}
               onClick={() => setTab(tab.id as any)}
-              className="flex-1 flex flex-col items-center justify-center h-full relative cursor-pointer outline-none focus:outline-none select-none z-20"
+              className="flex-1 flex flex-col items-center justify-center h-full relative cursor-pointer outline-none focus:outline-none select-none z-30"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              {/* Active Bubble Glow (slides or fades elegantly) */}
-              <AnimatePresence>
-                {isActive && (
-                  <motion.div
-                    layoutId="activeBubble"
-                    className="absolute w-12 h-12 rounded-full -z-10 shadow-[0_5px_15px_rgba(0,0,0,0.35)]"
-                    style={{ 
-                      backgroundColor: tab.color,
-                      boxShadow: `0 4px 18px ${tab.color}70`
-                    }}
-                    initial={{ scale: 0, y: 10 }}
-                    animate={{ scale: 1, y: -34 }}
-                    exit={{ scale: 0, y: 10 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 24 }}
-                  />
-                )}
-              </AnimatePresence>
-
               {/* Icon Container with motion */}
               <motion.div
                 animate={{ y: isActive ? -34 : 0 }}
-                transition={{ type: 'spring', stiffness: 350, damping: 24 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 28 }}
                 className="w-10 h-10 flex items-center justify-center rounded-full"
               >
                 <Icon 
