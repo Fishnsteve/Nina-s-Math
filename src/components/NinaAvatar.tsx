@@ -146,8 +146,57 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           </g>
         )}
 
+        {equippedAvatar === 'hero_ninja' && (
+          <g>
+            {/* Ninja Suit */}
+            <path d="M 70 95 Q 100 105 130 95 L 140 160 Q 100 165 60 160 Z" fill="#1e293b" />
+            <path d="M 85 95 L 100 115 L 115 95" fill="none" stroke="#dc2626" strokeWidth="4" strokeLinejoin="round" />
+            <path d="M 65 130 Q 100 135 135 130 L 135 140 Q 100 145 65 140 Z" fill="#dc2626" />
+            <path d="M 90 130 L 110 140 M 110 130 L 90 140" stroke="#000" strokeWidth="2" />
+          </g>
+        )}
+
+        {equippedAvatar === 'hero_princess' && (
+          <g>
+            {/* Princess Dress */}
+            <path d="M 60 95 Q 100 110 140 95 L 160 180 Q 100 190 40 180 Z" fill="#fbcfe8" />
+            <path d="M 70 95 L 130 95 L 100 130 Z" fill="#f472b6" />
+            <path d="M 40 180 Q 100 170 160 180" fill="none" stroke="#f472b6" strokeWidth="8" opacity="0.5" />
+            <path d="M 50 160 Q 100 150 150 160" fill="none" stroke="#f472b6" strokeWidth="8" opacity="0.3" />
+            {/* Crown (Head) */}
+            <g transform="translate(85, 20)">
+              <path d="M 0 15 L 5 0 L 15 10 L 25 0 L 30 15 Z" fill="url(#gold)" />
+              <circle cx="5" cy="0" r="3" fill="#ec4899" />
+              <circle cx="15" cy="10" r="3" fill="#ec4899" />
+              <circle cx="25" cy="0" r="3" fill="#ec4899" />
+            </g>
+          </g>
+        )}
+
+        {equippedAvatar === 'hero_cyber' && (
+          <g>
+            {/* Cyberpunk Suit */}
+            <path d="M 65 95 Q 100 105 135 95 L 145 160 Q 100 165 55 160 Z" fill="#0f172a" />
+            <path d="M 80 95 L 90 130 L 110 130 L 120 95" fill="none" stroke="#06b6d4" strokeWidth="4" />
+            <path d="M 70 110 L 130 110" fill="none" stroke="#eab308" strokeWidth="2" />
+            <circle cx="100" cy="115" r="8" fill="#0ea5e9" />
+            <circle cx="100" cy="115" r="4" fill="#fff" />
+            {/* Cyber Glasses */}
+            <path d="M 80 55 L 120 55 L 115 65 L 85 65 Z" fill="#0ea5e9" opacity="0.8" />
+            <path d="M 80 55 L 120 55 L 115 65 L 85 65 Z" fill="none" stroke="#fff" strokeWidth="1" />
+          </g>
+        )}
+
         {equippedAvatar === 'hero_flower' && (
           <g>
+            <path d="M 65 95 Q 100 105 135 95 L 145 165 Q 100 170 55 165 Z" fill="#bbf7d0" />
+            {/* Flowers on dress */}
+            <circle cx="80" cy="120" r="6" fill="#f472b6" />
+            <circle cx="80" cy="120" r="2" fill="#fff" />
+            <circle cx="120" cy="140" r="6" fill="#f472b6" />
+            <circle cx="120" cy="140" r="2" fill="#fff" />
+            <circle cx="100" cy="150" r="8" fill="#fb7185" />
+            <circle cx="100" cy="150" r="3" fill="#fff" />
             {/* Elaborate Flower on head */}
             <g transform="translate(65, 35)">
               <circle cx="0" cy="-12" r="8" fill="#ff66b2" />
@@ -179,6 +228,32 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             <path d="M 130 95 Q 160 120 155 145 L 135 140 Z" fill="url(#kimonoPink)" />
           </g>
         )}
+        {equippedAvatar === 'hero_ninja' && (
+          <g>
+            <path d="M 75 95 Q 50 110 40 125 L 55 130 Z" fill="#1e293b" />
+            <path d="M 125 95 Q 150 110 160 125 L 145 130 Z" fill="#1e293b" />
+          </g>
+        )}
+        {equippedAvatar === 'hero_princess' && (
+          <g>
+            <path d="M 75 95 Q 60 100 50 105 L 65 115 Z" fill="#fbcfe8" />
+            <path d="M 125 95 Q 140 100 150 105 L 135 115 Z" fill="#fbcfe8" />
+          </g>
+        )}
+        {equippedAvatar === 'hero_cyber' && (
+          <g>
+            <path d="M 75 95 Q 60 110 55 120 L 70 120 Z" fill="#0f172a" />
+            <path d="M 125 95 Q 140 110 145 120 L 130 120 Z" fill="#0f172a" />
+            <path d="M 45 130 L 45 140" fill="none" stroke="#0ea5e9" strokeWidth="10" strokeLinecap="round" />
+            <path d="M 155 130 L 155 140" fill="none" stroke="#0ea5e9" strokeWidth="10" strokeLinecap="round" />
+          </g>
+        )}
+        {equippedAvatar === 'hero_flower' && (
+          <g>
+            <path d="M 75 95 Q 60 110 55 120 L 70 120 Z" fill="#bbf7d0" />
+            <path d="M 125 95 Q 140 110 145 120 L 130 120 Z" fill="#bbf7d0" />
+          </g>
+        )}
 
         {/* --- PETS / ACCESSORIES (equippedPet) --- */}
         {equippedPet === 'pet_fan' && (
@@ -207,6 +282,33 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           </g>
         )}
 
+        {equippedPet === 'pet_cat' && (
+          <g transform="translate(140, 150)">
+            <motion.g animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}>
+              <circle cx="0" cy="0" r="10" fill="#f59e0b" />
+              <path d="M -8 -8 L -10 -15 L -2 -10 Z" fill="#f59e0b" />
+              <path d="M 8 -8 L 10 -15 L 2 -10 Z" fill="#f59e0b" />
+              <circle cx="-3" cy="-2" r="1.5" fill="#000" />
+              <circle cx="3" cy="-2" r="1.5" fill="#000" />
+              <path d="M -1 2 L 0 3 L 1 2" fill="none" stroke="#000" strokeWidth="1" />
+            </motion.g>
+          </g>
+        )}
+
+        {equippedPet === 'pet_dog' && (
+          <g transform="translate(150, 160)">
+            <motion.g animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
+              <ellipse cx="0" cy="0" rx="12" ry="10" fill="#8b5a2b" />
+              <path d="M -10 -5 Q -15 -10 -12 2 Z" fill="#5c3a21" />
+              <path d="M 10 -5 Q 15 -10 12 2 Z" fill="#5c3a21" />
+              <circle cx="-4" cy="-2" r="2" fill="#000" />
+              <circle cx="4" cy="-2" r="2" fill="#000" />
+              <circle cx="0" cy="2" r="3" fill="#000" />
+              <path d="M 0 5 Q 0 8 4 6" fill="none" stroke="#ffb6c1" strokeWidth="3" strokeLinecap="round" />
+            </motion.g>
+          </g>
+        )}
+
         {equippedPet === 'pet_dragon' && (
           <g transform="translate(150, 40)">
             <motion.g
@@ -225,6 +327,22 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
               {/* Dragon Horns */}
               <path d="M 30 6 L 25 0 L 32 4 Z" fill="url(#gold)" />
               <path d="M 38 4 L 38 -2 L 40 2 Z" fill="url(#gold)" />
+            </motion.g>
+          </g>
+        )}
+
+        {equippedPet === 'pet_phoenix' && (
+          <g transform="translate(40, 40)">
+            <motion.g animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}>
+              <path d="M 10 20 Q 20 0 35 15 Q 20 30 5 25 Z" fill="#ef4444" />
+              <path d="M 15 22 Q 25 5 30 15 Q 20 25 10 25 Z" fill="#f59e0b" />
+              <circle cx="25" cy="12" r="6" fill="#dc2626" />
+              <circle cx="27" cy="10" r="1.5" fill="#000" />
+              <path d="M 30 12 L 35 10 L 30 15 Z" fill="#fbbf24" />
+              <path d="M 5 25 Q -15 35 0 50" fill="none" stroke="#ef4444" strokeWidth="3" />
+              <path d="M 0 50 Q -5 45 5 35" fill="none" stroke="#f59e0b" strokeWidth="2" />
+              <path d="M 20 5 Q 15 -10 25 -15 Q 30 -5 25 5 Z" fill="#ef4444" />
+              <path d="M 22 5 Q 18 -5 25 -8 Q 28 0 25 5 Z" fill="#f59e0b" />
             </motion.g>
           </g>
         )}

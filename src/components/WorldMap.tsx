@@ -54,10 +54,25 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                   "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(255,255,255,0.2)] border-4 border-white/20 ring-4 ring-white/10 text-white z-10 relative bg-gradient-to-br",
                   isUnlocked ? zone.color : "from-slate-700 to-slate-800 grayscale"
                 )}>
+                  {isUnlocked && (
+                    <motion.div 
+                      className="absolute inset-0 z-0"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <div className="absolute inset-0 bg-white/20 rounded-full blur-md"></div>
+                    </motion.div>
+                  )}
                   {isLockedByLevel ? (
                     <Icons.Lock className="w-8 h-8" />
                   ) : (
-                    <IconComponent className="w-8 h-8 drop-shadow-md" />
+                    <motion.div
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                      className="relative z-10"
+                    >
+                      <IconComponent className="w-8 h-8 drop-shadow-md" />
+                    </motion.div>
                   )}
                 </div>
                 

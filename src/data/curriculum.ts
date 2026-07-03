@@ -79,13 +79,25 @@ export const generateQuestion = (topic: string): Question => {
   const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
   
   const id = Math.random().toString(36).substr(2, 9);
+  const difficultyRand = Math.random();
+  const difficultyLevel = difficultyRand > 0.8 ? 'Hard' : (difficultyRand > 0.4 ? 'Normal' : 'Easy');
 
   switch (topic) {
     case 'U1_GCF_LCM': {
       const isGCF = Math.random() > 0.5;
       if (isGCF) {
-        const a = randInt(2, 10) * randInt(2, 5);
-        const b = randInt(2, 10) * randInt(2, 5);
+        let a, b;
+        if (difficultyLevel === 'Easy') {
+          a = randInt(2, 5) * randInt(2, 3);
+          b = randInt(2, 5) * randInt(2, 3);
+        } else if (difficultyLevel === 'Normal') {
+          a = randInt(2, 10) * randInt(2, 5);
+          b = randInt(2, 10) * randInt(2, 5);
+        } else {
+          a = randInt(10, 20) * randInt(2, 5);
+          b = randInt(10, 20) * randInt(2, 5);
+        }
+        
         const gcf = (x: number, y: number): number => y === 0 ? x : gcf(y, x % y);
         const ans = gcf(a, b);
         const wrong1 = ans + 1;
@@ -93,25 +105,35 @@ export const generateQuestion = (topic: string): Question => {
         const wrong3 = Math.max(a, b);
         const options = [ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()].sort(() => Math.random() - 0.5);
         return {
-          id, topic, difficulty: 'Normal',
+          id, topic, difficulty: difficultyLevel,
           question: { en: `What is the Greatest Common Factor (GCF) of ${a} and ${b}?`, zh: `${a}和${b}的最大公因數(GCF)是多少？` },
           options: { en: options, zh: options },
           correctAnswer: options.indexOf(ans.toString()),
           explanation: { en: `The largest number that divides both ${a} and ${b} without a remainder is ${ans}.`, zh: `能同時整除${a}和${b}的最大的數是${ans}。` }
         };
       } else {
-        const a = randInt(2, 6);
-        const b = randInt(3, 8);
+        let a, b;
+        if (difficultyLevel === 'Easy') {
+          a = randInt(2, 4);
+          b = randInt(3, 5);
+        } else if (difficultyLevel === 'Normal') {
+          a = randInt(4, 8);
+          b = randInt(5, 10);
+        } else {
+          a = randInt(8, 15);
+          b = randInt(10, 20);
+        }
+        
         const gcf = (x: number, y: number): number => y === 0 ? x : gcf(y, x % y);
         const ans = (a * b) / gcf(a, b);
         const wrong1 = a * b;
         const wrong2 = ans * 2;
         const wrong3 = ans + a;
         const options = Array.from(new Set([ans, wrong1, wrong2, wrong3])).map(String);
-        while (options.length < 4) options.push(randInt(10, 50).toString());
+        while (options.length < 4) options.push(randInt(10, 100).toString());
         const finalOptions = options.slice(0, 4).sort(() => Math.random() - 0.5);
         return {
-          id, topic, difficulty: 'Normal',
+          id, topic, difficulty: difficultyLevel,
           question: { en: `Find the Least Common Multiple (LCM) of ${a} and ${b}.`, zh: `找出${a}和${b}的最小公倍數(LCM)。` },
           options: { en: finalOptions, zh: finalOptions },
           correctAnswer: finalOptions.indexOf(ans.toString()),
@@ -120,11 +142,18 @@ export const generateQuestion = (topic: string): Question => {
       }
     }
     case 'U2_Fraction_Division': {
-      const a = randInt(1, 5);
-      const b = randInt(2, 6); // a/b
-      const c = randInt(1, 5);
-      const d = randInt(2, 6); // c/d
-      // (a/b) / (c/d) = (a*d) / (b*c)
+      let a, b, c, d;
+      if (difficultyLevel === 'Easy') {
+        a = 1; b = randInt(2, 4);
+        c = 1; d = randInt(2, 4);
+      } else if (difficultyLevel === 'Normal') {
+        a = randInt(1, 5); b = randInt(2, 6);
+        c = randInt(1, 5); d = randInt(2, 6);
+      } else {
+        a = randInt(2, 8); b = randInt(3, 10);
+        c = randInt(2, 8); d = randInt(3, 10);
+      }
+      
       const num = a * d;
       const den = b * c;
       const gcf = (x: number, y: number): number => y === 0 ? x : gcf(y, x % y);
@@ -135,11 +164,11 @@ export const generateQuestion = (topic: string): Question => {
       
       const wrong1 = `${b * c}/${a * d}`; // reciprocal
       const wrong2 = `${a * c}/${b * d}`; // multiplied instead
-      const wrong3 = `${a * d}/${b * c + 1}`;
+      const wrong3 = `${simpNum + 1}/${simpDen}`;
       
       const options = [ansStr, wrong1, wrong2, wrong3].sort(() => Math.random() - 0.5);
       return {
-        id, topic, difficulty: 'Normal',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `Calculate: ${a}/${b} ÷ ${c}/${d}`, zh: `計算：${a}/${b} ÷ ${c}/${d}` },
         options: { en: options, zh: options },
         correctAnswer: options.indexOf(ansStr),
@@ -147,27 +176,63 @@ export const generateQuestion = (topic: string): Question => {
       };
     }
     case 'U3_Algebra': {
-      const x = randInt(2, 20);
-      const add = randInt(1, 15);
-      const sum = x + add;
-      const ans = x;
-      const wrong1 = sum + add;
-      const wrong2 = sum;
-      const wrong3 = Math.abs(x - add) || x + 2;
-      const options = [ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()].sort(() => Math.random() - 0.5);
-      return {
-        id, topic, difficulty: 'Easy',
-        question: { en: `If x + ${add} = ${sum}, what is x?`, zh: `如果 x + ${add} = ${sum}，請問 x 是多少？` },
-        options: { en: options, zh: options },
-        correctAnswer: options.indexOf(ans.toString()),
-        explanation: { en: `Subtract ${add} from both sides: x = ${sum} - ${add}, so x = ${ans}.`, zh: `等式兩邊減去${add}：x = ${sum} - ${add}，所以 x = ${ans}。` }
-      };
+      const type = Math.floor(Math.random() * 3);
+      if (type === 0 || difficultyLevel === 'Easy') {
+        // x + a = b
+        let x = randInt(2, 20);
+        let a = randInt(1, 15);
+        if (difficultyLevel === 'Hard') { x = randInt(20, 100); a = randInt(15, 50); }
+        const sum = x + a;
+        const options = [x.toString(), (sum + a).toString(), sum.toString(), Math.abs(x - a).toString() || (x + 2).toString()].sort(() => Math.random() - 0.5);
+        return {
+          id, topic, difficulty: difficultyLevel,
+          question: { en: `If x + ${a} = ${sum}, what is x?`, zh: `如果 x + ${a} = ${sum}，請問 x 是多少？` },
+          options: { en: options, zh: options },
+          correctAnswer: options.indexOf(x.toString()),
+          explanation: { en: `Subtract ${a} from both sides: x = ${sum} - ${a}, so x = ${x}.`, zh: `等式兩邊減去${a}：x = ${sum} - ${a}，所以 x = ${x}。` }
+        };
+      } else if (type === 1) {
+        // a * x = b
+        let x = randInt(2, 12);
+        let a = randInt(2, 10);
+        if (difficultyLevel === 'Hard') { x = randInt(10, 30); a = randInt(5, 15); }
+        const prod = x * a;
+        const options = [x.toString(), (x + 2).toString(), (prod / 2).toString(), (prod + a).toString()].sort(() => Math.random() - 0.5);
+        return {
+          id, topic, difficulty: difficultyLevel,
+          question: { en: `If ${a}x = ${prod}, what is x?`, zh: `如果 ${a}x = ${prod}，請問 x 是多少？` },
+          options: { en: options, zh: options },
+          correctAnswer: options.indexOf(x.toString()),
+          explanation: { en: `Divide both sides by ${a}: x = ${prod} ÷ ${a}, so x = ${x}.`, zh: `等式兩邊同除以${a}：x = ${prod} ÷ ${a}，所以 x = ${x}。` }
+        };
+      } else {
+        // a * x + b = c
+        let x = randInt(2, 10);
+        let a = randInt(2, 6);
+        let b = randInt(1, 10);
+        if (difficultyLevel === 'Hard') { x = randInt(5, 20); a = randInt(3, 10); b = randInt(5, 30); }
+        const c = a * x + b;
+        const options = [x.toString(), (x + 1).toString(), (x - 1 || x + 2).toString(), (c - b).toString()].sort(() => Math.random() - 0.5);
+        return {
+          id, topic, difficulty: difficultyLevel,
+          question: { en: `If ${a}x + ${b} = ${c}, what is x?`, zh: `如果 ${a}x + ${b} = ${c}，請問 x 是多少？` },
+          options: { en: options, zh: options },
+          correctAnswer: options.indexOf(x.toString()),
+          explanation: { en: `Subtract ${b} from both sides: ${a}x = ${c - b}. Then divide by ${a}: x = ${x}.`, zh: `兩邊先減去${b}：${a}x = ${c - b}。然後除以${a}：x = ${x}。` }
+        };
+      }
     }
     case 'U4_Decimal_Division': {
-      const a = randInt(2, 9);
-      const b = randInt(2, 9);
+      let a, b;
+      if (difficultyLevel === 'Easy') {
+        a = randInt(2, 5); b = randInt(2, 5);
+      } else if (difficultyLevel === 'Normal') {
+        a = randInt(2, 9); b = randInt(2, 9);
+      } else {
+        a = randInt(5, 15); b = randInt(5, 15);
+      }
       const product = a * b;
-      // product / 10 / (a / 10) = b
+      
       const dividend = product / 10;
       const divisor = a / 10;
       const ans = b;
@@ -177,7 +242,7 @@ export const generateQuestion = (topic: string): Question => {
       const wrong3 = b + 1;
       const options = [ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()].sort(() => Math.random() - 0.5);
       return {
-        id, topic, difficulty: 'Normal',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `Calculate: ${dividend} ÷ ${divisor}`, zh: `計算：${dividend} ÷ ${divisor}` },
         options: { en: options, zh: options },
         correctAnswer: options.indexOf(ans.toString()),
@@ -185,9 +250,15 @@ export const generateQuestion = (topic: string): Question => {
       };
     }
     case 'U5_Ratio': {
-      const multiplier = randInt(2, 6);
-      const a = randInt(2, 7);
-      let b = randInt(2, 7);
+      let multiplier, a, b;
+      if (difficultyLevel === 'Easy') {
+        multiplier = randInt(2, 4); a = randInt(2, 4); b = randInt(2, 4);
+      } else if (difficultyLevel === 'Normal') {
+        multiplier = randInt(3, 8); a = randInt(2, 7); b = randInt(2, 7);
+      } else {
+        multiplier = randInt(5, 15); a = randInt(4, 12); b = randInt(4, 12);
+      }
+      
       if (a === b) b++;
       const num1 = a * multiplier;
       const num2 = b * multiplier;
@@ -196,18 +267,24 @@ export const generateQuestion = (topic: string): Question => {
       const wrong1 = `${b}:${a}`;
       const wrong2 = `${a * 2}:${b}`;
       const wrong3 = `${a}:${b * 2}`;
-      const options = [ans, wrong1, wrong2, wrong3].sort(() => Math.random() - 0.5);
+      const options = Array.from(new Set([ans, wrong1, wrong2, wrong3]));
+      while(options.length < 4) options.push(`${a+1}:${b}`);
+      const finalOptions = options.slice(0, 4).sort(() => Math.random() - 0.5);
       
       return {
-        id, topic, difficulty: 'Easy',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `Simplify the ratio ${num1}:${num2}`, zh: `化簡比例 ${num1}:${num2}` },
-        options: { en: options, zh: options },
-        correctAnswer: options.indexOf(ans),
+        options: { en: finalOptions, zh: finalOptions },
+        correctAnswer: finalOptions.indexOf(ans),
         explanation: { en: `Divide both numbers by their GCF, which is ${multiplier}. ${num1}÷${multiplier} = ${a}, ${num2}÷${multiplier} = ${b}. The simplified ratio is ${ans}.`, zh: `兩數同除以最大公因數${multiplier}。${num1}÷${multiplier} = ${a}，${num2}÷${multiplier} = ${b}。化簡後的比例為 ${ans}。` }
       };
     }
     case 'U6_Circle_Circumference': {
-      const diameter = randInt(2, 12) * 2;
+      let diameter;
+      if (difficultyLevel === 'Easy') diameter = randInt(2, 6) * 2;
+      else if (difficultyLevel === 'Normal') diameter = randInt(2, 12) * 2;
+      else diameter = randInt(10, 30) * 2;
+      
       const ans = (3.14 * diameter).toFixed(2);
       
       const wrong1 = (3.14 * (diameter / 2)).toFixed(2); // used radius
@@ -217,7 +294,7 @@ export const generateQuestion = (topic: string): Question => {
       const options = [`${ans} cm`, `${wrong1} cm`, `${wrong2} cm`, `${wrong3} cm`].sort(() => Math.random() - 0.5);
       
       return {
-        id, topic, difficulty: 'Normal',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `If a circle has a diameter of ${diameter}cm, what is its circumference? (Use π ≈ 3.14)`, zh: `一個直徑${diameter}公分的圓，其圓周長是多少？(使用 π ≈ 3.14)` },
         options: { en: options, zh: options },
         correctAnswer: options.indexOf(`${ans} cm`),
@@ -225,7 +302,11 @@ export const generateQuestion = (topic: string): Question => {
       };
     }
     case 'U7_Circle_Area': {
-      const radius = randInt(2, 10);
+      let radius;
+      if (difficultyLevel === 'Easy') radius = randInt(2, 5);
+      else if (difficultyLevel === 'Normal') radius = randInt(5, 12);
+      else radius = randInt(10, 25);
+      
       const ans = (3.14 * radius * radius).toFixed(2);
       
       const wrong1 = (3.14 * radius * 2).toFixed(2); // circumference instead of area
@@ -235,7 +316,7 @@ export const generateQuestion = (topic: string): Question => {
       const options = [`${ans} cm²`, `${wrong1} cm²`, `${wrong2} cm²`, `${wrong3} cm²`].sort(() => Math.random() - 0.5);
       
       return {
-        id, topic, difficulty: 'Hard',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `What is the area of a circle with a radius of ${radius}cm? (Use π ≈ 3.14)`, zh: `一個半徑${radius}公分的圓，其面積是多少？(使用 π ≈ 3.14)` },
         options: { en: options, zh: options },
         correctAnswer: options.indexOf(`${ans} cm²`),
@@ -243,19 +324,22 @@ export const generateQuestion = (topic: string): Question => {
       };
     }
     case 'U8_Speed': {
-      const speed = randInt(4, 12) * 10;
-      const hours = randInt(2, 5);
+      let speed, hours;
+      if (difficultyLevel === 'Easy') { speed = randInt(4, 8) * 10; hours = randInt(2, 4); }
+      else if (difficultyLevel === 'Normal') { speed = randInt(5, 12) * 10; hours = randInt(2, 6); }
+      else { speed = randInt(8, 20) * 5; hours = randInt(3, 8); }
+      
       const distance = speed * hours;
       
       const ans = speed;
-      const wrong1 = distance / (hours + 1);
-      const wrong2 = distance / (hours - 1);
+      const wrong1 = Math.floor(distance / (hours + 1));
+      const wrong2 = Math.floor(distance / (hours - 1)) || speed + 10;
       const wrong3 = distance * hours;
       
       const options = [`${ans} km/h`, `${wrong1} km/h`, `${wrong2} km/h`, `${wrong3} km/h`].sort(() => Math.random() - 0.5);
       
       return {
-        id, topic, difficulty: 'Easy',
+        id, topic, difficulty: difficultyLevel,
         question: { en: `A car travels ${distance} km in ${hours} hours. What is its speed?`, zh: `一輛車在${hours}小時內行駛了${distance}公里。它的速率是多少？` },
         options: { en: options, zh: options },
         correctAnswer: options.indexOf(`${ans} km/h`),

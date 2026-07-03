@@ -20,18 +20,28 @@ function AppContent() {
   let bgClass = "bg-gradient-to-b from-blue-900/20 via-indigo-900/10 to-slate-900/40";
   let circle1 = "bg-purple-600/30";
   let circle2 = "bg-blue-600/20";
-  let baseBg = "bg-[#1a1c2c]";
+  let baseBg = "bg-[#0b0f19]";
 
-  if (equippedBackground === 'bg_stage') {
-    bgClass = "bg-gradient-to-b from-rose-900/20 via-pink-900/10 to-stone-900/50";
-    circle1 = "bg-rose-600/30";
-    circle2 = "bg-pink-600/20";
-    baseBg = "bg-[#25181e]";
-  } else if (equippedBackground === 'bg_street') {
-    bgClass = "bg-gradient-to-b from-orange-900/20 via-amber-900/10 to-stone-900/50";
-    circle1 = "bg-orange-600/30";
-    circle2 = "bg-amber-600/20";
-    baseBg = "bg-[#261f1c]";
+  if (equippedBackground === 'bg_forest') {
+    bgClass = "bg-gradient-to-b from-emerald-900/40 via-green-900/20 to-slate-900/50";
+    circle1 = "bg-emerald-600/40";
+    circle2 = "bg-green-600/30";
+    baseBg = "bg-[#0f1712]";
+  } else if (equippedBackground === 'bg_castle') {
+    bgClass = "bg-gradient-to-b from-amber-900/40 via-orange-900/20 to-slate-900/50";
+    circle1 = "bg-amber-600/40";
+    circle2 = "bg-orange-600/30";
+    baseBg = "bg-[#17130f]";
+  } else if (equippedBackground === 'bg_ocean') {
+    bgClass = "bg-gradient-to-b from-cyan-900/40 via-blue-900/20 to-slate-900/50";
+    circle1 = "bg-cyan-600/40";
+    circle2 = "bg-blue-600/30";
+    baseBg = "bg-[#0f1417]";
+  } else if (equippedBackground === 'bg_cyber') {
+    bgClass = "bg-gradient-to-b from-fuchsia-900/40 via-indigo-900/20 to-slate-900/50";
+    circle1 = "bg-fuchsia-600/40";
+    circle2 = "bg-indigo-600/30";
+    baseBg = "bg-[#140f17]";
   }
 
   return (

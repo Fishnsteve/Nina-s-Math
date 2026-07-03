@@ -10,7 +10,7 @@ import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 
 export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => void }) {
-  const { addXp, addCoins, loseHeart, hearts, incrementStreak, resetStreak, currentStreak, completeLevel, language } = useGame();
+  const { addXp, addCoins, loseHeart, hearts, incrementStreak, resetStreak, currentStreak, completeLevel, language, equippedBackground } = useGame();
   const t = translations[language];
   
   const zone = ZONES.find(z => z.id === zoneId);
@@ -145,10 +145,48 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     );
   }
 
+  const getBackgroundClass = (bgId: string) => {
+    switch (bgId) {
+      case 'bg_forest': return 'from-emerald-900/60 to-black/80';
+      case 'bg_castle': return 'from-amber-900/40 to-slate-900/80';
+      case 'bg_ocean': return 'from-cyan-900/50 to-blue-900/80';
+      case 'bg_cyber': return 'from-fuchsia-900/40 to-indigo-900/80';
+      default: return 'from-blue-900/20 to-black/60';
+    }
+  };
+
   return (
-    <div className="h-[100dvh] flex flex-col relative z-20 overflow-hidden bg-gradient-to-b from-transparent to-black/40">
+    <div className={cn("h-[100dvh] flex flex-col relative z-20 overflow-hidden bg-gradient-to-b transition-colors duration-1000", getBackgroundClass(equippedBackground))}>
+      
+      {/* Floating Particles Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-white/20 blur-[1px]"
+            style={{
+              width: Math.random() * 8 + 4 + 'px',
+              height: Math.random() * 8 + 4 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+            }}
+            animate={{
+              y: [0, Math.random() * -100 - 50],
+              x: [0, Math.random() * 40 - 20],
+              opacity: [0, 0.6, 0],
+            }}
+            transition={{
+              duration: Math.random() * 5 + 5,
+              repeat: Infinity,
+              ease: "linear",
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Game Header */}
-      <div className="p-4 flex items-center justify-between shrink-0">
+      <div className="p-4 flex items-center justify-between shrink-0 relative z-10">
         <button onClick={onExit} className="p-2 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
           <X className="w-6 h-6" />
         </button>
@@ -177,30 +215,41 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
         <div className="flex-1 flex flex-col justify-center min-h-0 relative">
           
-          <div className="flex items-end justify-center mb-6">
-            <div className="w-24 h-24 shrink-0 -ml-4 hidden sm:block">
+          <div className="flex items-end justify-center mb-4 sm:mb-6">
+            <motion.div 
+              className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 -ml-4 hidden sm:block"
+              animate={{ 
+                y: [0, -10, 0],
+                rotate: [-2, 2, -2]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
                <NinaAvatar />
-            </div>
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-[2rem] rounded-bl-none shadow-2xl relative">
-              <Sparkles className="absolute -top-3 -right-3 text-amber-400 w-8 h-8 drop-shadow-md" />
-              <h2 className="text-2xl md:text-3xl font-black text-white drop-shadow-md text-center leading-snug">
+            </motion.div>
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 sm:p-6 rounded-[2rem] rounded-bl-none shadow-2xl relative">
+              <Sparkles className="absolute -top-3 -right-3 text-amber-400 w-6 h-6 sm:w-8 sm:h-8 drop-shadow-md" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white drop-shadow-md text-center leading-snug">
                 {currentQuestion.question[language]}
               </h2>
             </div>
           </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
+        <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto w-full">
           {currentQuestion.options[language].map((option, idx) => {
             const isSelected = selectedAnswer === idx;
             const isCorrectOption = idx === currentQuestion.correctAnswer;
             
             let btnStateClasses = "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-[1.02] backdrop-blur-md shadow-lg";
             if (isAnswerChecked) {
-              if (isCorrectOption) btnStateClasses = "bg-emerald-500 border-emerald-600 text-white shadow-[0_0_30px_rgba(16,185,129,0.5)] scale-[1.02] z-10";
+              if (isCorrectOption) btnStateClasses = "bg-emerald-500 border-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-[1.02] z-10";
               else if (isSelected) btnStateClasses = "bg-rose-500/50 border-rose-600 text-rose-100 opacity-80 scale-95";
               else btnStateClasses = "bg-black/20 border-white/5 opacity-40 scale-95";
             } else if (isSelected) {
-              btnStateClasses = "bg-blue-500 border-blue-600 text-white shadow-[0_0_30px_rgba(59,130,246,0.6)] scale-[1.05] z-10";
+              btnStateClasses = "bg-blue-500 border-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] scale-[1.05] z-10";
             }
 
             return (
@@ -209,13 +258,13 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                 disabled={isAnswerChecked}
                 onClick={() => setSelectedAnswer(idx)}
                 className={cn(
-                  "w-full flex flex-row sm:flex-col items-center justify-center px-6 py-5 sm:p-6 rounded-[2rem] border-b-[6px] font-black text-2xl sm:text-3xl transition-all duration-300 active:translate-y-2 active:border-b-0",
+                  "w-full flex flex-col items-center justify-center p-3 sm:p-5 rounded-[1.5rem] border-b-[4px] font-black text-lg sm:text-2xl transition-all duration-300 active:translate-y-1 active:border-b-0",
                   btnStateClasses
                 )}
               >
-                <span className="flex-1 text-center">{option}</span>
-                {isAnswerChecked && isCorrectOption && <Check className="w-8 h-8 sm:mt-2 opacity-90 text-white drop-shadow-md shrink-0" />}
-                {isAnswerChecked && isSelected && !isCorrectOption && <X className="w-8 h-8 sm:mt-2 opacity-90 text-white drop-shadow-md shrink-0" />}
+                <span className="text-center leading-tight">{option}</span>
+                {isAnswerChecked && isCorrectOption && <Check className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
+                {isAnswerChecked && isSelected && !isCorrectOption && <X className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
               </button>
             );
           })}
@@ -224,7 +273,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       </div>
 
       {/* Footer Area */}
-      <div className="h-44 shrink-0 w-full relative">
+      <div className="h-32 sm:h-44 shrink-0 w-full relative">
         <AnimatePresence>
           {isAnswerChecked && (
             <motion.div
@@ -233,27 +282,27 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
               exit={{ y: "100%" }}
               transition={{ type: "spring", bounce: 0.2 }}
               className={cn(
-                "absolute bottom-0 left-0 right-0 h-full p-6 flex flex-col justify-center rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl border-t-2 z-30",
+                "absolute bottom-0 left-0 right-0 h-full p-4 sm:p-6 flex flex-col justify-center rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl border-t-2 z-30",
                 isCorrect ? "bg-emerald-900/95 border-emerald-400" : "bg-rose-900/95 border-rose-400"
               )}
             >
-              <div className="flex flex-col h-full justify-between max-w-3xl mx-auto w-full gap-4">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col h-full justify-between max-w-3xl mx-auto w-full gap-2 sm:gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div className={cn(
-                    "w-16 h-16 rounded-full flex items-center justify-center shrink-0 border-4 shadow-inner",
+                    "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 border-4 shadow-inner",
                     isCorrect ? "bg-emerald-500 border-emerald-300" : "bg-rose-500 border-rose-300"
                   )}>
-                    {isCorrect ? <Check className="w-10 h-10 text-white" /> : <X className="w-10 h-10 text-white" />}
+                    {isCorrect ? <Check className="w-8 h-8 sm:w-10 sm:h-10 text-white" /> : <X className="w-8 h-8 sm:w-10 sm:h-10 text-white" />}
                   </div>
                   <div>
                     <h3 className={cn(
-                      "text-3xl font-black mb-1 drop-shadow-md",
+                      "text-2xl sm:text-3xl font-black mb-0 sm:mb-1 drop-shadow-md",
                       isCorrect ? "text-emerald-300" : "text-rose-300"
                     )}>
                       {isCorrect ? t.game.awesome : t.game.notQuite}
                     </h3>
                     <p className={cn(
-                      "font-bold text-lg leading-tight line-clamp-2",
+                      "font-bold text-sm sm:text-lg leading-tight line-clamp-2",
                       isCorrect ? "text-emerald-100" : "text-rose-100"
                     )}>
                       {currentQuestion.explanation[language]}
@@ -264,7 +313,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                 <button
                   onClick={handleNext}
                   className={cn(
-                    "w-full py-4 rounded-2xl font-black text-2xl text-white shadow-xl border-b-[6px] active:translate-y-2 active:border-b-0 transition-all",
+                    "w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0",
                     isCorrect ? "bg-emerald-500 border-emerald-700 hover:bg-emerald-400" : "bg-rose-500 border-rose-700 hover:bg-rose-400"
                   )}
                 >
@@ -276,15 +325,15 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         </AnimatePresence>
         
         {!isAnswerChecked && (
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-20 h-full flex items-center">
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-20 h-full flex items-center">
             <div className="max-w-3xl mx-auto w-full">
               <button
                 onClick={handleCheckAnswer}
                 disabled={selectedAnswer === null}
                 className={cn(
-                  "w-full py-5 rounded-[2rem] font-black text-2xl text-white border-b-[8px] transition-all duration-300",
+                  "w-full py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] font-black text-xl sm:text-2xl text-white border-b-[6px] sm:border-b-[8px] transition-all duration-300",
                   selectedAnswer !== null 
-                    ? "bg-pink-500 border-pink-700 hover:bg-pink-400 active:translate-y-2 active:border-b-0 shadow-[0_10px_30px_rgba(236,72,153,0.5)] scale-100" 
+                    ? "bg-pink-500 border-pink-700 hover:bg-pink-400 active:translate-y-1 sm:active:translate-y-2 active:border-b-0 shadow-[0_10px_30px_rgba(236,72,153,0.5)] scale-100" 
                     : "bg-white/10 border-white/5 text-slate-500 cursor-not-allowed scale-95"
                 )}
               >
