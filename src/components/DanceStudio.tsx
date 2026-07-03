@@ -97,7 +97,8 @@ export function DanceStudio() {
           <div className="flex overflow-x-auto gap-3 pb-2 pt-1 px-1 hide-scrollbar snap-x">
             
             {activeTab === 'outfits' && outfits.map(outfit => {
-              const isUnlocked = level >= outfit.level || inventory.includes(outfit.id);
+              const isUnlocked = inventory.includes(outfit.id) || outfit.price === 0;
+              const meetsLevel = level >= outfit.level;
               const isEquipped = equippedAvatar === outfit.id;
               
               return (
@@ -106,7 +107,7 @@ export function DanceStudio() {
                   onClick={() => {
                     if (isUnlocked) {
                       equipItem(outfit.id, 'character');
-                    } else {
+                    } else if (meetsLevel) {
                       buyItem(outfit.id, outfit.price, outfit.currency);
                     }
                   }}
@@ -119,10 +120,14 @@ export function DanceStudio() {
                   
                   {isUnlocked ? (
                     <div className="font-bold text-[9px] sm:text-[10px] text-white leading-tight">{outfit.name}</div>
-                  ) : (
+                  ) : meetsLevel ? (
                     <div className="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-bold text-amber-300">
                       {outfit.price}
                       <Coins className="w-2.5 h-2.5 fill-amber-300" />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-1 text-[9px] sm:text-[10px] font-bold text-slate-400">
+                      <Lock className="w-2.5 h-2.5" /> Lv {outfit.level}
                     </div>
                   )}
 

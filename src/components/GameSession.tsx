@@ -3,28 +3,49 @@ import { useGame } from '../context/GameContext';
 import { QUESTIONS, ZONES, generateQuestion } from '../data/curriculum';
 import { Question } from '../types/game';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, ArrowRight, Zap, Coins, HeartCrack, Trophy, Sparkles } from 'lucide-react';
+import { X, Check, ArrowRight, Zap, Coins, HeartCrack, Heart, Trophy, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from '../lib/utils';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
+import { Notepad } from './Notepad';
 
 export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => void }) {
   const { addXp, addCoins, loseHeart, hearts, incrementStreak, resetStreak, currentStreak, completeLevel, language, equippedBackground } = useGame();
   const t = translations[language];
   
   const zone = ZONES.find(z => z.id === zoneId);
+  const isKingdom = zone?.type === 'kingdom';
+  const totalQuestions = isKingdom ? 10 : 5;
   
   const zoneQuestions = useMemo(() => {
     if (!zone) return [];
-    return Array.from({ length: 5 }).map(() => generateQuestion(zone.topic));
-  }, [zone?.topic]);
+    return Array.from({ length: totalQuestions }).map((_, idx) => {
+      const topic = Array.isArray(zone.topic) 
+        ? zone.topic[Math.floor(Math.random() * zone.topic.length)] 
+        : zone.topic;
+        
+      let diff: 'Easy' | 'Normal' | 'Hard' | 'Extra' = 'Easy';
+      if (isKingdom) {
+        if (idx < 3) diff = 'Normal';
+        else if (idx < 6) diff = 'Hard';
+        else diff = 'Extra';
+      } else {
+        if (idx < 2) diff = 'Easy';
+        else if (idx < 4) diff = 'Normal';
+        else diff = 'Hard';
+      }
+      return generateQuestion(topic, diff);
+    });
+  }, [zone?.topic, totalQuestions, isKingdom]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
+  const [mistakes, setMistakes] = useState(0);
   
   const currentQuestion = zoneQuestions[currentIndex];
 
@@ -64,19 +85,30 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     if (correct) {
       handleFireConfetti();
       incrementStreak();
-      const baseCoins = 10;
-      const streakBonus = Math.floor(currentStreak / 3) * 5;
-      addCoins(baseCoins + streakBonus);
-      addXp(50);
+      
+      if (zone?.type === 'kingdom') {
+        const baseCoins = 15;
+        const streakBonus = Math.floor(currentStreak / 3) * 5;
+        addCoins(baseCoins + streakBonus);
+        addXp(20);
+      } else {
+        const baseCoins = 2;
+        const streakBonus = Math.floor(currentStreak / 3) * 1;
+        addCoins(baseCoins + streakBonus);
+        addXp(40);
+      }
     } else {
-      loseHeart();
+      setMistakes(m => m + 1);
+      if (isKingdom) {
+        loseHeart();
+      }
       resetStreak();
     }
   };
 
   const handleNext = () => {
-    if (hearts <= 0) {
-      onExit();
+    if (isKingdom && mistakes >= 3) {
+      setIsFailed(true);
       return;
     }
     
@@ -86,13 +118,21 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       setIsAnswerChecked(false);
     } else {
       setIsCompleted(true);
-      completeLevel(zoneId, 3); // Basic logic to award 3 stars on completion for now
+      let stars = 3;
+      if (mistakes === 1) stars = 2;
+      else if (mistakes >= 2) stars = 1;
+      
+      completeLevel(zoneId, stars);
       handleFireConfetti();
       handleFireConfetti();
     }
   };
 
   if (isCompleted) {
+    const isKingdom = zone?.type === 'kingdom';
+    const completionXp = isKingdom ? 50 : 100;
+    const completionCoins = isKingdom ? 150 : 10;
+    
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white relative z-20">
         <motion.div 
@@ -104,7 +144,9 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
           <Trophy className="w-32 h-32 text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />
         </motion.div>
         <h2 className="text-4xl font-black mb-4 drop-shadow-md text-emerald-400">{t.game.zoneCleared}</h2>
-        <p className="text-emerald-200 text-lg mb-12 font-bold bg-emerald-900/30 px-6 py-2 rounded-full border border-emerald-500/20 backdrop-blur-sm">+150 XP • +50 Coins</p>
+        <p className="text-emerald-200 text-lg mb-12 font-bold bg-emerald-900/30 px-6 py-2 rounded-full border border-emerald-500/20 backdrop-blur-sm">
+          +{completionXp} XP • +{completionCoins} Coins
+        </p>
         
         <div className="w-48 h-48 mb-8">
           <NinaAvatar />
@@ -112,8 +154,8 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
         <button 
           onClick={() => {
-            addXp(150);
-            addCoins(50);
+            addXp(completionXp);
+            addCoins(completionCoins);
             onExit();
           }}
           className="bg-emerald-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 transition-transform border border-emerald-400 hover:bg-emerald-400"
@@ -124,7 +166,39 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     );
   }
 
-  if (!currentQuestion || hearts <= 0) {
+  if (isFailed) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white relative z-20">
+        <motion.div 
+          initial={{ scale: 0 }} 
+          animate={{ scale: 1 }} 
+          transition={{ type: 'spring', bounce: 0.5 }}
+          className="bg-rose-500/20 border border-rose-500/30 p-8 rounded-full mb-8 shadow-[0_0_30px_rgba(225,29,72,0.3)] backdrop-blur-md"
+        >
+          <HeartCrack className="w-32 h-32 text-rose-400 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]" />
+        </motion.div>
+        <h2 className="text-4xl font-black mb-4 drop-shadow-md text-rose-400">
+          {language === 'en' ? 'Challenge Failed' : '挑戰失敗'}
+        </h2>
+        <p className="text-rose-200 text-lg mb-12 font-bold bg-rose-900/30 px-6 py-2 rounded-full border border-rose-500/20 backdrop-blur-sm">
+          {language === 'en' ? 'Too many mistakes! Try again.' : '失誤太多了！再試一次。'}
+        </p>
+        
+        <div className="w-48 h-48 mb-8 grayscale opacity-80">
+          <NinaAvatar />
+        </div>
+
+        <button 
+          onClick={onExit}
+          className="bg-rose-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(225,29,72,0.4)] active:scale-95 transition-transform border border-rose-400 hover:bg-rose-400"
+        >
+          {t.game.continue}
+        </button>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative z-20">
         <HeartCrack className="w-24 h-24 text-rose-500 mb-6 drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" />
@@ -197,6 +271,16 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
             animate={{ width: `${((currentIndex + 1) / zoneQuestions.length) * 100}%` }}
           />
         </div>
+        {isKingdom && (
+          <div className="flex items-center gap-1">
+            {[...Array(3)].map((_, i) => (
+              <Heart 
+                key={i} 
+                className={cn("w-6 h-6 transition-all duration-300", i < 3 - mistakes ? "fill-rose-500 text-rose-500 scale-100 drop-shadow-md" : "fill-transparent text-white/20 scale-90")} 
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
@@ -270,6 +354,8 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
           })}
           </div>
         </div>
+        
+        <Notepad />
       </div>
 
       {/* Footer Area */}

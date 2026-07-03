@@ -15,9 +15,9 @@ const INITIAL_STATE: GameState = {
   unlockedZones: ['zone_1'],
   completedLevels: {},
   equippedAvatar: 'hero_sulan',
-  equippedBackground: 'bg_stage',
+  equippedBackground: 'bg_default',
   equippedPet: '',
-  inventory: ['hero_sulan', 'bg_stage']
+  inventory: ['hero_sulan', 'bg_default']
 };
 
 interface GameContextType extends GameState {
@@ -49,6 +49,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('mathQuestState', JSON.stringify(state));
   }, [state]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setState(p => {
+        if (p.hearts < p.maxHearts) {
+          return { ...p, hearts: p.hearts + 1 };
+        }
+        return p;
+      });
+    }, 60000); // Regenerate 1 heart every 60 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const setLanguage = (lang: 'en' | 'zh') => setState(p => ({ ...p, language: lang }));
 
   const addXp = (amount: number) => {
@@ -61,19 +73,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         newLevel++;
       }
 
-      // Automatically unlock level-based outfits
-      const newInventory = [...prev.inventory];
-      const levelUnlocks = [
-        { id: 'hero_pink_kimono', level: 4 },
-        { id: 'hero_flower', level: 8 }
-      ];
-      levelUnlocks.forEach(item => {
-        if (newLevel >= item.level && !newInventory.includes(item.id)) {
-          newInventory.push(item.id);
-        }
-      });
+      // No automatic level unlocks, users must purchase them in the shop.
       
-      return { ...prev, xp: newXp, level: newLevel, inventory: newInventory };
+      return { ...prev, xp: newXp, level: newLevel };
     });
   };
 
@@ -110,7 +112,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     return {
       ...p,
       completedLevels: { ...p.completedLevels, [zoneId]: newStars },
-      stars: totalStars
+      stars: totalStars,
+      hearts: p.maxHearts // Restore hearts to full on level completion!
     };
   });
 
@@ -127,7 +130,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   const equipItem = (itemId: string, type: 'character' | 'background' | 'pet') => {
-    if (itemId === '' || state.inventory.includes(itemId)) {
+    const isDefault = itemId === 'hero_sulan' || itemId === 'bg_default' || itemId === '';
+    if (isDefault || state.inventory.includes(itemId)) {
       setState(p => {
         let field: keyof GameState;
         if (type === 'character') field = 'equippedAvatar';

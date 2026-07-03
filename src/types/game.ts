@@ -18,17 +18,18 @@ export interface Question {
   options: LocalizedStringArray;
   correctAnswer: number; // index of the correct option
   explanation: LocalizedString;
-  difficulty: 'Easy' | 'Normal' | 'Hard';
+  difficulty: 'Easy' | 'Normal' | 'Hard' | 'Extra';
 }
 
 export interface Zone {
   id: string;
   name: LocalizedString;
-  topic: Topic;
+  topic: Topic | Topic[];
   description: LocalizedString;
   icon: string;
   color: string;
   requiredLevel: number;
+  type: 'training' | 'kingdom';
 }
 
 export interface GameState {

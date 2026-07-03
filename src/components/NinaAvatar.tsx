@@ -283,28 +283,75 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         )}
 
         {equippedPet === 'pet_cat' && (
-          <g transform="translate(140, 150)">
-            <motion.g animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}>
-              <circle cx="0" cy="0" r="10" fill="#f59e0b" />
-              <path d="M -8 -8 L -10 -15 L -2 -10 Z" fill="#f59e0b" />
-              <path d="M 8 -8 L 10 -15 L 2 -10 Z" fill="#f59e0b" />
-              <circle cx="-3" cy="-2" r="1.5" fill="#000" />
-              <circle cx="3" cy="-2" r="1.5" fill="#000" />
-              <path d="M -1 2 L 0 3 L 1 2" fill="none" stroke="#000" strokeWidth="1" />
+          <g transform="translate(0, 175)">
+            <motion.g 
+              animate={{ 
+                x: [20, 160, 160, 20, 20],
+                scaleX: [1, 1, -1, -1, 1] 
+              }} 
+              transition={{ repeat: Infinity, duration: 8, ease: "linear", times: [0, 0.45, 0.5, 0.95, 1] }}
+            >
+              {/* Body */}
+              <ellipse cx="0" cy="0" rx="14" ry="10" fill="#f59e0b" />
+              {/* Tail */}
+              <motion.path 
+                d="M -12 -5 Q -25 -20 -15 -25" 
+                fill="none" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"
+                animate={{ rotate: [-10, 10, -10] }}
+                transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+              />
+              {/* Legs */}
+              <motion.line x1="-8" y1="8" x2="-8" y2="15" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" animate={{ y2: [15, 12, 15] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="-3" y1="9" x2="-3" y2="15" stroke="#d97706" strokeWidth="3" strokeLinecap="round" animate={{ y2: [12, 15, 12] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="5" y1="9" x2="5" y2="15" stroke="#d97706" strokeWidth="3" strokeLinecap="round" animate={{ y2: [15, 12, 15] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="10" y1="8" x2="10" y2="15" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" animate={{ y2: [12, 15, 12] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              {/* Head */}
+              <circle cx="12" cy="-8" r="9" fill="#f59e0b" />
+              {/* Ears */}
+              <path d="M 6 -13 L 4 -22 L 12 -15 Z" fill="#f59e0b" />
+              <path d="M 18 -13 L 20 -22 L 14 -16 Z" fill="#f59e0b" />
+              {/* Face */}
+              <circle cx="15" cy="-9" r="1.5" fill="#000" />
+              <circle cx="9" cy="-9" r="1.5" fill="#000" />
+              <path d="M 11 -6 L 12 -5 L 13 -6" fill="none" stroke="#000" strokeWidth="1" />
             </motion.g>
           </g>
         )}
 
         {equippedPet === 'pet_dog' && (
-          <g transform="translate(150, 160)">
-            <motion.g animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
-              <ellipse cx="0" cy="0" rx="12" ry="10" fill="#8b5a2b" />
-              <path d="M -10 -5 Q -15 -10 -12 2 Z" fill="#5c3a21" />
-              <path d="M 10 -5 Q 15 -10 12 2 Z" fill="#5c3a21" />
-              <circle cx="-4" cy="-2" r="2" fill="#000" />
-              <circle cx="4" cy="-2" r="2" fill="#000" />
-              <circle cx="0" cy="2" r="3" fill="#000" />
-              <path d="M 0 5 Q 0 8 4 6" fill="none" stroke="#ffb6c1" strokeWidth="3" strokeLinecap="round" />
+          <g transform="translate(0, 175)">
+            <motion.g 
+              animate={{ 
+                x: [160, 20, 20, 160, 160],
+                scaleX: [-1, -1, 1, 1, -1] 
+              }} 
+              transition={{ repeat: Infinity, duration: 7, ease: "linear", times: [0, 0.45, 0.5, 0.95, 1] }}
+            >
+              {/* Body */}
+              <ellipse cx="0" cy="0" rx="16" ry="11" fill="#8b5a2b" />
+              {/* Tail */}
+              <motion.path 
+                d="M -15 -2 Q -25 5 -22 -10" 
+                fill="none" stroke="#8b5a2b" strokeWidth="4" strokeLinecap="round"
+                animate={{ rotate: [-20, 20, -20] }}
+                transition={{ repeat: Infinity, duration: 0.3, ease: "easeInOut" }}
+                style={{ transformOrigin: '-15px -2px' }}
+              />
+              {/* Legs */}
+              <motion.line x1="-10" y1="8" x2="-10" y2="16" stroke="#8b5a2b" strokeWidth="4" strokeLinecap="round" animate={{ y2: [16, 12, 16] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="-4" y1="9" x2="-4" y2="16" stroke="#5c3a21" strokeWidth="4" strokeLinecap="round" animate={{ y2: [12, 16, 12] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="6" y1="9" x2="6" y2="16" stroke="#5c3a21" strokeWidth="4" strokeLinecap="round" animate={{ y2: [16, 12, 16] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              <motion.line x1="12" y1="8" x2="12" y2="16" stroke="#8b5a2b" strokeWidth="4" strokeLinecap="round" animate={{ y2: [12, 16, 12] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+              {/* Head */}
+              <ellipse cx="14" cy="-8" rx="11" ry="10" fill="#8b5a2b" />
+              {/* Ears */}
+              <path d="M 6 -12 Q -2 -15 2 -3 Z" fill="#5c3a21" />
+              <path d="M 22 -12 Q 30 -15 26 -3 Z" fill="#5c3a21" />
+              {/* Face */}
+              <circle cx="17" cy="-10" r="1.5" fill="#000" />
+              <circle cx="11" cy="-10" r="1.5" fill="#000" />
+              <circle cx="14" cy="-6" r="2.5" fill="#000" />
+              <path d="M 14 -4 Q 14 -1 17 -2" fill="none" stroke="#ffb6c1" strokeWidth="2" strokeLinecap="round" />
             </motion.g>
           </g>
         )}
