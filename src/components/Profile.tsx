@@ -6,9 +6,19 @@ import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
 import { audioEngine } from '../utils/audio';
 
+const COLLECTIBLE_IDS = [
+  'hero_pink_kimono', 'hero_ninja', 'hero_flower', 'hero_princess', 'hero_cyber',
+  'pet_fan', 'pet_lantern', 'pet_cat', 'pet_dog', 'pet_dragon', 'pet_phoenix',
+  'bg_forest', 'bg_castle', 'bg_ocean', 'bg_cyber'
+];
+
 export function Profile() {
-  const { xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar } = useGame();
+  const { xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar, inventory } = useGame();
   const t = translations[language];
+
+  const purchasedCount = COLLECTIBLE_IDS.filter(id => inventory.includes(id)).length;
+  const totalCount = COLLECTIBLE_IDS.length;
+  const hasAllCollectibles = purchasedCount === totalCount;
 
   const outfitsMap = {
     hero_sulan: language === 'en' ? 'Sulan' : '素蘭',
@@ -70,15 +80,17 @@ export function Profile() {
 
   return (
     <div className="min-h-screen pb-32 pt-6 px-4 relative overflow-hidden">
-      {/* Immersive Kimono Dancer Background Art */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen mask-fade"
-        style={{ 
-          backgroundImage: `url('/src/assets/images/profile_bg_1783148219481.jpg')`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover'
-        }}
-      />
+      {/* Immersive Kimono Dancer Background Art - Only appears when all collectibles are purchased */}
+      {hasAllCollectibles && (
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen mask-fade"
+          style={{ 
+            backgroundImage: `url('/src/assets/images/profile_bg_1783148219481.jpg')`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }}
+        />
+      )}
       
       <div className="max-w-2xl mx-auto space-y-6 relative z-10">
         
@@ -249,6 +261,33 @@ export function Profile() {
                 </div>
               </div>
             ))}
+            
+            {/* Secret Background Achievement */}
+            <div className={`flex items-center gap-4 p-3 rounded-2xl border transition-all duration-300 ${
+              hasAllCollectibles 
+                ? "bg-pink-500/10 border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.15)]" 
+                : "bg-white/5 border-white/5 opacity-80"
+            }`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border shadow-[0_0_15px_rgba(244,114,182,0.1)] transition-all ${
+                hasAllCollectibles 
+                  ? "bg-pink-500/20 border-pink-400/30 text-2xl" 
+                  : "bg-slate-800/40 border-slate-700/30 grayscale"
+              }`}>
+                {hasAllCollectibles ? '🔮' : '🔒'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`font-bold text-sm truncate ${hasAllCollectibles ? "text-pink-300" : "text-white/70"}`}>
+                  {hasAllCollectibles 
+                    ? (language === 'en' ? 'Ultimate Collector' : '終極收藏家') 
+                    : (language === 'en' ? 'Ultimate Collector (Secret)' : '終極收藏家（隱藏挑戰）')}
+                </h4>
+                <p className="text-[11px] text-pink-200/60 mt-0.5">
+                  {hasAllCollectibles 
+                    ? (language === 'en' ? 'Unlocked the secret Profile Backdrop!' : '已成功解鎖專屬個人檔案背景！') 
+                    : (language === 'en' ? `Purchase all shop items (${purchasedCount}/${totalCount})` : `購買商店所有道具以解鎖隱藏背景 (${purchasedCount}/${totalCount})`)}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
