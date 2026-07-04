@@ -10,6 +10,13 @@ body {
   background-color: #1a1c2c;
   color: #f1f5f9;
   -webkit-tap-highlight-color: transparent;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 /* Hide scrollbar for horizontal scrolling areas */

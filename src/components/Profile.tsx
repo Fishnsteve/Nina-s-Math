@@ -69,8 +69,18 @@ export function Profile() {
   const totalQuestionsAnswered = Object.values(completedLevels).reduce((acc, curr) => acc + curr, 0) * 3; // Approx
 
   return (
-    <div className="min-h-screen pb-32 pt-6 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen pb-32 pt-6 px-4 relative overflow-hidden">
+      {/* Immersive Kimono Dancer Background Art */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.14] pointer-events-none bg-contain bg-no-repeat bg-right-bottom mix-blend-screen mask-fade"
+        style={{ 
+          backgroundImage: `url('/src/assets/images/profile_bg_1783148219481.jpg')`,
+          backgroundPosition: 'center 40%',
+          backgroundSize: 'contain'
+        }}
+      />
+      
+      <div className="max-w-2xl mx-auto space-y-6 relative z-10">
         
         {/* Header Avatar */}
         <div className="bg-white/5 backdrop-blur-lg rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col items-center">

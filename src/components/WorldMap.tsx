@@ -97,26 +97,90 @@ const SIDE_QUESTS: SideQuestQuestion[] = [
   {
     id: 'sq_11',
     question: { 
-      en: "What is the value of Pi (π) rounded to two decimal places? (e.g., 3.14)", 
-      zh: "圓周率（π）四捨五入到小數點後兩位是多少？（例如：3.14）" 
+      en: "Pi (π) is approximately 3.1415926535... What is the value of Pi rounded to 2 decimal places?", 
+      zh: "圓周率 (π) 大約是 3.1415926535... 請問四捨五入到小數點後 2 位的數值是多少？" 
     },
     answer: "3.14"
   },
   {
     id: 'sq_12',
     question: { 
-      en: "Calculate the area of a circular dance ring with a radius of 10 meters. (Use π = 3.14)", 
-      zh: "計算一個半徑為 10 公尺的圓形舞池面積。（使用 π = 3.14）" 
+      en: "Pi (π) is approximately 3.1415926535... What is the value of Pi rounded to 3 decimal places?", 
+      zh: "圓周率 (π) 大約是 3.1415926535... 請問四捨五入到小數點後 3 位的數值是多少？" 
     },
-    answer: "314"
+    answer: "3.142"
   },
   {
     id: 'sq_13',
     question: { 
-      en: "What is the circumference of a circular stage with a diameter of 20 meters? (Use π = 3.14)", 
-      zh: "一個直徑為 20 公尺的圓形舞台的周長是多少公尺？（使用 π = 3.14）" 
+      en: "Pi (π) is approximately 3.141592653589... What is the value of Pi rounded to 4 decimal places?", 
+      zh: "圓周率 (π) 大約是 3.141592653589... 請問四捨五入到小數點後 4 位的數值是多少？" 
+    },
+    answer: "3.1416"
+  },
+  {
+    id: 'sq_14',
+    question: {
+      en: "Given Pi (π) ≈ 3.14159..., calculate the area in square meters of a circular stage with a radius of 10 meters, rounded to the nearest integer.",
+      zh: "設圓周率 (π) ≈ 3.14159...，計算半徑為 10 公尺的圓形舞台面積（平方米），四捨五入到最接近的整數。"
+    },
+    answer: "314"
+  },
+  {
+    id: 'sq_15',
+    question: {
+      en: "Given Pi (π) ≈ 3.14159..., what is the circumference of a circular stage with a diameter of 20 meters, rounded to one decimal place?",
+      zh: "設圓周率 (π) ≈ 3.14159...，一個直徑為 20 公尺的圓形舞台周長是多少公尺？（四捨五入到小數點後 1 位）"
     },
     answer: "62.8"
+  },
+  {
+    id: 'sq_16',
+    question: {
+      en: "If Nina does a dance routine that decreases in beat tempo by 5% every minute, and the starting tempo is 120 BPM, what is the tempo (BPM) after exactly 1 minute?",
+      zh: "如果妮娜跳的舞蹈節奏每分鐘減少 5%，初始節奏為 120 BPM，一分鐘後的節奏（BPM）是多少？"
+    },
+    answer: "114"
+  },
+  {
+    id: 'sq_17',
+    question: {
+      en: "A dance squad of 8 dancers wants to form pairs for a duet. How many unique duets can be formed from the group?",
+      zh: "一個 8 人的舞蹈隊伍想要兩兩組隊進行雙人舞。這群人總共可以組成多少種不同的雙人舞組合？"
+    },
+    answer: "28"
+  },
+  {
+    id: 'sq_18',
+    question: {
+      en: "A rectangular dance hall measures 15 meters by 12 meters. What is its area in square meters?",
+      zh: "一個長方形舞廳，長 15 公尺、寬 12 公尺。它的面積是多少平方公尺？"
+    },
+    answer: "180"
+  },
+  {
+    id: 'sq_19',
+    question: {
+      en: "Solve for x: 5x + 3 = 2x + 18.",
+      zh: "求解 x：5x + 3 = 2x + 18。"
+    },
+    answer: "5"
+  },
+  {
+    id: 'sq_20',
+    question: {
+      en: "What is the square root of 225?",
+      zh: "225 的平方根是多少？"
+    },
+    answer: "15"
+  },
+  {
+    id: 'sq_21',
+    question: {
+      en: "A sequence of dance steps follows the pattern: 2, 4, 8, 16, ... What is the next number in the sequence?",
+      zh: "一組舞蹈步伐遵循以下規律：2, 4, 8, 16, ... 序列中的下一個數字是多少？"
+    },
+    answer: "32"
   }
 ];
 
@@ -156,8 +220,12 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
     if (!questActive && !showQuestModal) {
       const delay = isFirstSpawn ? 6000 : 25000;
       timeout = setTimeout(() => {
-        const randomIdx = Math.floor(Math.random() * SIDE_QUESTS.length);
-        setCurrentQuest(SIDE_QUESTS[randomIdx]);
+        // Filter out current quest to avoid duplicate consecutively
+        const availableQuests = currentQuest 
+          ? SIDE_QUESTS.filter(q => q.id !== currentQuest.id)
+          : SIDE_QUESTS;
+        const randomIdx = Math.floor(Math.random() * availableQuests.length);
+        setCurrentQuest(availableQuests[randomIdx]);
         setQuestActive(true);
         setQuestTimeLeft(15);
         setUserAnswer('');
@@ -166,7 +234,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
       }, delay);
     }
     return () => clearTimeout(timeout);
-  }, [questActive, showQuestModal, isFirstSpawn]);
+  }, [questActive, showQuestModal, isFirstSpawn, currentQuest]);
 
   const checkAnswer = () => {
     if (!currentQuest) return;
