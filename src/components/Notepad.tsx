@@ -131,7 +131,7 @@ export function Notepad() {
 
   if (!isOpen) {
     return (
-      <div className="w-full max-w-2xl mx-auto mt-4 flex justify-end px-2">
+      <div className="w-full max-w-2xl mx-auto mt-4 flex justify-end px-2 relative z-20">
         <button 
           onClick={() => setIsOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-black/30 border border-white/20 rounded-full text-white/80 hover:bg-white/10 hover:text-white transition-all text-sm font-bold shadow-lg backdrop-blur-md"
@@ -144,7 +144,7 @@ export function Notepad() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-4 bg-black/40 backdrop-blur-xl border border-white/20 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl relative" style={{ height: '300px' }}>
+    <div className="w-full max-w-2xl mx-auto mt-4 bg-black/40 backdrop-blur-xl border border-white/20 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl relative z-20" style={{ height: '300px' }}>
       
       {/* Toolbar */}
       <div className="bg-black/40 p-2 flex items-center justify-between border-b border-white/10 shrink-0">

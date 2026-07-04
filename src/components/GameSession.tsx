@@ -3,7 +3,7 @@ import { useGame } from '../context/GameContext';
 import { QUESTIONS, ZONES, generateQuestion } from '../data/curriculum';
 import { Question } from '../types/game';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, ArrowRight, Zap, Coins, HeartCrack, Heart, Trophy, Sparkles } from 'lucide-react';
+import { X, Check, ArrowRight, Zap, Coins, HeartCrack, Heart, Trophy, Sparkles, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from '../lib/utils';
 import { translations } from '../i18n';
@@ -50,6 +50,82 @@ export function renderMathText(text: string): React.ReactNode {
   return <>{parts}</>;
 }
 
+const STANDARD_UNITS = [
+  'km/h', 'm/s', 'km', 'm', 'cm', 'mm', 'm²', 'cm²', 'm2', 'cm2', '公尺', '公分', '公里', '毫米', '平方公尺', '平方公分',
+  'kg', 'g', '公斤', '公克', '克', 'l', 'ml', '升', '毫升', '$', '元', 'dollars', '¥'
+];
+
+const INFORMAL_UNITS = [
+  'laps', 'pieces', 'cups', 'hair-ties', 'bags', 'packages', 'groups', 'bouquets', 'steps', 'minutes', 'seconds', 'days', 'hours', 'miles',
+  '圈', '段', '杯', '個髮圈', '袋', '個禮物包', '隊', '束', '步', '分鐘', '秒', '天', '小時', '英里'
+];
+
+interface ParsedAnswer {
+  number: string;
+  unit: string;
+}
+
+export function parseAnswer(str: string): ParsedAnswer {
+  const clean = str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '')
+    .replace(/^(x|y|ans|answer)\s*=\s*/, '');
+
+  let unit = '';
+  let number = clean;
+
+  if (clean.startsWith('$')) {
+    unit = '$';
+    number = clean.slice(1);
+  } else if (clean.startsWith('¥')) {
+    unit = '¥';
+    number = clean.slice(1);
+  } else {
+    const allKnownUnits = [...STANDARD_UNITS, ...INFORMAL_UNITS]
+      .map(u => u.toLowerCase().replace(/\s+/g, ''))
+      .sort((a, b) => b.length - a.length);
+
+    for (const ku of allKnownUnits) {
+      if (clean.endsWith(ku)) {
+        unit = ku;
+        number = clean.slice(0, clean.length - ku.length);
+        break;
+      }
+    }
+  }
+
+  return { number, unit };
+}
+
+export function matchesAnswer(userInput: string, targetValue: string): boolean {
+  const user = parseAnswer(userInput);
+  const target = parseAnswer(targetValue);
+
+  if (user.number !== target.number) {
+    return false;
+  }
+
+  const isStandardTargetUnit = STANDARD_UNITS.some(
+    u => u.toLowerCase().replace(/\s+/g, '') === target.unit
+  );
+
+  if (isStandardTargetUnit) {
+    const currencyUnits = ['$', '元', 'dollars'];
+    if (currencyUnits.includes(user.unit) && currencyUnits.includes(target.unit)) {
+      return true;
+    }
+    return user.unit === target.unit;
+  }
+
+  // For informal or no units, if user typed only the correct number, accept it.
+  if (user.unit === '') {
+    return true;
+  }
+
+  return user.unit === target.unit;
+}
+
 export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => void }) {
   const { addXp, addCoins, loseHeart, hearts, incrementStreak, resetStreak, currentStreak, completeLevel, language, equippedBackground } = useGame();
   const t = translations[language];
@@ -57,7 +133,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   const zone = ZONES.find(z => z.id === zoneId);
   const isKingdom = zone?.type === 'kingdom';
   const isHell = zone?.type === 'hell';
-  const totalQuestions = isHell ? 5 : (isKingdom ? 10 : 5);
+  const totalQuestions = isHell ? 10 : (isKingdom ? 10 : 5);
   
   const zoneQuestions = useMemo(() => {
     if (!zone) return [];
@@ -103,6 +179,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   const [isCompleted, setIsCompleted] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [mistakes, setMistakes] = useState(0);
+  const [isAlmost, setIsAlmost] = useState(false);
   
   const currentQuestion = zoneQuestions[currentIndex];
 
@@ -146,54 +223,69 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
   const handleCheckAnswer = () => {
     let correct = false;
+    let almost = false;
 
     if (isHell) {
       if (!typedAnswer.trim()) return;
       
-      const correctValue = currentQuestion.options.en[currentQuestion.correctAnswer];
+      const correctValueEn = currentQuestion.options.en[currentQuestion.correctAnswer];
+      const correctValueZh = currentQuestion.options.zh[currentQuestion.correctAnswer];
       
-      const normalize = (str: string) => {
-        return str
-          .toLowerCase()
-          .replace(/\s+/g, '') // remove spaces
-          .replace(/cm²|m²|cm|m|km\/h/g, ''); // remove units and symbols
-      };
-      
-      correct = normalize(typedAnswer) === normalize(correctValue);
+      correct = matchesAnswer(typedAnswer, correctValueEn) || matchesAnswer(typedAnswer, correctValueZh);
+
+      if (!correct) {
+        // Benefit of the doubt: check if the number part is correct but units are wrong or missing
+        const userParsed = parseAnswer(typedAnswer);
+        const targetParsedEn = parseAnswer(correctValueEn);
+        const targetParsedZh = parseAnswer(correctValueZh);
+
+        const numberMatches = (userParsed.number && (userParsed.number === targetParsedEn.number || userParsed.number === targetParsedZh.number));
+        if (numberMatches) {
+          almost = true;
+        }
+      }
     } else {
       if (selectedAnswer === null) return;
       correct = selectedAnswer === currentQuestion.correctAnswer;
     }
     
-    setIsAnswerChecked(true);
-    setIsCorrect(correct);
-    
-    if (correct) {
-      audioEngine.play('correct');
-      handleFireConfetti();
-      incrementStreak();
-      
-      if (isHell) {
-        const baseCoins = 50;
-        const streakBonus = Math.floor(currentStreak / 3) * 10;
-        addCoins(baseCoins + streakBonus);
-        addXp(60);
-      } else if (zone?.type === 'kingdom') {
-        const baseCoins = 15;
-        const streakBonus = Math.floor(currentStreak / 3) * 5;
-        addCoins(baseCoins + streakBonus);
-        addXp(20);
-      } else {
-        const baseCoins = 2;
-        const streakBonus = Math.floor(currentStreak / 3) * 1;
-        addCoins(baseCoins + streakBonus);
-        addXp(40);
-      }
+    if (almost) {
+      audioEngine.play('click');
+      setIsAlmost(true);
+      setIsAnswerChecked(true);
+      setIsCorrect(false);
     } else {
-      audioEngine.play('wrong');
-      setMistakes(m => m + 1);
-      loseHeart();
-      resetStreak();
+      setIsAlmost(false);
+      setIsAnswerChecked(true);
+      setIsCorrect(correct);
+      
+      if (correct) {
+        audioEngine.play('correct');
+        handleFireConfetti();
+        incrementStreak();
+        
+        if (isHell) {
+          const baseCoins = 50;
+          const streakBonus = Math.floor(currentStreak / 3) * 10;
+          addCoins(baseCoins + streakBonus);
+          addXp(10);
+        } else if (zone?.type === 'kingdom') {
+          const baseCoins = 15;
+          const streakBonus = Math.floor(currentStreak / 3) * 5;
+          addCoins(baseCoins + streakBonus);
+          addXp(20);
+        } else {
+          const baseCoins = 2;
+          const streakBonus = Math.floor(currentStreak / 3) * 1;
+          addCoins(baseCoins + streakBonus);
+          addXp(40);
+        }
+      } else {
+        audioEngine.play('wrong');
+        setMistakes(m => m + 1);
+        loseHeart();
+        resetStreak();
+      }
     }
   };
 
@@ -209,6 +301,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       setSelectedAnswer(null);
       setTypedAnswer('');
       setIsAnswerChecked(false);
+      setIsAlmost(false);
     } else {
       setIsCompleted(true);
       let stars = 3;
@@ -222,7 +315,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   if (isCompleted) {
-    const completionXp = isHell ? 250 : (isKingdom ? 50 : 100);
+    const completionXp = isHell ? 50 : (isKingdom ? 50 : 100);
     const completionCoins = isHell ? 1000 : (isKingdom ? 150 : 10);
     
     return (
@@ -460,7 +553,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
           )}
         </div>
         
-        <Notepad />
+        <Notepad key={currentIndex} />
       </div>
 
       {/* Footer Area */}
@@ -474,42 +567,69 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
               transition={{ type: "spring", bounce: 0.2 }}
               className={cn(
                 "absolute bottom-0 left-0 right-0 h-auto min-h-full p-4 sm:p-6 pb-6 sm:pb-8 flex flex-col justify-between rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl border-t-2 z-30",
-                isCorrect ? "bg-emerald-900/95 border-emerald-400" : "bg-rose-900/95 border-rose-400"
+                isAlmost 
+                  ? "bg-amber-950/95 border-amber-400"
+                  : (isCorrect ? "bg-emerald-900/95 border-emerald-400" : "bg-rose-900/95 border-rose-400")
               )}
             >
               <div className="flex flex-col justify-between max-w-3xl mx-auto w-full gap-3 sm:gap-4">
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className={cn(
                     "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 border-4 shadow-inner",
-                    isCorrect ? "bg-emerald-500 border-emerald-300" : "bg-rose-500 border-rose-300"
+                    isAlmost
+                      ? "bg-amber-500 border-amber-300"
+                      : (isCorrect ? "bg-emerald-500 border-emerald-300" : "bg-rose-500 border-rose-300")
                   )}>
-                    {isCorrect ? <Check className="w-8 h-8 sm:w-10 sm:h-10 text-white" /> : <X className="w-8 h-8 sm:w-10 sm:h-10 text-white" />}
+                    {isAlmost ? (
+                      <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                    ) : (
+                      isCorrect ? <Check className="w-8 h-8 sm:w-10 sm:h-10 text-white" /> : <X className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                    )}
                   </div>
                   <div>
                     <h3 className={cn(
                       "text-2xl sm:text-3xl font-black mb-0 sm:mb-1 drop-shadow-md",
-                      isCorrect ? "text-emerald-300" : "text-rose-300"
+                      isAlmost ? "text-amber-300" : (isCorrect ? "text-emerald-300" : "text-rose-300")
                     )}>
-                      {isCorrect ? t.game.awesome : t.game.notQuite}
+                      {isAlmost 
+                        ? (language === 'en' ? "Check Your Units!" : "注意單位！")
+                        : (isCorrect ? t.game.awesome : t.game.notQuite)}
                     </h3>
                     <p className={cn(
                       "font-bold text-sm sm:text-lg leading-tight flex flex-wrap items-center gap-y-1",
-                      isCorrect ? "text-emerald-100" : "text-rose-100"
+                      isAlmost ? "text-amber-100" : (isCorrect ? "text-emerald-100" : "text-rose-100")
                     )}>
-                      {renderMathText(currentQuestion.explanation[language])}
+                      {isAlmost 
+                        ? (language === 'en' 
+                            ? "Almost! Your number is correct, but remember to include the correct units (like m, cm, m², laps, etc.)." 
+                            : "差一點點！你的數字正確，但記得加上正確的單位（例如：公尺、公分、m²、圈等）。")
+                        : renderMathText(currentQuestion.explanation[language])}
                     </p>
                   </div>
                 </div>
                 
-                <button
-                  onClick={handleNext}
-                  className={cn(
-                    "w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0 cursor-pointer",
-                    isCorrect ? "bg-emerald-500 border-emerald-700 hover:bg-emerald-400" : "bg-rose-500 border-rose-700 hover:bg-rose-400"
-                  )}
-                >
-                  {t.game.continue}
-                </button>
+                {isAlmost ? (
+                  <button
+                    onClick={() => {
+                      audioEngine.play('click');
+                      setIsAnswerChecked(false);
+                      setIsAlmost(false);
+                    }}
+                    className="w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0 cursor-pointer bg-amber-500 border-amber-700 hover:bg-amber-400"
+                  >
+                    {language === 'en' ? "TRY AGAIN" : "再試一次"}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNext}
+                    className={cn(
+                      "w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0 cursor-pointer",
+                      isCorrect ? "bg-emerald-500 border-emerald-700 hover:bg-emerald-400" : "bg-rose-500 border-rose-700 hover:bg-rose-400"
+                    )}
+                  >
+                    {t.game.continue}
+                  </button>
+                )}
               </div>
             </motion.div>
           )}

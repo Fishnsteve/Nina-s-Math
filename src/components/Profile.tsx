@@ -72,11 +72,11 @@ export function Profile() {
     <div className="min-h-screen pb-32 pt-6 px-4 relative overflow-hidden">
       {/* Immersive Kimono Dancer Background Art */}
       <div 
-        className="absolute inset-0 z-0 opacity-[0.14] pointer-events-none bg-contain bg-no-repeat bg-right-bottom mix-blend-screen mask-fade"
+        className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen mask-fade"
         style={{ 
           backgroundImage: `url('/src/assets/images/profile_bg_1783148219481.jpg')`,
-          backgroundPosition: 'center 40%',
-          backgroundSize: 'contain'
+          backgroundPosition: 'center',
+          backgroundSize: 'cover'
         }}
       />
       
