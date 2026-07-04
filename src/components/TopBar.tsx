@@ -53,10 +53,6 @@ export function TopBar() {
         {/* Currencies & Language & Sound */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide hide-scrollbar select-none">
           <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/10 shrink-0">
-            <Heart className="w-4 h-4 text-rose-400 fill-rose-400" />
-            <span className="font-bold text-white text-xs leading-none">{hearts}</span>
-          </div>
-          <div className="flex items-center gap-1 bg-white/5 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/10 shrink-0">
             <Coins className="w-4 h-4 text-amber-400 fill-amber-400" />
             <span className="font-bold text-white text-xs leading-none">{coins}</span>
           </div>

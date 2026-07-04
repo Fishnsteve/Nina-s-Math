@@ -259,6 +259,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
 
   const trainingZones = ZONES.filter(z => z.type === 'training');
   const kingdomZones = ZONES.filter(z => z.type === 'kingdom');
+  const hellZones = ZONES.filter(z => z.type === 'hell');
 
   return (
     <div className="min-h-screen pb-32 pt-6 px-4 flex flex-col items-center overflow-y-auto">
@@ -453,6 +454,112 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                   </div>
                 ) : (
                   <p className="text-xs text-center text-red-400 font-bold mt-2 relative z-10 drop-shadow-md">
+                    {t.map.locked} {zone.requiredLevel}
+                  </p>
+                )}
+              </button>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Infernal Gateways (Hell Stages) Section */}
+      <div className="w-full max-w-lg mb-4 text-center mt-12">
+        <h2 className="text-2xl font-black text-rose-500 uppercase tracking-widest drop-shadow-md flex items-center justify-center gap-2 animate-pulse">
+          <Icons.Flame className="w-6 h-6 fill-rose-500 animate-bounce text-rose-500" />
+          {language === 'en' ? 'Infernal Gateways' : '深淵地獄'}
+          <Icons.Skull className="w-6 h-6 fill-rose-500 text-rose-500" />
+        </h2>
+        <p className="text-sm text-rose-300/80 mb-8">
+          {language === 'en' ? 'NO MULTIPLE CHOICE • FAIL & LOSE ALL • 1,000 COINS!' : '無單選題 • 失敗即淘汰 • 獎勵 1000 金幣！'}
+        </p>
+      </div>
+
+      <div className="w-full max-w-lg relative mb-16">
+        {/* Background path line */}
+        <div className="absolute top-0 bottom-0 left-1/2 w-4 bg-rose-950/40 -translate-x-1/2 rounded-full z-0 border border-rose-900/10" />
+        
+        {hellZones.map((zone, index) => {
+          const isLockedByLevel = level < zone.requiredLevel;
+          const isUnlocked = unlockedZones.includes(zone.id) || !isLockedByLevel;
+          const IconComponent = (Icons as any)[zone.icon] || Icons.Flame;
+          
+          const isEven = index % 2 === 0;
+          const stars = completedLevels[zone.id] || 0;
+
+          return (
+            <motion.div
+              key={zone.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={cn(
+                "relative z-10 flex w-full my-8",
+                isEven ? "justify-start pr-12" : "justify-end pl-12"
+              )}
+            >
+              {/* Connector dot */}
+              <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-slate-950 border-4 border-rose-600/50 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg shadow-rose-600/20" />
+              <button
+                onClick={() => {
+                  if (isUnlocked) {
+                    audioEngine.play('click');
+                    onSelectZone(zone.id);
+                  }
+                }}
+                disabled={!isUnlocked}
+                className={cn(
+                  "w-3/4 rounded-[32px] p-4 transition-transform active:scale-95 relative overflow-hidden backdrop-blur-md shadow-xl border-2",
+                  isUnlocked 
+                    ? "bg-rose-950/40 border-rose-500/40 hover:bg-rose-950/60 cursor-pointer shadow-[0_0_30px_rgba(239,68,68,0.15)]" 
+                    : "bg-slate-900/60 border-slate-800/50 opacity-80 cursor-not-allowed"
+                )}
+              >
+                <div className={cn(
+                  "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(239,68,68,0.2)] border-4 border-white/10 ring-4 ring-rose-500/10 text-white z-10 relative bg-gradient-to-br",
+                  isUnlocked ? zone.color : "from-slate-800 to-slate-900 grayscale"
+                )}>
+                  {isUnlocked && (
+                    <motion.div 
+                      className="absolute inset-0 z-0"
+                      animate={{ opacity: [0.4, 0.9, 0.4] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <div className="absolute inset-0 bg-red-500/20 rounded-full blur-md"></div>
+                    </motion.div>
+                  )}
+                  {isLockedByLevel ? (
+                    <Icons.Lock className="w-8 h-8" />
+                  ) : (
+                    <motion.div
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                      className="relative z-10 text-rose-100"
+                    >
+                      <IconComponent className="w-8 h-8 drop-shadow-[0_2px_8px_rgba(239,68,68,0.6)]" />
+                    </motion.div>
+                  )}
+                </div>
+                
+                <h3 className="font-bold text-center text-white text-base sm:text-lg drop-shadow-md relative z-10">{zone.name[language]}</h3>
+                <p className="text-[10px] text-center text-rose-300/60 mt-1 relative z-10 line-clamp-1">
+                  {zone.description[language]}
+                </p>
+                
+                {isUnlocked ? (
+                  <div className="flex justify-center gap-1 mt-2 relative z-10">
+                    {[1, 2, 3].map(star => (
+                      <Icons.Star 
+                        key={star} 
+                        className={cn(
+                          "w-5 h-5",
+                          star <= stars ? "fill-rose-500 text-rose-400 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]" : "fill-white/5 text-white/10"
+                        )} 
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-center text-rose-400 font-bold mt-2 relative z-10 drop-shadow-md">
                     {t.map.locked} {zone.requiredLevel}
                   </p>
                 )}

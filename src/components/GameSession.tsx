@@ -56,17 +56,23 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   
   const zone = ZONES.find(z => z.id === zoneId);
   const isKingdom = zone?.type === 'kingdom';
-  const totalQuestions = isKingdom ? 10 : 5;
+  const isHell = zone?.type === 'hell';
+  const totalQuestions = isHell ? 5 : (isKingdom ? 10 : 5);
   
   const zoneQuestions = useMemo(() => {
     if (!zone) return [];
-    return Array.from({ length: totalQuestions }).map((_, idx) => {
+    const questions: Question[] = [];
+    const seenTexts = new Set<string>();
+
+    for (let idx = 0; idx < totalQuestions; idx++) {
       const topic = Array.isArray(zone.topic) 
         ? zone.topic[Math.floor(Math.random() * zone.topic.length)] 
         : zone.topic;
         
       let diff: 'Easy' | 'Normal' | 'Hard' | 'Extra' = 'Easy';
-      if (isKingdom) {
+      if (zone.type === 'hell') {
+        diff = idx < 2 ? 'Hard' : 'Extra';
+      } else if (isKingdom) {
         if (idx < 3) diff = 'Normal';
         else if (idx < 6) diff = 'Hard';
         else diff = 'Extra';
@@ -75,12 +81,23 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         else if (idx < 4) diff = 'Normal';
         else diff = 'Hard';
       }
-      return generateQuestion(topic, diff);
-    });
-  }, [zone?.topic, totalQuestions, isKingdom]);
+
+      let attempts = 0;
+      let q = generateQuestion(topic, diff);
+      // Deduplicate by question text
+      while (seenTexts.has(q.question.en) && attempts < 25) {
+        q = generateQuestion(topic, diff);
+        attempts++;
+      }
+      seenTexts.add(q.question.en);
+      questions.push(q);
+    }
+    return questions;
+  }, [zone?.topic, totalQuestions, isKingdom, zone?.type]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [typedAnswer, setTypedAnswer] = useState('');
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -128,10 +145,27 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   const handleCheckAnswer = () => {
-    if (selectedAnswer === null) return;
+    let correct = false;
+
+    if (isHell) {
+      if (!typedAnswer.trim()) return;
+      
+      const correctValue = currentQuestion.options.en[currentQuestion.correctAnswer];
+      
+      const normalize = (str: string) => {
+        return str
+          .toLowerCase()
+          .replace(/\s+/g, '') // remove spaces
+          .replace(/cm²|m²|cm|m|km\/h/g, ''); // remove units and symbols
+      };
+      
+      correct = normalize(typedAnswer) === normalize(correctValue);
+    } else {
+      if (selectedAnswer === null) return;
+      correct = selectedAnswer === currentQuestion.correctAnswer;
+    }
     
     setIsAnswerChecked(true);
-    const correct = selectedAnswer === currentQuestion.correctAnswer;
     setIsCorrect(correct);
     
     if (correct) {
@@ -139,7 +173,12 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       handleFireConfetti();
       incrementStreak();
       
-      if (zone?.type === 'kingdom') {
+      if (isHell) {
+        const baseCoins = 50;
+        const streakBonus = Math.floor(currentStreak / 3) * 10;
+        addCoins(baseCoins + streakBonus);
+        addXp(60);
+      } else if (zone?.type === 'kingdom') {
         const baseCoins = 15;
         const streakBonus = Math.floor(currentStreak / 3) * 5;
         addCoins(baseCoins + streakBonus);
@@ -153,16 +192,14 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     } else {
       audioEngine.play('wrong');
       setMistakes(m => m + 1);
-      if (isKingdom) {
-        loseHeart();
-      }
+      loseHeart();
       resetStreak();
     }
   };
 
   const handleNext = () => {
     audioEngine.play('click');
-    if (isKingdom && mistakes >= 3) {
+    if (mistakes >= 3) {
       setIsFailed(true);
       return;
     }
@@ -170,6 +207,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     if (currentIndex < zoneQuestions.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setSelectedAnswer(null);
+      setTypedAnswer('');
       setIsAnswerChecked(false);
     } else {
       setIsCompleted(true);
@@ -184,9 +222,8 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   if (isCompleted) {
-    const isKingdom = zone?.type === 'kingdom';
-    const completionXp = isKingdom ? 50 : 100;
-    const completionCoins = isKingdom ? 150 : 10;
+    const completionXp = isHell ? 250 : (isKingdom ? 50 : 100);
+    const completionCoins = isHell ? 1000 : (isKingdom ? 150 : 10);
     
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white relative z-20">
@@ -198,7 +235,11 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         >
           <Trophy className="w-32 h-32 text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" />
         </motion.div>
-        <h2 className="text-4xl font-black mb-4 drop-shadow-md text-emerald-400">{t.game.zoneCleared}</h2>
+        <h2 className="text-4xl font-black mb-4 drop-shadow-md text-emerald-400">
+          {isHell 
+            ? (language === 'en' ? 'HELL STAGE CONQUERED!' : '地獄關卡征服成功！') 
+            : t.game.zoneCleared}
+        </h2>
         <p className="text-emerald-200 text-lg mb-12 font-bold bg-emerald-900/30 px-6 py-2 rounded-full border border-emerald-500/20 backdrop-blur-sm">
           +{completionXp} XP • +{completionCoins} Coins
         </p>
@@ -206,14 +247,14 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         <div className="w-48 h-48 mb-8">
           <NinaAvatar />
         </div>
-
+        
         <button 
           onClick={() => {
             addXp(completionXp);
             addCoins(completionCoins);
             onExit();
           }}
-          className="bg-emerald-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 transition-transform border border-emerald-400 hover:bg-emerald-400"
+          className="bg-emerald-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 transition-transform border border-emerald-400 hover:bg-emerald-400 cursor-pointer"
         >
           {t.game.continue}
         </button>
@@ -245,7 +286,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
         <button 
           onClick={onExit}
-          className="bg-rose-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(225,29,72,0.4)] active:scale-95 transition-transform border border-rose-400 hover:bg-rose-400"
+          className="bg-rose-500 text-white font-bold text-xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(225,29,72,0.4)] active:scale-95 transition-transform border border-rose-400 hover:bg-rose-400 cursor-pointer"
         >
           {t.game.continue}
         </button>
@@ -253,9 +294,9 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     );
   }
 
-  if ((hearts <= 0 || !currentQuestion) && !isCompleted && !isFailed) {
+  if ((mistakes >= 3 || !currentQuestion) && !isCompleted && !isFailed) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative z-20">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative z-20 text-white">
         <HeartCrack className="w-24 h-24 text-rose-500 mb-6 drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" />
         <h2 className="text-3xl font-black text-white mb-4 drop-shadow-md">{t.game.outOfHearts}</h2>
         <p className="text-rose-200 mb-8 bg-rose-900/30 px-6 py-2 rounded-full border border-rose-500/20 backdrop-blur-sm font-medium">{t.game.takeBreak}</p>
@@ -266,7 +307,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
         <button 
           onClick={onExit}
-          className="bg-white/10 text-white font-bold py-4 px-8 rounded-full shadow-lg border border-white/20 active:scale-95 transition-transform w-full max-w-sm backdrop-blur-md hover:bg-white/20"
+          className="bg-white/10 text-white font-bold py-4 px-8 rounded-full shadow-lg border border-white/20 active:scale-95 transition-transform w-full max-w-sm backdrop-blur-md hover:bg-white/20 cursor-pointer"
         >
           {t.game.returnMap}
         </button>
@@ -294,7 +335,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
 
       {/* Game Header */}
       <div className="p-4 flex items-center justify-between shrink-0 relative z-10">
-        <button onClick={onExit} className="p-2 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+        <button onClick={onExit} className="p-2 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors cursor-pointer">
           <X className="w-6 h-6" />
         </button>
         <div className="flex-1 mx-4 bg-black/40 rounded-full h-5 overflow-hidden border border-white/10 shadow-inner p-1">
@@ -304,16 +345,15 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
             animate={{ width: `${((currentIndex + 1) / zoneQuestions.length) * 100}%` }}
           />
         </div>
-        {isKingdom && (
-          <div className="flex items-center gap-1">
-            {[...Array(3)].map((_, i) => (
-              <Heart 
-                key={i} 
-                className={cn("w-6 h-6 transition-all duration-300", i < 3 - mistakes ? "fill-rose-500 text-rose-500 scale-100 drop-shadow-md" : "fill-transparent text-white/20 scale-90")} 
-              />
-            ))}
-          </div>
-        )}
+        {/* Always display the 3 hearts for the stage */}
+        <div className="flex items-center gap-1">
+          {[...Array(3)].map((_, i) => (
+            <Heart 
+              key={i} 
+              className={cn("w-6 h-6 transition-all duration-300", i < 3 - mistakes ? "fill-rose-500 text-rose-500 scale-100 drop-shadow-md" : "fill-transparent text-white/20 scale-90")} 
+            />
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
@@ -355,42 +395,69 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
             </div>
           </div>
 
-        <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto w-full">
-          {currentQuestion.options[language].map((option, idx) => {
-            const isSelected = selectedAnswer === idx;
-            const isCorrectOption = idx === currentQuestion.correctAnswer;
-            
-            let btnStateClasses = "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-[1.02] backdrop-blur-md shadow-lg";
-            if (isAnswerChecked) {
-              if (isCorrectOption) btnStateClasses = "bg-emerald-500 border-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-[1.02] z-10";
-              else if (isSelected) btnStateClasses = "bg-rose-500/50 border-rose-600 text-rose-100 opacity-80 scale-95";
-              else btnStateClasses = "bg-black/20 border-white/5 opacity-40 scale-95";
-            } else if (isSelected) {
-              btnStateClasses = "bg-blue-500 border-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] scale-[1.05] z-10";
-            }
-
-            return (
-              <button
-                key={idx}
+          {isHell ? (
+            <div className="flex flex-col items-center max-w-md mx-auto w-full gap-4 relative z-10 px-4 py-2">
+              <input
+                type="text"
                 disabled={isAnswerChecked}
-                onClick={() => {
-                  audioEngine.play('click');
-                  setSelectedAnswer(idx);
+                placeholder={language === 'en' ? "Type your answer..." : "輸入你的答案..."}
+                value={typedAnswer}
+                onChange={(e) => setTypedAnswer(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && typedAnswer.trim() && !isAnswerChecked) {
+                    handleCheckAnswer();
+                  }
                 }}
                 className={cn(
-                  "w-full flex flex-col items-center justify-center p-3 sm:p-5 rounded-[1.5rem] border-b-[4px] font-black text-lg sm:text-2xl transition-all duration-300 active:translate-y-1 active:border-b-0",
-                  btnStateClasses
+                  "w-full text-center py-4 px-6 bg-slate-950/80 border-2 rounded-[1.5rem] font-black text-2xl text-white outline-none transition-all backdrop-blur-md shadow-inner",
+                  isAnswerChecked 
+                    ? (isCorrect ? "border-emerald-500 bg-emerald-950/40 text-emerald-200" : "border-rose-500 bg-rose-950/40 text-rose-200")
+                    : "border-white/20 focus:border-red-500 focus:ring-4 focus:ring-red-500/25"
                 )}
-              >
-                <span className="text-center leading-tight flex items-center justify-center flex-wrap gap-y-1">
-                  {renderMathText(option)}
-                </span>
-                {isAnswerChecked && isCorrectOption && <Check className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
-                {isAnswerChecked && isSelected && !isCorrectOption && <X className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
-              </button>
-            );
-          })}
-          </div>
+                autoFocus
+              />
+              <p className="text-xs text-white/50 text-center font-semibold">
+                {language === 'en' ? "Press Enter or click Check to submit" : "按下 Enter 或點擊檢查以提交"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto w-full">
+              {currentQuestion.options[language].map((option, idx) => {
+                const isSelected = selectedAnswer === idx;
+                const isCorrectOption = idx === currentQuestion.correctAnswer;
+                
+                let btnStateClasses = "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-[1.02] backdrop-blur-md shadow-lg";
+                if (isAnswerChecked) {
+                  if (isCorrectOption) btnStateClasses = "bg-emerald-500 border-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-[1.02] z-10";
+                  else if (isSelected) btnStateClasses = "bg-rose-500/50 border-rose-600 text-rose-100 opacity-80 scale-95";
+                  else btnStateClasses = "bg-black/20 border-white/5 opacity-40 scale-95";
+                } else if (isSelected) {
+                  btnStateClasses = "bg-blue-500 border-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] scale-[1.05] z-10";
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    disabled={isAnswerChecked}
+                    onClick={() => {
+                      audioEngine.play('click');
+                      setSelectedAnswer(idx);
+                    }}
+                    className={cn(
+                      "w-full flex flex-col items-center justify-center p-3 sm:p-5 rounded-[1.5rem] border-b-[4px] font-black text-lg sm:text-2xl transition-all duration-300 active:translate-y-1 active:border-b-0 cursor-pointer",
+                      btnStateClasses
+                    )}
+                  >
+                    <span className="text-center leading-tight flex items-center justify-center flex-wrap gap-y-1">
+                      {renderMathText(option)}
+                    </span>
+                    {isAnswerChecked && isCorrectOption && <Check className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
+                    {isAnswerChecked && isSelected && !isCorrectOption && <X className="w-6 h-6 sm:w-8 sm:h-8 mt-1 opacity-90 text-white drop-shadow-md shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
         
         <Notepad />
@@ -437,7 +504,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                 <button
                   onClick={handleNext}
                   className={cn(
-                    "w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0",
+                    "w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-xl sm:text-2xl text-white shadow-xl border-b-[4px] sm:border-b-[6px] active:translate-y-1 sm:active:translate-y-2 active:border-b-0 transition-all mt-2 sm:mt-0 cursor-pointer",
                     isCorrect ? "bg-emerald-500 border-emerald-700 hover:bg-emerald-400" : "bg-rose-500 border-rose-700 hover:bg-rose-400"
                   )}
                 >
@@ -453,10 +520,10 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
             <div className="max-w-3xl mx-auto w-full">
               <button
                 onClick={handleCheckAnswer}
-                disabled={selectedAnswer === null}
+                disabled={isHell ? !typedAnswer.trim() : selectedAnswer === null}
                 className={cn(
-                  "w-full py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] font-black text-xl sm:text-2xl text-white border-b-[6px] sm:border-b-[8px] transition-all duration-300",
-                  selectedAnswer !== null 
+                  "w-full py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] font-black text-xl sm:text-2xl text-white border-b-[6px] sm:border-b-[8px] transition-all duration-300 cursor-pointer",
+                  (isHell ? typedAnswer.trim() : selectedAnswer !== null) 
                     ? "bg-pink-500 border-pink-700 hover:bg-pink-400 active:translate-y-1 sm:active:translate-y-2 active:border-b-0 shadow-[0_10px_30px_rgba(236,72,153,0.5)] scale-100" 
                     : "bg-white/10 border-white/5 text-slate-500 cursor-not-allowed scale-95"
                 )}

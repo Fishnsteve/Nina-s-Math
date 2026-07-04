@@ -110,6 +110,26 @@ export const ZONES: Zone[] = [
     color: 'from-purple-400 to-indigo-600',
     requiredLevel: 9,
     type: 'kingdom'
+  },
+  {
+    id: 'hell_1',
+    name: { en: 'Gates of Hell: Algebra & Speed', zh: '地獄之門：代數與速率' },
+    topic: ['U3_Algebra', 'U8_Speed'],
+    description: { en: 'NO MULTIPLE CHOICES! Fill in the blank. Reward: 1,000 Coins!', zh: '無單選題！填空作答。通關獎勵：1000金幣！' },
+    icon: 'Flame',
+    color: 'from-red-600 to-rose-950',
+    requiredLevel: 5,
+    type: 'hell'
+  },
+  {
+    id: 'hell_2',
+    name: { en: 'Inferno: Sacred Pi & Circles', zh: '煉獄：神聖圓周率' },
+    topic: ['U6_Circle_Circumference', 'U7_Circle_Area'],
+    description: { en: 'NO MULTIPLE CHOICES! Master of Circle & Area. Reward: 1,000 Coins!', zh: '無單選題！精通圓形與面積。通關獎勵：1000金幣！' },
+    icon: 'Skull',
+    color: 'from-orange-600 to-red-950',
+    requiredLevel: 8,
+    type: 'hell'
   }
 ];
 

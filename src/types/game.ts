@@ -29,7 +29,7 @@ export interface Zone {
   icon: string;
   color: string;
   requiredLevel: number;
-  type: 'training' | 'kingdom';
+  type: 'training' | 'kingdom' | 'hell';
 }
 
 export interface GameState {
