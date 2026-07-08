@@ -14,6 +14,7 @@ import { DanceStudio } from './components/DanceStudio';
 import { BackgroundVisuals } from './components/BackgroundVisuals';
 import { Download, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Analytics } from '@vercel/analytics/react';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<'map' | 'studio' | 'profile'>('map');
@@ -177,6 +178,7 @@ export default function App() {
   return (
     <GameProvider>
       <AppContent />
+      <Analytics />
     </GameProvider>
   );
 }
