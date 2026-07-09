@@ -514,7 +514,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                 </button>
                 
                 {/* Title & Stars below the Orb */}
-                <div className="mt-4 flex flex-col items-center">
+                <div className="mt-4 flex flex-col items-center relative z-20">
                   <h3 className="font-bold text-center text-white text-base sm:text-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight">
                     {zone.name[language]}
                   </h3>
@@ -630,7 +630,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                 </button>
                 
                 {/* Title & Stars below */}
-                <div className="mt-6 flex flex-col items-center">
+                <div className="mt-6 flex flex-col items-center relative z-20">
                   <h3 className="font-bold text-center text-amber-200 text-lg sm:text-xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight flex items-center justify-center gap-1">
                     <Icons.Crown className="w-4 h-4 fill-amber-300 hidden sm:block text-amber-300" />
                     {zone.name[language]}
@@ -741,7 +741,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                 </button>
                 
                 {/* Title & Stars */}
-                <div className="mt-6 flex flex-col items-center">
+                <div className="mt-6 flex flex-col items-center relative z-20">
                   <h3 className="font-black text-center text-rose-200 text-lg sm:text-xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight uppercase tracking-wider">
                     {zone.name[language]}
                   </h3>
