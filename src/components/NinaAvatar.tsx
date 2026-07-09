@@ -80,6 +80,30 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             <stop offset="40%" stopColor="#f472b6" />
             <stop offset="100%" stopColor="#d946ef" />
           </linearGradient>
+
+          {/* Kimono Floral Pattern Defs */}
+          <g id="kimonoFlower">
+            {/* Multi-colored traditional flower burst / chiyogami design */}
+            <path d="M 0 0 C -4 -12 4 -12 0 0" fill="#ffffff" />
+            <path d="M 0 0 C 4 -12 12 -4 0 0" fill="#ff4d4d" />
+            <path d="M 0 0 C 12 -4 12 4 0 0" fill="#fb923c" />
+            <path d="M 0 0 C 12 4 4 12 0 0" fill="#a78bfa" />
+            <path d="M 0 0 C 4 12 -4 12 0 0" fill="#ffffff" />
+            <path d="M 0 0 C -4 12 -12 4 0 0" fill="#ff4d4d" />
+            <path d="M 0 0 C -12 4 -12 -4 0 0" fill="#fb923c" />
+            <path d="M 0 0 C -12 -4 -4 -12 0 0" fill="#a78bfa" />
+            <circle cx="0" cy="0" r="3" fill="url(#gold)" stroke="#ffffff" strokeWidth="0.5" />
+          </g>
+          <g id="cherryBlossom">
+            <path d="M 0 0 C -3 -7 3 -7 0 0" fill="#ffd1dc" />
+            <path d="M 0 0 C 7 -3 7 3 0 0" fill="#ffd1dc" />
+            <path d="M 0 0 C 3 7 -3 7 0 0" fill="#ffd1dc" />
+            <path d="M 0 0 C -7 3 -7 -3 0 0" fill="#ffd1dc" />
+            <circle cx="0" cy="0" r="1.5" fill="#f43f5e" />
+          </g>
+          <g id="kimonoLeaf">
+            <path d="M 0 0 Q 5 -7 10 -2 Q 5 3 0 0" fill="#a7f3d0" />
+          </g>
         </defs>
 
         {/* --- BASE GIRL --- */}
@@ -170,11 +194,20 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             {/* Dangling Gold Ornaments */}
             <path d="M 75 20 L 70 45 M 78 20 L 74 40 M 125 20 L 130 45 M 122 20 L 126 40" stroke="url(#gold)" strokeWidth="1.5" strokeDasharray="3,2" />
 
-            {/* Face Paint / Gems */}
-            <circle cx="72" cy="73" r="1.5" fill="#fff" opacity="0.8" />
-            <circle cx="68" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
-            <circle cx="128" cy="73" r="1.5" fill="#fff" opacity="0.8" />
-            <circle cx="132" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+            {/* Face Paint / Gems - high-fidelity rhinestone pattern inspired by the photo */}
+            {/* Left Eye Gems (viewer's left, slanting upwards/outwards) */}
+            <path d="M 78 72 L 80 70 L 82 72 L 80 74 Z" fill="#ffffff" /> {/* center white diamond */}
+            <circle cx="74" cy="73.5" r="1.5" fill="#fb923c" /> {/* orange/gold gem */}
+            <circle cx="70" cy="74.5" r="1.2" fill="#f43f5e" /> {/* pink gem */}
+            <circle cx="84" cy="71.5" r="1.3" fill="#c084fc" /> {/* purple gem */}
+            <circle cx="88" cy="71" r="1.0" fill="#38bdf8" /> {/* blue gem */}
+
+            {/* Right Eye Gems (viewer's right, slanting upwards/outwards) */}
+            <path d="M 120 72 L 122 70 L 124 72 L 122 74 Z" fill="#ffffff" /> {/* center white diamond */}
+            <circle cx="126" cy="73.5" r="1.5" fill="#fb923c" /> {/* orange/gold gem */}
+            <circle cx="130" cy="74.5" r="1.2" fill="#f43f5e" /> {/* pink gem */}
+            <circle cx="116" cy="71.5" r="1.3" fill="#c084fc" /> {/* purple gem */}
+            <circle cx="112" cy="71" r="1.0" fill="#38bdf8" /> {/* blue gem */}
           </g>
         ) : equippedAvatar === 'hero_ninja' ? (
           <g>
@@ -272,6 +305,30 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           <g>
             {/* Pink Sulan Details */}
             <path d="M 65 95 Q 100 105 135 95 L 150 170 Q 100 175 50 170 Z" fill="url(#kimonoPink)" />
+
+            {/* Traditional Floral Patterns Scattered Gracefully */}
+            {/* Flowers on the chest/shoulders */}
+            <use href="#kimonoFlower" transform="translate(76, 104) scale(0.75) rotate(-10)" />
+            <use href="#kimonoFlower" transform="translate(124, 104) scale(0.75) rotate(10)" />
+            <use href="#cherryBlossom" transform="translate(70, 112) scale(0.65)" />
+            <use href="#cherryBlossom" transform="translate(130, 112) scale(0.65)" />
+
+            {/* Flowers on the skirt and lower body */}
+            <use href="#kimonoFlower" transform="translate(68, 152) scale(1.1) rotate(15)" />
+            <use href="#kimonoFlower" transform="translate(132, 154) scale(1.0) rotate(-25)" />
+            <use href="#kimonoFlower" transform="translate(100, 160) scale(0.9) rotate(45)" />
+
+            {/* Small scattered cherry blossoms & petals */}
+            <use href="#cherryBlossom" transform="translate(84, 144) scale(0.8) rotate(12)" />
+            <use href="#cherryBlossom" transform="translate(116, 144) scale(0.8) rotate(-15)" />
+            <use href="#cherryBlossom" transform="translate(100, 142) scale(0.6) rotate(30)" />
+
+            {/* Green leaves for contrast and decoration */}
+            <use href="#kimonoLeaf" transform="translate(60, 146) rotate(-35) scale(0.7)" />
+            <use href="#kimonoLeaf" transform="translate(140, 149) rotate(45) scale(0.7)" />
+            <use href="#kimonoLeaf" transform="translate(92, 154) rotate(10) scale(0.6)" />
+            <use href="#kimonoLeaf" transform="translate(108, 154) rotate(-20) scale(0.6)" />
+
             {/* Obi (Belt) */}
             <path d="M 70 115 Q 100 125 130 115 L 132 135 Q 100 145 68 135 Z" fill="#cc0066" />
             <circle cx="100" cy="128" r="4" fill="url(#gold)" />
@@ -389,8 +446,17 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         )}
         {equippedAvatar === 'hero_pink_kimono' && (
           <g>
+            {/* Left Sleeve */}
             <path d="M 70 95 Q 40 120 45 145 L 65 140 Z" fill="url(#kimonoPink)" />
+            <use href="#kimonoFlower" transform="translate(53, 122) scale(0.65) rotate(-15)" />
+            <use href="#cherryBlossom" transform="translate(56, 134) scale(0.55) rotate(30)" />
+            <use href="#kimonoLeaf" transform="translate(48, 114) rotate(-45) scale(0.5)" />
+
+            {/* Right Sleeve */}
             <path d="M 130 95 Q 160 120 155 145 L 135 140 Z" fill="url(#kimonoPink)" />
+            <use href="#kimonoFlower" transform="translate(147, 122) scale(0.65) rotate(15)" />
+            <use href="#cherryBlossom" transform="translate(144, 134) scale(0.55) rotate(-30)" />
+            <use href="#kimonoLeaf" transform="translate(152, 114) rotate(45) scale(0.5)" />
           </g>
         )}
         {equippedAvatar === 'hero_ninja' && (
