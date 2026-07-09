@@ -427,18 +427,18 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
   const hellZones = ZONES.filter(z => z.type === 'hell');
 
   return (
-    <div className="min-h-screen pb-32 pt-6 px-4 flex flex-col items-center overflow-y-auto">
-      <div className="w-full max-w-lg mb-8">
+    <div className="w-full pb-32 pt-6 px-4 flex flex-col items-center">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mb-8">
         <h1 className="text-3xl font-black text-white drop-shadow-md text-center">{t.map.welcome}</h1>
       </div>
       
       {/* Training Grounds Section */}
-      <div className="w-full max-w-lg mb-4 text-center">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mb-4 text-center">
         <h2 className="text-xl font-bold text-slate-300 uppercase tracking-widest">{language === 'en' ? 'Training Grounds' : '訓練場'}</h2>
         <p className="text-sm text-slate-400 mb-8">{language === 'en' ? 'Practice concepts to earn XP' : '練習概念以獲得 XP'}</p>
       </div>
 
-      <div className="w-full max-w-lg relative mb-16">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl relative mb-16">
         {/* Background path line */}
         <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
@@ -472,7 +472,9 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               transition={{ delay: index * 0.1 }}
               className={cn(
                 "relative z-10 flex w-full my-6 sm:my-8",
-                isEven ? "justify-start pl-6 sm:pl-12 pr-12" : "justify-end pr-6 sm:pr-12 pl-12"
+                isEven 
+                  ? "justify-start pl-6 sm:pl-12 md:pl-20 lg:pl-36 pr-12" 
+                  : "justify-end pr-6 sm:pr-12 md:pr-20 lg:pr-36 pl-12"
               )}
             >
               <div className="relative flex flex-col items-center w-44 sm:w-56 max-w-full overflow-visible">
@@ -544,7 +546,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
       </div>
 
       {/* Starred Kingdoms Section */}
-      <div className="w-full max-w-lg mb-4 text-center mt-8">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mb-4 text-center mt-8">
         <h2 className="text-2xl font-black text-amber-300 uppercase tracking-widest drop-shadow-md flex items-center justify-center gap-2">
           <Icons.Star className="w-6 h-6 fill-amber-300" />
           {language === 'en' ? 'Starred Kingdoms' : '星辰王國'}
@@ -553,7 +555,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
         <p className="text-sm text-amber-200/70 mb-8">{language === 'en' ? 'Complete challenges for coins & gems!' : '完成挑戰獲得金幣與寶石！'}</p>
       </div>
 
-      <div className="w-full max-w-lg relative mb-16">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl relative mb-16">
         {/* Background path line */}
         <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
@@ -587,7 +589,9 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               transition={{ delay: index * 0.1 }}
               className={cn(
                 "relative z-10 flex w-full my-6 sm:my-8",
-                isEven ? "justify-start pl-6 sm:pl-12 pr-12" : "justify-end pr-6 sm:pr-12 pl-12"
+                isEven 
+                  ? "justify-start pl-6 sm:pl-12 md:pl-20 lg:pl-36 pr-12" 
+                  : "justify-end pr-6 sm:pr-12 md:pr-20 lg:pr-36 pl-12"
               )}
             >
               <div className="relative flex flex-col items-center w-44 sm:w-56 max-w-full overflow-visible">
@@ -662,7 +666,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
       </div>
 
       {/* Infernal Gateways (Hell Stages) Section */}
-      <div className="w-full max-w-lg mb-4 text-center mt-12">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mb-4 text-center mt-12">
         <h2 className="text-2xl font-black text-rose-500 uppercase tracking-widest drop-shadow-md flex items-center justify-center gap-2 animate-pulse">
           <Icons.Flame className="w-6 h-6 fill-rose-500 animate-bounce text-rose-500" />
           {language === 'en' ? 'Infernal Gateways' : '深淵地獄'}
@@ -673,7 +677,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
         </p>
       </div>
 
-      <div className="w-full max-w-lg relative mb-16">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl relative mb-16">
         {/* Background path line */}
         <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">

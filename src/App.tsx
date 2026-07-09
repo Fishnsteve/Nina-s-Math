@@ -23,11 +23,54 @@ function AppContent() {
   const [canInstall, setCanInstall] = useState<boolean>(!!(window as any).getDeferredPrompt?.());
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ top: 0 });
+      setScrollProgress(0);
     }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const maxScroll = scrollHeight - clientHeight;
+      if (maxScroll > 10) {
+        setScrollProgress(scrollTop / maxScroll);
+      } else {
+        setScrollProgress(0);
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Check multiple times as the children might resize or mount dynamically
+    handleScroll();
+    const resizeObserver = new ResizeObserver(() => {
+      handleScroll();
+    });
+    resizeObserver.observe(container);
+
+    // Also watch document body for any size updates
+    const docObserver = new ResizeObserver(() => {
+      handleScroll();
+    });
+    docObserver.observe(document.body);
+
+    const timer = setTimeout(handleScroll, 200);
+    const timer2 = setTimeout(handleScroll, 800);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      resizeObserver.disconnect();
+      docObserver.disconnect();
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
   }, [activeTab]);
 
   useEffect(() => {
@@ -88,16 +131,16 @@ function AppContent() {
   }
 
   return (
-    <div className={`font-sans text-slate-100 ${baseBg} min-h-screen relative overflow-hidden flex flex-col transition-colors duration-1000`}>
+    <div className={`font-sans text-slate-100 ${baseBg} h-screen relative overflow-hidden flex flex-col transition-colors duration-1000`}>
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <BackgroundVisuals bgId={equippedBackground} />
+        <BackgroundVisuals bgId={equippedBackground} scrollProgress={scrollProgress} />
       </div>
 
       {activeZone ? (
         <GameSession zoneId={activeZone} onExit={() => setActiveZone(null)} />
       ) : (
         <>
-          <div ref={scrollContainerRef} className="relative z-10 flex flex-col h-full overflow-y-auto overflow-x-hidden flex-1">
+          <div ref={scrollContainerRef} className="scrollbar-hide relative z-10 flex flex-col h-full overflow-y-auto overflow-x-hidden flex-1">
             {activeTab !== 'studio' && <TopBar />}
             
             {/* Elegant Floating PWA Banner */}

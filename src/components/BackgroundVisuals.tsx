@@ -3,10 +3,12 @@ import { motion } from 'motion/react';
 
 interface BackgroundVisualsProps {
   bgId: string;
+  scrollProgress?: number;
 }
 
-export function BackgroundVisuals({ bgId }: BackgroundVisualsProps) {
-  switch (bgId) {
+export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisualsProps) {
+  const renderContent = () => {
+    switch (bgId) {
     case 'bg_cyber': {
       return (
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[#090514]">
@@ -402,4 +404,111 @@ export function BackgroundVisuals({ bgId }: BackgroundVisualsProps) {
       );
     }
   }
+};
+
+  // Calculate specific hue rotation degrees for each theme to shift beautifully to red (0deg)
+  const getHueRotationForBg = (id: string): number => {
+    switch (id) {
+      case 'bg_forest':
+        return -140; // Green to Red
+      case 'bg_ocean':
+        return -200; // Cyan/Blue to Red
+      case 'bg_castle':
+        return -35;  // Amber/Orange to Red
+      case 'bg_cyber':
+        return 65;   // Fuchsia/Purple to Red
+      default:
+        return 135;  // Default Indigo/Blue to Red
+    }
+  };
+
+  const hueAngle = getHueRotationForBg(bgId) * scrollProgress;
+
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[#050303]">
+      {/* Background layer: Deep hellish radial gradient that gets more intense and opaque as we scroll down */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-150"
+        style={{
+          background: 'radial-gradient(circle at bottom, rgba(160, 5, 5, 0.95) 0%, rgba(30, 3, 3, 0.98) 60%, rgba(10, 0, 0, 1) 100%)',
+          opacity: scrollProgress,
+        }}
+      />
+
+      {/* The main theme content, which gets gradually shifted in hue, saturated, darkened, and faded out */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-all duration-150"
+        style={{
+          filter: `hue-rotate(${hueAngle}deg) saturate(${1 + scrollProgress * 3}) brightness(${1 - scrollProgress * 0.4})`,
+          opacity: 1 - scrollProgress * 0.85,
+        }}
+      >
+        {renderContent()}
+      </div>
+      
+      {/* Eerie Red Shift Overlay Layer 1: Tint remaining visual details to red smoothly using color blend mode */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-150"
+        style={{
+          backgroundColor: '#ff1100',
+          opacity: scrollProgress * 0.8,
+          mixBlendMode: 'color',
+        }}
+      />
+
+      {/* Eerie Red Shift Overlay Layer 1b: Additional overlay blend to make highlights glow warm red */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-150"
+        style={{
+          backgroundColor: '#ff3c00',
+          opacity: scrollProgress * 0.5,
+          mixBlendMode: 'overlay',
+        }}
+      />
+      
+      {/* Eerie Red Shift Overlay Layer 2: Vivid crimson glowing radial gradient overlay from the bottom */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-150"
+        style={{
+          background: 'radial-gradient(circle at bottom, rgba(220, 20, 20, 0.4) 0%, rgba(120, 10, 10, 0.1) 50%, rgba(0, 0, 0, 0) 80%)',
+          opacity: scrollProgress * 0.9,
+        }}
+      />
+
+      {/* Burning lava ashes/particles floating up as we reach the infernal */}
+      {scrollProgress > 0.05 && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {Array.from({ length: Math.floor(scrollProgress * 25) + 5 }).map((_, i) => {
+            const size = Math.random() * 4 + 2;
+            const left = Math.random() * 100 + '%';
+            const duration = Math.random() * 5 + 3;
+            const delay = Math.random() * -5;
+            return (
+              <motion.div
+                key={`ember-${i}`}
+                className="absolute rounded-full bg-orange-500/90 shadow-[0_0_8px_#ff5500,0_0_15px_#ff0000]"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left,
+                  bottom: '-5%',
+                }}
+                animate={{
+                  y: ['0vh', '-105vh'],
+                  x: [0, Math.random() * 60 - 30],
+                  opacity: [0, 1, 1, 0],
+                }}
+                transition={{
+                  duration,
+                  repeat: Infinity,
+                  ease: 'easeOut',
+                  delay,
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
