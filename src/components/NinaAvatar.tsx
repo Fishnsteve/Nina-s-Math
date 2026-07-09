@@ -50,6 +50,11 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             <stop offset="0%" stopColor="#ffe600" />
             <stop offset="100%" stopColor="#cc9900" />
           </linearGradient>
+          <linearGradient id="princessGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#fae8ff" />
+            <stop offset="40%" stopColor="#f472b6" />
+            <stop offset="100%" stopColor="#d946ef" />
+          </linearGradient>
         </defs>
 
         {/* --- BASE GIRL --- */}
@@ -186,17 +191,51 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
 
         {equippedAvatar === 'hero_princess' && (
           <g>
-            {/* Princess Dress */}
-            <path d="M 60 95 Q 100 110 140 95 L 160 180 Q 100 190 40 180 Z" fill="#fbcfe8" />
-            <path d="M 70 95 L 130 95 L 100 130 Z" fill="#f472b6" />
-            <path d="M 40 180 Q 100 170 160 180" fill="none" stroke="#f472b6" strokeWidth="8" opacity="0.5" />
-            <path d="M 50 160 Q 100 150 150 160" fill="none" stroke="#f472b6" strokeWidth="8" opacity="0.3" />
-            {/* Crown (Head) */}
-            <g transform="translate(85, 20)">
-              <path d="M 0 15 L 5 0 L 15 10 L 25 0 L 30 15 Z" fill="url(#gold)" />
-              <circle cx="5" cy="0" r="3" fill="#ec4899" />
-              <circle cx="15" cy="10" r="3" fill="#ec4899" />
-              <circle cx="25" cy="0" r="3" fill="#ec4899" />
+            {/* Elegant Sheer / Lace Bell Sleeves draped under arms */}
+            {/* Left drape */}
+            <path d="M 75 95 Q 45 120 40 155 Q 60 145 70 115 Z" fill="#ffffff" opacity="0.4" />
+            {/* Right drape */}
+            <path d="M 125 95 Q 155 120 160 155 Q 140 145 130 115 Z" fill="#ffffff" opacity="0.4" />
+
+            {/* A delicate pearl necklace */}
+            <path d="M 90 92 Q 100 100 110 92" fill="none" stroke="#ffffff" strokeWidth="2.5" />
+            <circle cx="100" cy="101" r="3" fill="#f43f5e" stroke="#ffe600" strokeWidth="0.5" />
+
+            {/* Slender flowy A-line cascading underskirt */}
+            <path d="M 82 130 Q 100 138 118 130 L 142 185 Q 100 190 58 185 Z" fill="url(#princessGrad)" />
+
+            {/* Sparkling vertical central front dress panel (adds vertical line for slender appearance) */}
+            <path d="M 94 133 L 88 185 L 112 185 L 106 133 Z" fill="#ffffff" opacity="0.65" />
+            {/* Little sparkles on the central panel */}
+            <circle cx="100" cy="145" r="1.5" fill="#fdf4ff" className="animate-pulse" />
+            <circle cx="100" cy="160" r="1.5" fill="#fdf4ff" className="animate-pulse" />
+            <circle cx="100" cy="175" r="1.5" fill="#fdf4ff" className="animate-pulse" />
+
+            {/* Elegant high-waisted slender bodice */}
+            <path d="M 72 95 Q 100 102 128 95 L 118 130 Q 100 138 82 130 Z" fill="url(#princessGrad)" stroke="#fae8ff" strokeWidth="0.5" />
+
+            {/* Sweetheart neckline corset lace */}
+            <path d="M 72 95 Q 100 112 128 95" fill="none" stroke="#fbcfe8" strokeWidth="3" />
+            <path d="M 85 99 L 100 115 L 115 99" fill="none" stroke="url(#gold)" strokeWidth="1.5" />
+
+            {/* Gold Waistband/V-belt accentuating the slender waist */}
+            <path d="M 82 130 Q 100 138 118 130 L 118 133 Q 100 141 82 133 Z" fill="url(#gold)" />
+
+            {/* Floating side overskirts / peplum drapery (adds movement and flow) */}
+            <path d="M 82 130 Q 64 145 70 162 Q 90 152 100 135 Z" fill="#f472b6" opacity="0.75" />
+            <path d="M 118 130 Q 136 145 130 162 Q 110 152 100 135 Z" fill="#f472b6" opacity="0.75" />
+
+            {/* Crown (Tiara) */}
+            <g transform="translate(82, 10)">
+              {/* Tiara Base */}
+              <path d="M 2 15 Q 18 10 34 15 L 34 18 Q 18 13 2 18 Z" fill="url(#gold)" />
+              {/* Tiara Peaks */}
+              <path d="M 4 15 L 8 2 L 14 12 L 18 -2 L 22 12 L 28 2 L 32 15 Z" fill="url(#gold)" stroke="#b45309" strokeWidth="0.5" />
+              {/* Jewels */}
+              <circle cx="8" cy="2" r="2" fill="#38bdf8" />
+              <circle cx="18" cy="-2" r="2.5" fill="#f43f5e" />
+              <circle cx="28" cy="2" r="2" fill="#38bdf8" />
+              <circle cx="18" cy="7" r="1.5" fill="#ffffff" className="animate-pulse" />
             </g>
           </g>
         )}
@@ -264,8 +303,13 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         )}
         {equippedAvatar === 'hero_princess' && (
           <g>
-            <path d="M 75 95 Q 60 100 50 105 L 65 115 Z" fill="#fbcfe8" />
-            <path d="M 125 95 Q 140 100 150 105 L 135 115 Z" fill="#fbcfe8" />
+            {/* Elegant sheer off-the-shoulder ruffle cuffs */}
+            <path d="M 72 95 Q 60 102 52 107 L 62 114 Z" fill="#ffffff" opacity="0.6" />
+            <path d="M 128 95 Q 140 102 148 107 L 138 114 Z" fill="#ffffff" opacity="0.6" />
+            
+            {/* Tiny gold arm bands */}
+            <path d="M 72 95 L 68 97" stroke="url(#gold)" strokeWidth="1.5" />
+            <path d="M 128 95 L 132 97" stroke="url(#gold)" strokeWidth="1.5" />
           </g>
         )}
         {equippedAvatar === 'hero_cyber' && (

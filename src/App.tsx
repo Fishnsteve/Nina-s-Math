@@ -98,11 +98,11 @@ function AppContent() {
       ) : (
         <>
           <div ref={scrollContainerRef} className="relative z-10 flex flex-col h-full overflow-y-auto overflow-x-hidden flex-1">
-            <TopBar />
+            {activeTab !== 'studio' && <TopBar />}
             
             {/* Elegant Floating PWA Banner */}
             <AnimatePresence>
-              {canInstall && !isDismissed && (
+              {activeTab !== 'studio' && canInstall && !isDismissed && (
                 <motion.div
                   initial={{ opacity: 0, y: -20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
