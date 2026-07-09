@@ -87,8 +87,8 @@ const SIDE_QUESTS: SideQuestQuestion[] = [
   {
     id: 'sq_9',
     question: { 
-      en: "If Nina completes a quest in 12 minutes, and Sulan takes twice as long, how many minutes did Sulan take?", 
-      zh: "如果妮娜在 12 分鐘內完成一項任務，而蘇蘭花費的時間是她的兩倍，蘇蘭花了多少分鐘？" 
+      en: "If Nina completes a quest in 12 minutes, and Sishu takes twice as long, how many minutes did Sishu take?", 
+      zh: "如果妮娜在 12 分鐘內完成一項任務，而喜樹花費的時間是她的兩倍，喜樹花了多少分鐘？" 
     },
     answer: "24"
   },
@@ -929,7 +929,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               {/* Ribbon Banner Header */}
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-500 via-amber-400 to-orange-500 text-slate-950 font-black text-xs px-6 py-1.5 rounded-full uppercase tracking-wider shadow-lg border-2 border-yellow-300 flex items-center gap-1.5 whitespace-nowrap z-30 select-none">
                 <Icons.Sparkles className="w-3.5 h-3.5 fill-slate-950 text-slate-950 animate-spin" style={{ animationDuration: '3s' }} />
-                {language === 'en' ? "Sulan's Riddle Challenge" : "蘇蘭的神秘謎題"}
+                {language === 'en' ? "Sishu's Riddle Challenge" : "喜樹的神秘謎題"}
                 <Icons.Sparkles className="w-3.5 h-3.5 fill-slate-950 text-slate-950 animate-spin" style={{ animationDuration: '3s' }} />
               </div>
 

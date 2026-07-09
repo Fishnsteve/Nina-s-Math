@@ -15,8 +15,8 @@ export function DanceStudio() {
   const [isDancing, setIsDancing] = useState<string | null>(null);
 
   const outfits = [
-    { id: 'hero_sulan', icon: '💃', level: 1, name: language === 'en' ? 'Sulan' : '素蘭', price: 0, currency: 'coins' as const },
-    { id: 'hero_pink_kimono', icon: '👘', level: 2, name: language === 'en' ? 'Kimono' : '和服', price: 150, currency: 'coins' as const },
+    { id: 'hero_sulan', icon: '💃', level: 1, name: language === 'en' ? 'Sishu' : '喜樹', price: 0, currency: 'coins' as const },
+    { id: 'hero_pink_kimono', icon: '👘', level: 2, name: language === 'en' ? 'Sulan' : '素蘭', price: 150, currency: 'coins' as const },
     { id: 'hero_ninja', icon: '🥷', level: 4, name: language === 'en' ? 'Ninja' : '忍者', price: 300, currency: 'coins' as const },
     { id: 'hero_flower', icon: '🌸', level: 6, name: language === 'en' ? 'Flower' : '花朵', price: 500, currency: 'coins' as const },
     { id: 'hero_princess', icon: '👑', level: 8, name: language === 'en' ? 'Princess' : '公主', price: 1000, currency: 'coins' as const },

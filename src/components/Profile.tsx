@@ -21,8 +21,8 @@ export function Profile() {
   const hasAllCollectibles = purchasedCount === totalCount;
 
   const outfitsMap = {
-    hero_sulan: language === 'en' ? 'Sulan' : '素蘭',
-    hero_pink_kimono: language === 'en' ? 'Kimono' : '和服',
+    hero_sulan: language === 'en' ? 'Sishu' : '喜樹',
+    hero_pink_kimono: language === 'en' ? 'Sulan' : '素蘭',
     hero_ninja: language === 'en' ? 'Ninja' : '忍者',
     hero_flower: language === 'en' ? 'Flower' : '花朵',
     hero_princess: language === 'en' ? 'Princess' : '公主',
@@ -80,7 +80,7 @@ export function Profile() {
 
   return (
     <div className="min-h-screen pb-32 pt-6 px-4 relative overflow-hidden">
-      {/* Immersive Kimono Dancer Background Art - Only appears when all collectibles are purchased */}
+      {/* Immersive Sulan Dancer Background Art - Only appears when all collectibles are purchased */}
       {hasAllCollectibles && (
         <div 
           className="fixed inset-0 z-0 opacity-40 pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen"
@@ -175,8 +175,8 @@ export function Profile() {
             <div className="space-y-4">
               <p className="text-xs text-slate-200 leading-relaxed">
                 {language === 'en' 
-                  ? "Launch Nina's Quest directly from your home screen! Tap install to save the app with our high-definition Pink Kimono Nina icon." 
-                  : "直接從主畫面啟動 Nina 的冒險！點擊下方安裝，即可使用專屬粉紅和服 Nina 高畫質圖示快速啟動遊戲。"}
+                  ? "Launch Nina's Quest directly from your home screen! Tap install to save the app with our high-definition Pink Sulan Nina icon." 
+                  : "直接從主畫面啟動 Nina 的冒險！點擊下方安裝，即可使用專屬粉紅素蘭 Nina 高畫質圖示快速啟動遊戲。"}
               </p>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -220,8 +220,8 @@ export function Profile() {
             <div className="space-y-3">
               <p className="text-xs text-slate-200 leading-relaxed">
                 {language === 'en' 
-                  ? "Launch directly from your home screen with a full-screen display and our custom Nina with Pink Kimono icon!" 
-                  : "在手機或電腦主畫面建立捷徑，享受滿版全螢幕視野與粉紅和服 Nina 專屬的高清遊戲圖示！"}
+                  ? "Launch directly from your home screen with a full-screen display and our custom Nina with Pink Sulan icon!" 
+                  : "在手機或電腦主畫面建立捷徑，享受滿版全螢幕視野與粉紅素蘭 Nina 專屬的高清遊戲圖示！"}
               </p>
               <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-xs text-slate-300 space-y-2">
                 <p className="font-semibold text-pink-300">
