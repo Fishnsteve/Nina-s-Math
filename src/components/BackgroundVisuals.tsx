@@ -1,6 +1,93 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
+const EMBER_PARTICLES = Array.from({ length: 30 }).map((_, i) => {
+  // Use a simple seeded pseudo-random approach based on index to ensure stable styling
+  const size = ((i * 17) % 4) + 2; // 2 to 5 px
+  const left = `${(i * 31) % 100}%`;
+  const duration = 3.5 + ((i * 7) % 3); // 3.5 to 5.5 seconds
+  const delay = -(((i * 13) % 100) / 20); // 0 to -5 seconds
+  const swayX = ((i * 23) % 60) - 30; // -30 to 30
+  return { id: i, size, left, duration, delay, swayX };
+});
+
+const CYBER_CODES = Array.from({ length: 18 }).map((_, i) => {
+  const isCyan = i % 2 === 0;
+  const size = 10 + ((i * 7) % 13); // 10 to 22 px
+  const duration = 4 + ((i * 3) % 7); // 4 to 10 seconds
+  const delay = -(((i * 11) % 100) / 10); // -0 to -10 seconds
+  const left = `${(i * 5.5) + ((i * i) % 4)}%`;
+  const opacity = 0.3 + ((i * 13) % 4) * 0.1; // 0.3 to 0.6
+  const char = i % 2 === 0 ? '0' : '1';
+  return { id: i, isCyan, size, duration, delay, left, opacity, char };
+});
+
+const FIREFLIES = Array.from({ length: 20 }).map((_, i) => {
+  const size = 3 + ((i * 13) % 6); // 3 to 8 px
+  const duration = 5 + ((i * 7) % 7); // 5 to 11 seconds
+  const delay = -(((i * 17) % 100) / 10); // -0 to -10 seconds
+  const left = `${(i * 19) % 100}%`;
+  const top = `${20 + ((i * 23) % 60)}%`;
+  const targetY = -40 - ((i * 11) % 120); // -40 to -160
+  const targetX = ((i * 17) % 40) - 20; // -20 to 20
+  return { id: i, size, duration, delay, left, top, targetY, targetX };
+});
+
+const LEAVES = Array.from({ length: 12 }).map((_, i) => {
+  const size = 10 + ((i * 11) % 15); // 10 to 24 px
+  const duration = 8 + ((i * 5) % 11); // 8 to 18 seconds
+  const delay = -(((i * 13) % 100) / 8); // -0 to -12.5 seconds
+  const left = `${(i * 29) % 100}%`;
+  const swayX = ((i * 19) % 60) - 30; // -30 to 30
+  return { id: i, size, duration, delay, left, swayX };
+});
+
+const CASTLE_SPARKLES = Array.from({ length: 18 }).map((_, i) => {
+  const size = 3 + ((i * 17) % 7); // 3 to 9 px
+  const duration = 4 + ((i * 9) % 6); // 4 to 9 seconds
+  const delay = -(((i * 23) % 100) / 12); // -0 to -8.3 seconds
+  const left = `${(i * 37) % 100}%`;
+  const top = `${10 + ((i * 13) % 80)}%`;
+  const targetY = -50 - ((i * 23) % 150); // -50 to -200
+  const targetX = ((i * 19) % 50) - 25; // -25 to 25
+  return { id: i, size, duration, delay, left, top, targetY, targetX };
+});
+
+const CASTLE_CRESTS = Array.from({ length: 4 }).map((_, i) => {
+  const left = `${10 + i * 25 + ((i * 17) % 10)}%`;
+  const size = 30 + ((i * 23) % 31); // 30 to 60 px
+  const duration = 10 + ((i * 13) % 13); // 10 to 22 seconds
+  const delay = -(((i * 29) % 100) / 6); // -0 to -16.6 seconds
+  const isRotatePositive = i % 2 === 0;
+  return { id: i, left, size, duration, delay, isRotatePositive };
+});
+
+const OCEAN_BUBBLES = Array.from({ length: 22 }).map((_, i) => {
+  const size = 4 + ((i * 13) % 13); // 4 to 16 px
+  const duration = 6 + ((i * 7) % 9); // 6 to 14 seconds
+  const delay = -(((i * 31) % 100) / 8); // -0 to -12.5 seconds
+  const left = `${(i * 17) % 100}%`;
+  const swayX = ((i * 23) % 50) - 25; // -25 to 25
+  return { id: i, size, duration, delay, left, swayX };
+});
+
+const COSMIC_STARS = Array.from({ length: 18 }).map((_, i) => {
+  const size = 2 + ((i * 13) % 5); // 2 to 6 px
+  const duration = 2 + ((i * 7) % 5); // 2 to 6 seconds
+  const delay = -(((i * 19) % 100) / 20); // -0 to -5 seconds
+  const left = `${(i * 37) % 100}%`;
+  const top = `${(i * 47) % 100}%`;
+  return { id: i, size, duration, delay, left, top };
+});
+
+const COSMIC_SHOOTING_STARS = Array.from({ length: 2 }).map((_, i) => {
+  const duration = 6 + ((i * 13) % 5); // 6 to 10 seconds
+  const delay = 10 + i * 12;
+  const left = `${((i * 41) % 30) - 10}%`;
+  const top = `${20 + ((i * 37) % 40)}%`;
+  return { id: i, duration, delay, left, top };
+});
+
 interface BackgroundVisualsProps {
   bgId: string;
   scrollProgress?: number;
@@ -47,42 +134,34 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
           <div className="absolute bottom-48 left-0 right-0 h-[4px] bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-40 blur-[4px]" />
 
           {/* Falling Cyber Codes (Matrix style but Cyan/Fuchsia) */}
-          {Array.from({ length: 18 }).map((_, i) => {
-            const isCyan = i % 2 === 0;
-            const size = Math.random() * 12 + 10;
-            const duration = Math.random() * 6 + 4;
-            const delay = Math.random() * -10;
-            const left = (i * 6) + Math.random() * 4 + '%';
-            
-            return (
-              <motion.div
-                key={`cyber-code-${i}`}
-                className={`absolute font-mono font-black select-none ${
-                  isCyan 
-                    ? 'text-cyan-400 drop-shadow-[0_0_8px_#06b6d4]' 
-                    : 'text-fuchsia-400 drop-shadow-[0_0_8px_#d946ef]'
-                }`}
-                style={{
-                  left,
-                  top: '-10%',
-                  fontSize: `${size}px`,
-                  opacity: Math.random() * 0.4 + 0.3,
-                }}
-                animate={{
-                  y: ['0vh', '115vh'],
-                  rotate: [0, 360],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay,
-                }}
-              >
-                {Math.random() > 0.5 ? '0' : '1'}
-              </motion.div>
-            );
-          })}
+          {CYBER_CODES.map((code) => (
+            <motion.div
+              key={`cyber-code-${code.id}`}
+              className={`absolute font-mono font-black select-none ${
+                code.isCyan 
+                  ? 'text-cyan-400 drop-shadow-[0_0_8px_#06b6d4]' 
+                  : 'text-fuchsia-400 drop-shadow-[0_0_8px_#d946ef]'
+              }`}
+              style={{
+                left: code.left,
+                top: '-10%',
+                fontSize: `${code.size}px`,
+                opacity: code.opacity,
+              }}
+              animate={{
+                y: ['0vh', '115vh'],
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: code.duration,
+                repeat: Infinity,
+                ease: "linear",
+                delay: code.delay,
+              }}
+            >
+              {code.char}
+            </motion.div>
+          ))}
 
           {/* Neon Grid Crosshairs / Tech Circles */}
           <div className="absolute top-10 left-10 w-24 h-24 border border-cyan-500/20 rounded-full flex items-center justify-center opacity-30 animate-[spin_20s_linear_infinite]">
@@ -114,70 +193,58 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
           </div>
 
           {/* Enchanting Fireflies */}
-          {Array.from({ length: 20 }).map((_, i) => {
-            const size = Math.random() * 5 + 3;
-            const duration = Math.random() * 6 + 5;
-            const delay = Math.random() * -10;
-            
-            return (
-              <motion.div
-                key={`firefly-${i}`}
-                className="absolute rounded-full bg-amber-300/80 shadow-[0_0_10px_#f59e0b,0_0_20px_#f59e0b]"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 80 + 20 + '%',
-                }}
-                animate={{
-                  y: [0, Math.random() * -120 - 40],
-                  x: [0, Math.random() * 40 - 20],
-                  opacity: [0, 0.8, 0.8, 0],
-                  scale: [1, 1.3, 0.8, 1],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay,
-                }}
-              />
-            );
-          })}
+          {FIREFLIES.map((fly) => (
+            <motion.div
+              key={`firefly-${fly.id}`}
+              className="absolute rounded-full bg-amber-300/80 shadow-[0_0_10px_#f59e0b,0_0_20px_#f59e0b]"
+              style={{
+                width: `${fly.size}px`,
+                height: `${fly.size}px`,
+                left: fly.left,
+                top: fly.top,
+              }}
+              animate={{
+                y: [0, fly.targetY],
+                x: [0, fly.targetX],
+                opacity: [0, 0.8, 0.8, 0],
+                scale: [1, 1.3, 0.8, 1],
+              }}
+              transition={{
+                duration: fly.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: fly.delay,
+              }}
+            />
+          ))}
 
           {/* Falling Leaves */}
-          {Array.from({ length: 12 }).map((_, i) => {
-            const size = Math.random() * 14 + 10;
-            const duration = Math.random() * 10 + 8;
-            const delay = Math.random() * -12;
-            
-            return (
-              <motion.svg
-                key={`leaf-${i}`}
-                viewBox="0 0 24 24"
-                className="absolute text-emerald-500/30 fill-current"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: Math.random() * 100 + '%',
-                  top: '-10%',
-                }}
-                animate={{
-                  y: ['0vh', '110vh'],
-                  x: [0, Math.random() * 60 - 30, Math.random() * -60 + 30, 0],
-                  rotate: [0, 360],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay,
-                }}
-              >
-                <path d="M17,8C8,20 4,21 4,21C4,21 5,17 17,8M17,8c-3.5,1.5 -8.5,1.5 -11.5,-1.5c-3,3 -3,8 0,11c3,3 8,3 11,0C19.5,14.5 19.5,9.5 17,8Z" />
-              </motion.svg>
-            );
-          })}
+          {LEAVES.map((leaf) => (
+            <motion.svg
+              key={`leaf-${leaf.id}`}
+              viewBox="0 0 24 24"
+              className="absolute text-emerald-500/30 fill-current"
+              style={{
+                width: `${leaf.size}px`,
+                height: `${leaf.size}px`,
+                left: leaf.left,
+                top: '-10%',
+              }}
+              animate={{
+                y: ['0vh', '110vh'],
+                x: [0, leaf.swayX, -leaf.swayX, 0],
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: leaf.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: leaf.delay,
+              }}
+            >
+              <path d="M17,8C8,20 4,21 4,21C4,21 5,17 17,8M17,8c-3.5,1.5 -8.5,1.5 -11.5,-1.5c-3,3 -3,8 0,11c3,3 8,3 11,0C19.5,14.5 19.5,9.5 17,8Z" />
+            </motion.svg>
+          ))}
         </div>
       );
     }
@@ -190,72 +257,59 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
           <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-amber-500/5 to-transparent blur-2xl" />
 
           {/* Golden Magical Sparkles */}
-          {Array.from({ length: 18 }).map((_, i) => {
-            const size = Math.random() * 6 + 3;
-            const duration = Math.random() * 5 + 4;
-            const delay = Math.random() * -8;
-            
-            return (
-              <motion.div
-                key={`sparkle-${i}`}
-                className="absolute rounded-full bg-amber-400/75 shadow-[0_0_8px_#fbbf24,0_0_15px_#f59e0b]"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 90 + 10 + '%',
-                }}
-                animate={{
-                  y: [0, Math.random() * -150 - 50],
-                  x: [0, Math.random() * 50 - 25],
-                  opacity: [0, 0.9, 0],
-                  scale: [0.5, 1.2, 0.5],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay,
-                }}
-              />
-            );
-          })}
+          {CASTLE_SPARKLES.map((sparkle) => (
+            <motion.div
+              key={`sparkle-${sparkle.id}`}
+              className="absolute rounded-full bg-amber-400/75 shadow-[0_0_8px_#fbbf24,0_0_15px_#f59e0b]"
+              style={{
+                width: `${sparkle.size}px`,
+                height: `${sparkle.size}px`,
+                left: sparkle.left,
+                top: sparkle.top,
+              }}
+              animate={{
+                y: [0, sparkle.targetY],
+                x: [0, sparkle.targetX],
+                opacity: [0, 0.9, 0],
+                scale: [0.5, 1.2, 0.5],
+              }}
+              transition={{
+                duration: sparkle.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: sparkle.delay,
+              }}
+            />
+          ))}
 
           {/* Floating Royal Crests / Shields Outline Icons */}
-          {Array.from({ length: 4 }).map((_, i) => {
-            const left = 10 + (i * 25) + Math.random() * 10 + '%';
-            const size = Math.random() * 30 + 30;
-            const duration = Math.random() * 12 + 10;
-            const delay = Math.random() * -15;
-            
-            return (
-              <motion.svg
-                key={`crest-${i}`}
-                viewBox="0 0 24 24"
-                className="absolute text-amber-500/10 fill-none stroke-current"
-                strokeWidth="1"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left,
-                  top: '110%',
-                }}
-                animate={{
-                  y: ['0vh', '-125vh'],
-                  rotate: [0, Math.random() > 0.5 ? 45 : -45],
-                  opacity: [0, 0.3, 0.3, 0],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay,
-                }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-              </motion.svg>
-            );
-          })}
+          {CASTLE_CRESTS.map((crest) => (
+            <motion.svg
+              key={`crest-${crest.id}`}
+              viewBox="0 0 24 24"
+              className="absolute text-amber-500/10 fill-none stroke-current"
+              strokeWidth="1"
+              style={{
+                width: `${crest.size}px`,
+                height: `${crest.size}px`,
+                left: crest.left,
+                top: '110%',
+              }}
+              animate={{
+                y: ['0vh', '-125vh'],
+                rotate: [0, crest.isRotatePositive ? 45 : -45],
+                opacity: [0, 0.3, 0.3, 0],
+              }}
+              transition={{
+                duration: crest.duration,
+                repeat: Infinity,
+                ease: "linear",
+                delay: crest.delay,
+              }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+            </motion.svg>
+          ))}
 
           {/* Castle Brick Side Pillars Silhouette */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/40 to-transparent border-r border-amber-500/5 flex flex-col justify-around py-12 opacity-50">
@@ -292,35 +346,29 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
           </div>
 
           {/* Underwater Rising Bubbles */}
-          {Array.from({ length: 22 }).map((_, i) => {
-            const size = Math.random() * 12 + 4;
-            const duration = Math.random() * 8 + 6;
-            const delay = Math.random() * -12;
-            
-            return (
-              <motion.div
-                key={`bubble-${i}`}
-                className="absolute rounded-full border border-cyan-300/30 bg-gradient-to-tr from-cyan-500/10 to-white/20 shadow-inner"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: Math.random() * 100 + '%',
-                  bottom: '-10%',
-                }}
-                animate={{
-                  y: ['0vh', '-115vh'],
-                  x: [0, Math.random() * 50 - 25, Math.random() * -50 + 25, 0],
-                  scale: [1, 1.2, 0.9, 1.1],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay,
-                }}
-              />
-            );
-          })}
+          {OCEAN_BUBBLES.map((bubble) => (
+            <motion.div
+              key={`bubble-${bubble.id}`}
+              className="absolute rounded-full border border-cyan-300/30 bg-gradient-to-tr from-cyan-500/10 to-white/20 shadow-inner"
+              style={{
+                width: `${bubble.size}px`,
+                height: `${bubble.size}px`,
+                left: bubble.left,
+                bottom: '-10%',
+              }}
+              animate={{
+                y: ['0vh', '-115vh'],
+                x: [0, bubble.swayX, -bubble.swayX, 0],
+                scale: [1, 1.2, 0.9, 1.1],
+              }}
+              transition={{
+                duration: bubble.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: bubble.delay,
+              }}
+            />
+          ))}
 
           {/* Gentle Sea Waves Overlay */}
           <div className="absolute inset-0 opacity-15">
@@ -340,85 +388,74 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
           <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-purple-500/5 via-blue-500/5 to-cyan-500/5 blur-3xl pointer-events-none" />
 
           {/* Cosmic Twinkling Stars */}
-          {Array.from({ length: 18 }).map((_, i) => {
-            const size = Math.random() * 4 + 2;
-            const duration = Math.random() * 4 + 2;
-            const delay = Math.random() * -5;
-            
-            return (
-              <motion.div
-                key={`star-${i}`}
-                className="absolute rounded-full bg-white/70 shadow-[0_0_8px_#fff]"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 100 + '%',
-                }}
-                animate={{
-                  opacity: [0.1, 1, 0.1],
-                  scale: [0.8, 1.3, 0.8],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay,
-                }}
-              />
-            );
-          })}
+          {COSMIC_STARS.map((star) => (
+            <motion.div
+              key={`star-${star.id}`}
+              className="absolute rounded-full bg-white/70 shadow-[0_0_8px_#fff]"
+              style={{
+                width: `${star.size}px`,
+                height: `${star.size}px`,
+                left: star.left,
+                top: star.top,
+              }}
+              animate={{
+                opacity: [0.1, 1, 0.1],
+                scale: [0.8, 1.3, 0.8],
+              }}
+              transition={{
+                duration: star.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: star.delay,
+              }}
+            />
+          ))}
 
           {/* Cosmic Shooting Stars */}
-          {Array.from({ length: 2 }).map((_, i) => {
-            const duration = Math.random() * 4 + 6;
-            const delay = Math.random() * 10 + (i * 12);
-            
-            return (
-              <motion.div
-                key={`shooting-star-${i}`}
-                className="absolute h-[1.5px] bg-gradient-to-r from-white via-cyan-300 to-transparent shadow-[0_0_8px_#fff]"
-                style={{
-                  width: '80px',
-                  left: Math.random() * 30 - 10 + '%',
-                  top: Math.random() * 40 + '%',
-                  transform: 'rotate(-35deg)',
-                  opacity: 0,
-                }}
-                animate={{
-                  x: ['0px', '400px'],
-                  y: ['0px', '280px'],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 1.2,
-                  repeat: Infinity,
-                  repeatDelay: duration,
-                  ease: "easeOut",
-                  delay,
-                }}
-              />
-            );
-          })}
+          {COSMIC_SHOOTING_STARS.map((star) => (
+            <motion.div
+              key={`shooting-star-${star.id}`}
+              className="absolute h-[1.5px] bg-gradient-to-r from-white via-cyan-300 to-transparent shadow-[0_0_8px_#fff]"
+              style={{
+                width: '80px',
+                left: star.left,
+                top: star.top,
+                transform: 'rotate(-35deg)',
+                opacity: 0,
+              }}
+              animate={{
+                x: ['0px', '400px'],
+                y: ['0px', '280px'],
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                repeatDelay: star.duration,
+                ease: "easeOut",
+                delay: star.delay,
+              }}
+            />
+          ))}
         </div>
       );
     }
-  }
-};
+    }
+  };
 
   // Calculate specific hue rotation degrees for each theme to shift beautifully to red (0deg)
   const getHueRotationForBg = (id: string): number => {
     switch (id) {
-      case 'bg_forest':
-        return -140; // Green to Red
-      case 'bg_ocean':
-        return -200; // Cyan/Blue to Red
-      case 'bg_castle':
-        return -35;  // Amber/Orange to Red
-      case 'bg_cyber':
-        return 65;   // Fuchsia/Purple to Red
-      default:
-        return 135;  // Default Indigo/Blue to Red
+    case 'bg_forest':
+      return -140; // Green to Red
+    case 'bg_ocean':
+      return -200; // Cyan/Blue to Red
+    case 'bg_castle':
+      return -35;  // Amber/Orange to Red
+    case 'bg_cyber':
+      return 65;   // Fuchsia/Purple to Red
+    default:
+      return 135;  // Default Indigo/Blue to Red
     }
   };
 
@@ -477,36 +514,30 @@ export function BackgroundVisuals({ bgId, scrollProgress = 0 }: BackgroundVisual
 
       {/* Burning lava ashes/particles floating up as we reach the infernal */}
       {scrollProgress > 0.05 && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: Math.floor(scrollProgress * 25) + 5 }).map((_, i) => {
-            const size = Math.random() * 4 + 2;
-            const left = Math.random() * 100 + '%';
-            const duration = Math.random() * 5 + 3;
-            const delay = Math.random() * -5;
-            return (
-              <motion.div
-                key={`ember-${i}`}
-                className="absolute rounded-full bg-orange-500/90 shadow-[0_0_8px_#ff5500,0_0_15px_#ff0000]"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left,
-                  bottom: '-5%',
-                }}
-                animate={{
-                  y: ['0vh', '-105vh'],
-                  x: [0, Math.random() * 60 - 30],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration,
-                  repeat: Infinity,
-                  ease: 'easeOut',
-                  delay,
-                }}
-              />
-            );
-          })}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ opacity: Math.min(1, scrollProgress * 1.5) }}>
+          {EMBER_PARTICLES.map((particle) => (
+            <motion.div
+              key={`ember-${particle.id}`}
+              className="absolute rounded-full bg-orange-500/90 shadow-[0_0_8px_#ff5500,0_0_15px_#ff0000]"
+              style={{
+                width: `${particle.size}px`,
+                height: `${particle.size}px`,
+                left: particle.left,
+                bottom: '-5%',
+              }}
+              animate={{
+                y: ['0vh', '-105vh'],
+                x: [0, particle.swayX],
+                opacity: [0, 0.9, 0.9, 0],
+              }}
+              transition={{
+                duration: particle.duration,
+                repeat: Infinity,
+                ease: 'easeOut',
+                delay: particle.delay,
+              }}
+            />
+          ))}
         </div>
       )}
     </div>

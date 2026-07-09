@@ -79,7 +79,7 @@ export function Profile() {
   const totalQuestionsAnswered = Object.values(completedLevels).reduce((acc, curr) => acc + curr, 0) * 3; // Approx
 
   return (
-    <div className="min-h-screen pb-32 pt-6 px-4 relative overflow-hidden">
+    <div className="w-full pb-32 pt-6 px-4 relative overflow-hidden flex flex-col">
       {/* Immersive Sulan Dancer Background Art - Only appears when all collectibles are purchased */}
       {hasAllCollectibles && (
         <div 

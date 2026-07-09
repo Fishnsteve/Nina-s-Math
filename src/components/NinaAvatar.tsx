@@ -84,7 +84,7 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
 
         {/* --- BASE GIRL --- */}
         {/* Back Hair - Sleek, straight shoulder-length cut in perfect proportion with the head */}
-        <path d="M 70 30 C 58 35 58 75 58 122 C 80 126 120 126 142 122 C 142 75 142 35 130 30 C 100 18 70 20 70 30 Z" fill="url(#hairDark)" />
+        <path d="M 70 28 C 80 20 120 20 130 28 C 134 32 135 85 135 145 L 65 145 C 65 85 66 32 70 28 Z" fill="url(#hairDark)" />
         
         {/* Body / Legs (Base) */}
         {/* Left Leg */}
@@ -125,18 +125,29 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         <circle cx="122" cy="78" r="6" fill="url(#blush)" />
 
         {/* Front Hair / Bangs */}
-        {/* Beautiful, straight fringe bangs with soft vertical texturing and clean proportion */}
-        <path d="M 62 50 Q 72 26 100 24 Q 128 26 138 50 Q 134 49 130 53 Q 127 48 124 54 Q 121 47 118 55 Q 114 48 110 56 Q 106 49 102 58 Q 98 49 94 58 Q 90 49 86 56 Q 82 48 78 55 Q 75 47 72 53 Q 66 49 62 50 Z" fill="url(#hairDark)" />
+        {/* Soft, feathered see-through fringe with a gentle center part, swerving gracefully to the sides */}
+        {/* Base hair cap/underlayer to avoid forehead skin showing through at the very top */}
+        <path d="M 66 46 C 70 20 130 20 134 46 C 122 41 112 39 100 39 C 88 39 78 41 66 46 Z" fill="url(#hairDark)" />
+        
+        {/* Left-sweeping main locks */}
+        <path d="M 97 34 C 88 35 76 43 71 55 C 77 53 82 52 86 49 C 91 44 95 39 97 34 Z" fill="url(#hairDark)" />
+        <path d="M 87 34 C 79 36 71 43 67 56 C 70 53 74 52 77 49 C 82 44 85 39 87 34 Z" fill="url(#hairDark)" />
+        
+        {/* Right-sweeping main locks */}
+        <path d="M 103 34 C 112 35 124 43 129 55 C 123 53 118 52 114 49 C 109 44 105 39 103 34 Z" fill="url(#hairDark)" />
+        <path d="M 113 34 C 121 36 129 43 133 56 C 130 53 126 52 123 49 C 118 44 115 39 113 34 Z" fill="url(#hairDark)" />
         
         {/* Cute individual front hair wisps/strands overlay for natural depth and texture */}
-        <path d="M 74 42 Q 78 54 76 56 Q 75 48 72 44" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-        <path d="M 96 40 Q 100 55 101 58 Q 98 49 95 43" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-        <path d="M 104 40 Q 101 55 100 58 Q 102 49 105 43" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-        <path d="M 122 42 Q 118 54 120 56 Q 121 48 124 44" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <path d="M 96 35 C 93 42 88 49 84 53" fill="none" stroke="#1a0f0a" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+        <path d="M 104 35 C 107 42 112 49 116 53" fill="none" stroke="#1a0f0a" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+        <path d="M 98 36 Q 98 46 96 50" fill="none" stroke="#1a0f0a" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+        <path d="M 102 36 Q 102 46 104 50" fill="none" stroke="#1a0f0a" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+        <path d="M 75 42 C 77 48 76 53 75 55" fill="none" stroke="#1a0f0a" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+        <path d="M 125 42 C 123 48 124 53 125 55" fill="none" stroke="#1a0f0a" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
         
         {/* Side strands framing the face beautifully and falling straight down to shoulder length */}
-        <path d="M 62 50 C 58 75 58 100 58 122 C 66 100 68 75 68 50 Z" fill="url(#hairDark)" />
-        <path d="M 138 50 C 142 75 142 100 142 122 C 134 100 132 75 132 50 Z" fill="url(#hairDark)" />
+        <path d="M 66 48 C 61 70 59 105 59 140 C 69 110 71 80 71 48 Z" fill="url(#hairDark)" />
+        <path d="M 134 48 C 139 70 141 105 141 140 C 131 110 129 80 129 48 Z" fill="url(#hairDark)" />
 
         {/* --- HAIRSTYLES & ACCESSORIES (conditional) --- */}
         {equippedAvatar === 'hero_pink_kimono' ? (
