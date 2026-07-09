@@ -100,37 +100,92 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         <circle cx="122" cy="78" r="6" fill="url(#blush)" />
 
         {/* Front Hair / Bangs */}
-        {/* Full sweeping bangs across the forehead */}
-        <path d="M 60 55 Q 75 15 100 15 Q 125 15 140 55 Q 125 45 110 50 Q 95 35 80 50 Q 70 45 60 55 Z" fill="url(#hairDark)" />
-        <path d="M 85 20 Q 100 45 110 20 Z" fill="url(#hairDark)" />
+        {/* Beautiful, organic, feathered bangs with cute sharp fringes/individual strands */}
+        <path d="M 60 54 Q 72 20 100 18 Q 128 20 140 54 Q 134 52 130 56 Q 127 50 124 57 Q 121 49 118 58 Q 114 50 110 59 Q 106 51 102 61 Q 98 51 94 61 Q 90 51 86 59 Q 82 50 78 58 Q 75 49 72 56 Q 66 52 60 54 Z" fill="url(#hairDark)" />
+        
+        {/* Cute individual front hair wisps/strands overlay for natural depth */}
+        <path d="M 74 46 Q 78 58 76 60 Q 75 52 72 48" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <path d="M 96 44 Q 100 59 101 62 Q 98 53 95 47" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <path d="M 104 44 Q 101 59 100 62 Q 102 53 105 47" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <path d="M 122 46 Q 118 58 120 60 Q 121 52 124 48" fill="none" stroke="#1c1917" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
         
         {/* Side strands framing the face nicely */}
         <path d="M 60 55 Q 55 90 60 130 Q 75 90 70 50 Z" fill="url(#hairDark)" />
         <path d="M 140 55 Q 145 90 140 130 Q 125 90 130 50 Z" fill="url(#hairDark)" />
 
-        {/* Top Elaborate Bun & Updo */}
-        <path d="M 60 25 Q 100 -5 140 25 Q 150 -10 100 -20 Q 50 -10 60 25 Z" fill="url(#hairDark)" />
-        <circle cx="100" cy="5" r="28" fill="url(#hairDark)" />
-        <circle cx="82" cy="10" r="20" fill="url(#hairDark)" />
-        <circle cx="118" cy="10" r="20" fill="url(#hairDark)" />
-        
-        {/* Hair Accessories (Flowers in Bun) */}
-        <circle cx="100" cy="-5" r="8" fill="#dda0dd" />
-        <circle cx="92" cy="-2" r="7" fill="#ffb6c1" />
-        <circle cx="108" cy="-2" r="7" fill="#ffb6c1" />
-        <circle cx="100" cy="4" r="7" fill="#ffb6c1" />
-        <circle cx="100" cy="-2" r="3" fill="url(#gold)" />
-        <circle cx="75" cy="15" r="6" fill="#ffb6c1" />
-        <circle cx="125" cy="15" r="6" fill="#dda0dd" />
-        
-        {/* Dangling Gold Ornaments */}
-        <path d="M 75 20 L 70 45 M 78 20 L 74 40 M 125 20 L 130 45 M 122 20 L 126 40" stroke="url(#gold)" strokeWidth="1.5" strokeDasharray="3,2" />
+        {/* --- HAIRSTYLES & ACCESSORIES (conditional) --- */}
+        {equippedAvatar === 'hero_pink_kimono' ? (
+          <g>
+            {/* Traditional Sulan Elaborate Bun & Updo */}
+            <path d="M 60 25 Q 100 -5 140 25 Q 150 -10 100 -20 Q 50 -10 60 25 Z" fill="url(#hairDark)" />
+            <circle cx="100" cy="5" r="28" fill="url(#hairDark)" />
+            <circle cx="82" cy="10" r="20" fill="url(#hairDark)" />
+            <circle cx="118" cy="10" r="20" fill="url(#hairDark)" />
+            
+            {/* Hair Accessories (Flowers in Bun) */}
+            <circle cx="100" cy="-5" r="8" fill="#dda0dd" />
+            <circle cx="92" cy="-2" r="7" fill="#ffb6c1" />
+            <circle cx="108" cy="-2" r="7" fill="#ffb6c1" />
+            <circle cx="100" cy="4" r="7" fill="#ffb6c1" />
+            <circle cx="100" cy="-2" r="3" fill="url(#gold)" />
+            <circle cx="75" cy="15" r="6" fill="#ffb6c1" />
+            <circle cx="125" cy="15" r="6" fill="#dda0dd" />
+            
+            {/* Dangling Gold Ornaments */}
+            <path d="M 75 20 L 70 45 M 78 20 L 74 40 M 125 20 L 130 45 M 122 20 L 126 40" stroke="url(#gold)" strokeWidth="1.5" strokeDasharray="3,2" />
 
-        {/* Face Paint / Gems */}
-        <circle cx="72" cy="73" r="1.5" fill="#fff" opacity="0.8" />
-        <circle cx="68" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
-        <circle cx="128" cy="73" r="1.5" fill="#fff" opacity="0.8" />
-        <circle cx="132" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+            {/* Face Paint / Gems */}
+            <circle cx="72" cy="73" r="1.5" fill="#fff" opacity="0.8" />
+            <circle cx="68" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+            <circle cx="128" cy="73" r="1.5" fill="#fff" opacity="0.8" />
+            <circle cx="132" cy="72" r="1.5" fill="#ffb6c1" opacity="0.8" />
+          </g>
+        ) : equippedAvatar === 'hero_ninja' ? (
+          <g>
+            {/* Ninja Sleek Headband wrapping around the forehead */}
+            <path d="M 64 45 Q 100 40 136 45 L 134 52 Q 100 47 66 52 Z" fill="#0f172a" />
+            {/* Metal Plate */}
+            <rect x="90" y="42" width="20" height="8" rx="2" fill="#94a3b8" stroke="#cbd5e1" strokeWidth="0.5" />
+            {/* Engraving on metal plate */}
+            <circle cx="95" cy="46" r="1" fill="#475569" />
+            <circle cx="105" cy="46" r="1" fill="#475569" />
+            <path d="M 98 46 L 102 46" stroke="#475569" strokeWidth="1" />
+            {/* Headband knot ribbons at the side */}
+            <path d="M 64 48 Q 50 52 45 62 L 53 62 Z" fill="#0f172a" />
+          </g>
+        ) : equippedAvatar === 'hero_princess' ? (
+          <g>
+            {/* Elegant Princess Updo Bun (no traditional Chinese elements) */}
+            <circle cx="100" cy="15" r="22" fill="url(#hairDark)" />
+          </g>
+        ) : equippedAvatar === 'hero_cyber' ? (
+          <g>
+            {/* Cyberpunk Neon Highlights / Hair Clips */}
+            <path d="M 72 40 L 85 36" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" />
+            <path d="M 128 40 L 115 36" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="70" cy="38" r="2" fill="#ec4899" />
+            <circle cx="130" cy="38" r="2" fill="#ec4899" />
+          </g>
+        ) : equippedAvatar === 'hero_flower' ? (
+          <g>
+            {/* Simple sweet single flower pinned behind her ear */}
+            <g transform="translate(126, 45)">
+              <circle cx="-5" cy="-5" r="5" fill="#fef08a" />
+              <circle cx="5" cy="-5" r="5" fill="#fef08a" />
+              <circle cx="-5" cy="5" r="5" fill="#fef08a" />
+              <circle cx="5" cy="5" r="5" fill="#fef08a" />
+              <circle cx="0" cy="0" r="4.5" fill="#facc15" />
+            </g>
+          </g>
+        ) : (
+          <g>
+            {/* Plain pretty girl Nina hairstyle (Sishu & default) with a cute little side pink bow ribbon clip */}
+            <g transform="translate(68, 42)">
+              <path d="M -6 -4 Q -12 -8 -6 -12 Q -2 -10 -2 -6 Z M 6 -4 Q 12 -8 6 -12 Q 2 -10 2 -6 Z" fill="#f43f5e" />
+              <circle cx="0" cy="-5" r="2.5" fill="#fff" />
+            </g>
+          </g>
+        )}
 
 
         {/* --- OUTFITS (equippedAvatar) --- */}
