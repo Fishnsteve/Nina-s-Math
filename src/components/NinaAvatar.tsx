@@ -223,14 +223,24 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           </g>
         )}
 
+        {/* Arms */}
+        {/* Left Arm */}
+        <path d="M 75 100 Q 50 115 45 140" fill="none" stroke="url(#skin)" strokeWidth="10" strokeLinecap="round" />
+        {/* Right Arm */}
+        <path d="M 125 100 Q 150 115 155 140" fill="none" stroke="url(#skin)" strokeWidth="10" strokeLinecap="round" />
 
         {/* --- OUTFITS (equippedAvatar) --- */}
         {equippedAvatar === 'hero_sulan' && (
           <g>
             {/* Sishu PE Uniform (Pink & Royal Blue) */}
-            {/* Blue Shorts peeking out */}
-            <path d="M 83 140 L 97 140 L 97 172 Q 90 174 83 172 Z" fill="url(#sishuBlue)" />
-            <path d="M 103 140 L 117 140 L 117 172 Q 110 174 103 172 Z" fill="url(#sishuBlue)" />
+            
+            {/* Slender skin-colored bare legs */}
+            <path d="M 83 140 L 97 140 L 97 172 L 83 172 Z" fill="url(#skin)" />
+            <path d="M 103 140 L 117 140 L 117 172 L 103 172 Z" fill="url(#skin)" />
+            
+            {/* Royal Blue Cute Mini Shorts (Athletic & Loose-fitting) */}
+            <path d="M 73 135 H 98 V 151 C 90 153 82 153 74 151 C 72 146 72 140 73 135 Z" fill="url(#sishuBlue)" />
+            <path d="M 127 135 H 102 V 151 C 110 153 118 153 126 151 C 128 146 128 140 127 135 Z" fill="url(#sishuBlue)" />
             
             {/* White sneakers / shoes */}
             <path d="M 81 172 Q 81 169 88 169 L 92 169 Q 99 169 99 172 L 97 186 L 83 186 Z" fill="#ffffff" stroke="#94a3b8" strokeWidth="1" />
@@ -238,20 +248,23 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             <path d="M 84 182 L 96 182" stroke="#cbd5e1" strokeWidth="1" />
             <path d="M 104 182 L 116 182" stroke="#cbd5e1" strokeWidth="1" />
 
-            {/* Sishu Pink T-Shirt Base */}
-            <path d="M 70 95 L 130 95 L 145 160 Q 100 170 55 160 Z" fill="url(#sishuPink)" />
+            {/* Sishu Pink T-Shirt Base - Cute, Relaxed, and Symmetrical Drop-Shoulder Fit */}
+            <path d="M 86 96 Q 100 113 114 96 Q 122 90 130 97.4 L 132 138 Q 100 144 68 138 L 70 97.4 Q 78 90 86 96 Z" fill="url(#sishuPink)" />
             
-            {/* Sishu Royal Blue lower part with wave boundary */}
-            <path d="M 65 120 Q 95 102 135 120 L 145 160 Q 100 170 55 160 Z" fill="url(#sishuBlue)" />
+            {/* Sishu Royal Blue lower part of the T-shirt with stock market chart zigzag boundary */}
+            <path d="M 70 126 L 98 110 L 112 123 L 130 118 L 132 138 Q 100 144 68 138 Z" fill="url(#sishuBlue)" />
 
-            {/* White "喜樹" Chinese text printed vertically on the chest (Viewer's Right / Nina's Left) */}
-            <g transform="translate(116, 128)" style={{ userSelect: 'none' }}>
-              <text x="0" y="0" fontSize="7" fontWeight="900" fill="#ffffff" fontFamily="system-ui, sans-serif" textAnchor="middle">喜</text>
-              <text x="0" y="7.5" fontSize="7" fontWeight="900" fill="#ffffff" fontFamily="system-ui, sans-serif" textAnchor="middle">樹</text>
+            {/* White stock market chart separating line */}
+            <path d="M 70 126 L 98 110 L 112 123 L 130 118" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* White "喜樹" Chinese text printed vertically on the chest */}
+            <g transform="translate(116, 126)" style={{ userSelect: 'none' }}>
+              <text x="0" y="0" fontSize="6.5" fontWeight="900" fill="#ffffff" fontFamily="system-ui, sans-serif" textAnchor="middle">喜</text>
+              <text x="0" y="7" fontSize="6.5" fontWeight="900" fill="#ffffff" fontFamily="system-ui, sans-serif" textAnchor="middle">樹</text>
             </g>
 
-            {/* Round collar neckband */}
-            <path d="M 90 95 Q 100 102 110 95" fill="none" stroke="#fbcfe8" strokeWidth="2.5" />
+            {/* Collar neckband fitting the chin shape perfectly */}
+            <path d="M 86 96 Q 100 113 114 96" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </g>
         )}
 
@@ -366,18 +379,12 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             </g>
           </g>
         )}
-
-        {/* Arms */}
-        {/* Left Arm */}
-        <path d="M 75 98 Q 50 115 45 140" fill="none" stroke="url(#skin)" strokeWidth="10" strokeLinecap="round" />
-        {/* Right Arm */}
-        <path d="M 125 98 Q 150 115 155 140" fill="none" stroke="url(#skin)" strokeWidth="10" strokeLinecap="round" />
         
         {/* Sleeves depending on outfit */}
         {equippedAvatar === 'hero_sulan' && (
           <g>
-            <path d="M 75 95 Q 60 110 55 120 L 70 120 Z" fill="url(#sishuPink)" />
-            <path d="M 125 95 Q 140 110 145 120 L 130 120 Z" fill="url(#sishuPink)" />
+            <path d="M 70 97.4 Q 58 106 48 119 Q 58 124 64 122 Q 68 113 70 97.4 Z" fill="url(#sishuPink)" />
+            <path d="M 130 97.4 Q 142 106 152 119 Q 142 124 136 122 Q 132 113 130 97.4 Z" fill="url(#sishuPink)" />
           </g>
         )}
         {equippedAvatar === 'hero_pink_kimono' && (
@@ -388,8 +395,8 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         )}
         {equippedAvatar === 'hero_ninja' && (
           <g>
-            <path d="M 75 95 Q 50 110 40 125 L 55 130 Z" fill="#1e293b" />
-            <path d="M 125 95 Q 150 110 160 125 L 145 130 Z" fill="#1e293b" />
+            <path d="M 70 95 Q 50 110 40 125 L 55 130 Z" fill="#1e293b" />
+            <path d="M 130 95 Q 150 110 160 125 L 145 130 Z" fill="#1e293b" />
           </g>
         )}
         {equippedAvatar === 'hero_princess' && (
@@ -405,16 +412,16 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         )}
         {equippedAvatar === 'hero_cyber' && (
           <g>
-            <path d="M 75 95 Q 60 110 55 120 L 70 120 Z" fill="#0f172a" />
-            <path d="M 125 95 Q 140 110 145 120 L 130 120 Z" fill="#0f172a" />
+            <path d="M 70 95 Q 52 105 46 118 L 62 122 Z" fill="#0f172a" />
+            <path d="M 130 95 Q 148 105 154 118 L 138 122 Z" fill="#0f172a" />
             <path d="M 45 130 L 45 140" fill="none" stroke="#0ea5e9" strokeWidth="10" strokeLinecap="round" />
             <path d="M 155 130 L 155 140" fill="none" stroke="#0ea5e9" strokeWidth="10" strokeLinecap="round" />
           </g>
         )}
         {equippedAvatar === 'hero_flower' && (
           <g>
-            <path d="M 75 95 Q 60 110 55 120 L 70 120 Z" fill="#bbf7d0" />
-            <path d="M 125 95 Q 140 110 145 120 L 130 120 Z" fill="#bbf7d0" />
+            <path d="M 70 95 Q 52 105 46 118 L 62 122 Z" fill="#bbf7d0" />
+            <path d="M 130 95 Q 148 105 154 118 L 138 122 Z" fill="#bbf7d0" />
           </g>
         )}
 
