@@ -4,6 +4,12 @@ import { useGame } from '../context/GameContext';
 import { motion, AnimatePresence } from 'motion/react';
 import * as Icons from 'lucide-react';
 import { cn } from '../lib/utils';
+import { OrbitingOrbs, KingdomNode, HellNode } from './ZoneNodes';
+import { FloatingIsometricNode } from './nodes/FloatingIsometricNode';
+import { KingdomNumberSenseNode } from './nodes/KingdomNumberSenseNode';
+import { KingdomLogicAlgebraNode } from './nodes/KingdomLogicAlgebraNode';
+import { KingdomGeometryMotionNode } from './nodes/KingdomGeometryMotionNode';
+import { getIslandColors } from '../utils/getIslandColors';
 import { translations } from '../i18n';
 import { audioEngine } from '../utils/audio';
 
@@ -184,6 +190,165 @@ const SIDE_QUESTS: SideQuestQuestion[] = [
   }
 ];
 
+const MagicalFlyingChest = () => {
+  return (
+    <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_8px_16px_rgba(245,158,11,0.4)] overflow-visible">
+      <defs>
+        <radialGradient id="chestGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fef08a" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#eab308" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="goldBright" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fde047" />
+          <stop offset="50%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+        <linearGradient id="woodTexture" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#78350f" />
+          <stop offset="100%" stopColor="#451a03" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="50" cy="85" rx="30" ry="10" fill="url(#chestGlow)" className="animate-pulse" />
+
+      {/* Flapping Left Wing */}
+      <motion.g
+        animate={{
+          rotate: [-15, 25, -15],
+          y: [0, -3, 0]
+        }}
+        transition={{
+          duration: 0.6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{ transformOrigin: "35px 50px" }}
+      >
+        <path d="M 35,50 C 10,40 -5,15 10,10 C 25,5 30,25 35,50 Z" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.5" />
+        <path d="M 30,45 C 15,38 5,20 18,15 C 28,10 28,25 30,45 Z" fill="#f1f5f9" />
+      </motion.g>
+
+      {/* Flapping Right Wing */}
+      <motion.g
+        animate={{
+          rotate: [15, -25, 15],
+          y: [0, -3, 0]
+        }}
+        transition={{
+          duration: 0.6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{ transformOrigin: "65px 50px" }}
+      >
+        <path d="M 65,50 C 90,40 105,15 90,10 C 75,5 70,25 65,50 Z" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.5" />
+        <path d="M 70,45 C 85,38 95,20 82,15 C 72,10 72,25 70,45 Z" fill="#f1f5f9" />
+      </motion.g>
+
+      {/* Sparkles */}
+      <g>
+        <circle cx="20" cy="30" r="1.5" fill="#fde047">
+          <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="30;10" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="80" cy="25" r="2" fill="#38bdf8">
+          <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="25;5" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+      </g>
+
+      {/* Chest Body */}
+      <g className="cursor-pointer">
+        <path d="M 25,52 L 75,52 L 70,80 L 30,80 Z" fill="url(#woodTexture)" stroke="#1e1b4b" strokeWidth="2.5" strokeLinejoin="round" />
+        
+        <path d="M 25,52 L 35,52 L 30,80 L 25,52 Z" fill="url(#goldBright)" />
+        <path d="M 75,52 L 65,52 L 70,80 L 75,52 Z" fill="url(#goldBright)" />
+        <path d="M 30,80 L 70,80 L 68,76 L 32,76 Z" fill="url(#goldBright)" stroke="#78350f" strokeWidth="0.5" />
+
+        {/* Chest Lid */}
+        <motion.g
+          animate={{
+            y: [0, -3, 0],
+            rotate: [0, -1.5, 0]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{ transformOrigin: "50px 52px" }}
+        >
+          <path d="M 23,52 C 23,28 77,28 77,52 Z" fill="url(#woodTexture)" stroke="#1e1b4b" strokeWidth="2.5" />
+          <path d="M 23,52 C 23,28 33,28 33,52" fill="none" stroke="url(#goldBright)" strokeWidth="4" />
+          <path d="M 77,52 C 77,28 67,28 67,52" fill="none" stroke="url(#goldBright)" strokeWidth="4" />
+          <path d="M 23,52 L 77,52" stroke="url(#goldBright)" strokeWidth="3" />
+
+          {/* Blink eyes */}
+          <motion.g 
+            transform="translate(42, 42)"
+            animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "0px 0px" }}
+          >
+            <ellipse cx="0" cy="0" rx="3.5" ry="5.5" fill="#ffffff" />
+            <ellipse cx="-0.5" cy="0.5" rx="2" ry="3" fill="#1e293b" />
+            <circle cx="-1" cy="-2" r="1" fill="#ffffff" />
+          </motion.g>
+          <motion.g 
+            transform="translate(58, 42)"
+            animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "0px 0px" }}
+          >
+            <ellipse cx="0" cy="0" rx="3.5" ry="5.5" fill="#ffffff" />
+            <ellipse cx="0.5" cy="0.5" rx="2" ry="3" fill="#1e293b" />
+            <circle cx="0" cy="-2" r="1" fill="#ffffff" />
+          </motion.g>
+
+          <ellipse cx="37" cy="46" rx="2" ry="1.2" fill="#f43f5e" opacity="0.6" />
+          <ellipse cx="63" cy="46" rx="2" ry="1.2" fill="#f43f5e" opacity="0.6" />
+
+          <path d="M 48,46 Q 50,49 52,46" fill="none" stroke="#1e293b" strokeWidth="1.5" strokeLinecap="round" />
+        </motion.g>
+
+        {/* Lock */}
+        <g transform="translate(50, 52)">
+          <rect x="-6" y="-6" width="12" height="12" rx="3" fill="url(#goldBright)" stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="0" cy="-1" r="2.5" fill="#06b6d4" className="animate-pulse" />
+          <path d="M 0,1 L 0,4" stroke="#1e1b4b" strokeWidth="1.5" strokeLinecap="round" />
+        </g>
+      </g>
+    </svg>
+  );
+};
+
+const MagicalUnfoldedScroll = () => {
+  return (
+    <svg viewBox="0 0 120 80" className="w-24 h-16 mx-auto drop-shadow-[0_6px_12px_rgba(245,158,11,0.3)] overflow-visible">
+      <path d="M 20,15 L 100,15 C 105,15 105,25 100,25 L 20,25 C 15,25 15,15 20,15 Z" fill="#fde047" opacity="0.3" />
+      <path d="M 20,20 L 100,20 Q 103,40 100,60 L 20,60 Q 17,40 20,20 Z" fill="#fef3c7" stroke="#b45309" strokeWidth="2" strokeLinejoin="round" />
+      
+      <path d="M 35,32 L 45,32 M 35,40 L 55,40 M 35,48 L 48,48" stroke="#d97706" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+      <text x="70" y="48" fill="#ec4899" fontSize="18" fontWeight="bold" fontFamily="sans-serif" opacity="0.8">π</text>
+      <text x="85" y="38" fill="#38bdf8" fontSize="16" fontWeight="bold" fontFamily="sans-serif" opacity="0.8">x²</text>
+
+      <g>
+        <rect x="13" y="10" width="6" height="60" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="1" />
+        <circle cx="16" cy="10" r="4.5" fill="#fbbf24" stroke="#78350f" strokeWidth="1" />
+        <circle cx="16" cy="70" r="4.5" fill="#fbbf24" stroke="#78350f" strokeWidth="1" />
+        <rect x="18" y="18" width="5" height="44" rx="1.5" fill="#f59e0b" />
+      </g>
+
+      <g>
+        <rect x="101" y="10" width="6" height="60" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="1" />
+        <circle cx="104" cy="10" r="4.5" fill="#fbbf24" stroke="#78350f" strokeWidth="1" />
+        <circle cx="104" cy="70" r="4.5" fill="#fbbf24" stroke="#78350f" strokeWidth="1" />
+        <rect x="97" y="18" width="5" height="44" rx="1.5" fill="#f59e0b" />
+      </g>
+    </svg>
+  );
+};
+
 export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => void }) {
   const { unlockedZones, level, completedLevels, language, addCoins } = useGame();
   const t = translations[language];
@@ -275,7 +440,20 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
 
       <div className="w-full max-w-lg relative mb-16">
         {/* Background path line */}
-        <div className="absolute top-0 bottom-0 left-1/2 w-4 bg-white/5 -translate-x-1/2 rounded-full z-0" />
+        <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <path 
+              d={`M 25,6 L 75,18.5 L 25,31 L 75,43.5 L 25,56 L 75,68.5 L 25,81 L 75,93.5`} 
+              fill="none" 
+              stroke="rgba(255,255,255,0.2)" 
+              strokeWidth="4" 
+              vectorEffect="non-scaling-stroke" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeDasharray="8 8"
+            />
+          </svg>
+        </div>
         
         {trainingZones.map((zone, index) => {
           const isLockedByLevel = level < zone.requiredLevel;
@@ -293,71 +471,73 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className={cn(
-                "relative z-10 flex w-full my-8",
-                isEven ? "justify-start pr-12" : "justify-end pl-12"
+                "relative z-10 flex w-full my-6 sm:my-8",
+                isEven ? "justify-start pl-6 sm:pl-12 pr-12" : "justify-end pr-6 sm:pr-12 pl-12"
               )}
             >
-              {/* Connector dot */}
-              <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-slate-800 border-4 border-white/20 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg" />
-              <button
-                onClick={() => {
-                  if (isUnlocked) {
-                    audioEngine.play('click');
-                    onSelectZone(zone.id);
-                  }
-                }}
-                disabled={!isUnlocked}
-                className={cn(
-                  "w-3/4 rounded-[32px] p-4 transition-transform active:scale-95 relative overflow-hidden backdrop-blur-md shadow-xl border",
-                  isUnlocked ? "bg-white/10 border-white/20 hover:bg-white/20 cursor-pointer" : "bg-white/5 border-white/5 opacity-60 cursor-not-allowed grayscale"
-                )}
-              >
-                <div className={cn(
-                  "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(255,255,255,0.2)] border-4 border-white/20 ring-4 ring-white/10 text-white z-10 relative bg-gradient-to-br",
-                  isUnlocked ? zone.color : "from-slate-700 to-slate-800 grayscale"
-                )}>
-                  {isUnlocked && (
-                    <motion.div 
-                      className="absolute inset-0 z-0"
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <div className="absolute inset-0 bg-white/20 rounded-full blur-md"></div>
-                    </motion.div>
+              <div className="relative flex flex-col items-center w-44 sm:w-56 max-w-full overflow-visible">
+                {/* Connector line effect */}
+                <div className="absolute top-1/2 left-1/2 w-full h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-1/2 -z-10" />
+                
+                <button
+                  onClick={() => {
+                    if (isUnlocked) {
+                      audioEngine.play('click');
+                      onSelectZone(zone.id);
+                    }
+                  }}
+                  disabled={!isUnlocked}
+                  className={cn(
+                    "relative group transition-all duration-500 ease-out outline-none",
+                    isUnlocked ? "cursor-pointer hover:scale-110 active:scale-95" : "cursor-not-allowed opacity-60 grayscale"
                   )}
-                  {isLockedByLevel ? (
-                    <Icons.Lock className="w-8 h-8" />
-                  ) : (
+                >
+                  {/* Outer glowing aura */}
+                  {isUnlocked && (
                     <motion.div
-                      animate={{ y: [0, -3, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
-                      className="relative z-10"
-                    >
-                      <IconComponent className="w-8 h-8 drop-shadow-md" />
-                    </motion.div>
+                      className={cn(
+                        "absolute -inset-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl z-0 bg-gradient-to-br",
+                        zone.color
+                      )}
+                    />
+                  )}
+                  
+                  <div className="w-36 h-36 sm:w-48 sm:h-48 mx-auto relative z-10 flex items-center justify-center overflow-visible">
+                    {isLockedByLevel ? (
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-slate-800/80 border-4 border-slate-700 flex items-center justify-center backdrop-blur-sm shadow-xl">
+                        <Icons.Lock className="w-12 h-12 sm:w-16 sm:h-16 text-white/50 relative z-10" />
+                      </div>
+                    ) : (
+                      <FloatingIsometricNode unlocked={isUnlocked} colors={getIslandColors(zone.topic)} duration={4 + (index % 3)} topic={zone.topic} />
+                    )}
+                  </div>
+                </button>
+                
+                {/* Title & Stars below the Orb */}
+                <div className="mt-4 flex flex-col items-center">
+                  <h3 className="font-bold text-center text-white text-base sm:text-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight">
+                    {zone.name[language]}
+                  </h3>
+                  
+                  {isUnlocked ? (
+                    <div className="flex justify-center gap-1 mt-1">
+                      {[1, 2, 3].map(star => (
+                        <Icons.Star 
+                          key={star} 
+                          className={cn(
+                            "w-4 h-4 sm:w-5 sm:h-5 transition-all",
+                            star <= stars ? "fill-yellow-400 text-yellow-300 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] scale-110" : "fill-white/10 text-white/20"
+                          )} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] sm:text-xs text-center text-red-400 font-bold mt-1 drop-shadow-md bg-black/40 px-3 py-1 rounded-full border border-red-500/30">
+                      {t.map.locked} {zone.requiredLevel}
+                    </p>
                   )}
                 </div>
-                
-                <h3 className="font-bold text-center text-white text-lg drop-shadow-md relative z-10">{zone.name[language]}</h3>
-                
-                {isUnlocked ? (
-                  <div className="flex justify-center gap-1 mt-2 relative z-10">
-                    {[1, 2, 3].map(star => (
-                      <Icons.Star 
-                        key={star} 
-                        className={cn(
-                          "w-5 h-5",
-                          star <= stars ? "fill-yellow-400 text-yellow-300 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" : "fill-white/10 text-white/20"
-                        )} 
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-center text-red-400 font-bold mt-2 relative z-10 drop-shadow-md">
-                    {t.map.locked} {zone.requiredLevel}
-                  </p>
-                )}
-              </button>
+              </div>
             </motion.div>
           );
         })}
@@ -375,7 +555,20 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
 
       <div className="w-full max-w-lg relative mb-16">
         {/* Background path line */}
-        <div className="absolute top-0 bottom-0 left-1/2 w-4 bg-amber-500/20 -translate-x-1/2 rounded-full z-0" />
+        <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <path 
+              d={`M 25,12.5 L 75,50 L 25,87.5`} 
+              fill="none" 
+              stroke="rgba(245, 158, 11, 0.3)" 
+              strokeWidth="4" 
+              vectorEffect="non-scaling-stroke" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeDasharray="8 8"
+            />
+          </svg>
+        </div>
         
         {kingdomZones.map((zone, index) => {
           const isLockedByLevel = level < zone.requiredLevel;
@@ -393,71 +586,76 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className={cn(
-                "relative z-10 flex w-full my-8",
-                isEven ? "justify-start pr-12" : "justify-end pl-12"
+                "relative z-10 flex w-full my-6 sm:my-8",
+                isEven ? "justify-start pl-6 sm:pl-12 pr-12" : "justify-end pr-6 sm:pr-12 pl-12"
               )}
             >
-              {/* Connector dot */}
-              <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-slate-900 border-4 border-amber-500/50 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg shadow-amber-500/20" />
-              <button
-                onClick={() => {
-                  if (isUnlocked) {
-                    audioEngine.play('click');
-                    onSelectZone(zone.id);
-                  }
-                }}
-                disabled={!isUnlocked}
-                className={cn(
-                  "w-3/4 rounded-[32px] p-4 transition-transform active:scale-95 relative overflow-hidden backdrop-blur-md shadow-xl border-2",
-                  isUnlocked ? "bg-amber-900/40 border-amber-500/40 hover:bg-amber-900/60 cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.15)]" : "bg-slate-900/60 border-slate-700/50 opacity-80 cursor-not-allowed"
-                )}
-              >
-                <div className={cn(
-                  "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(255,255,255,0.2)] border-4 border-white/20 ring-4 ring-white/10 text-white z-10 relative bg-gradient-to-br",
-                  isUnlocked ? zone.color : "from-slate-700 to-slate-800 grayscale"
-                )}>
-                  {isUnlocked && (
-                    <motion.div 
-                      className="absolute inset-0 z-0"
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <div className="absolute inset-0 bg-white/20 rounded-full blur-md"></div>
-                    </motion.div>
+              <div className="relative flex flex-col items-center w-44 sm:w-56 max-w-full overflow-visible">
+                {/* Connector dot */}
+                <div className="absolute top-[40%] left-1/2 w-8 h-8 bg-slate-900 border-4 border-amber-500/50 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg shadow-amber-500/20" />
+                
+                <button
+                  onClick={() => {
+                    if (isUnlocked) {
+                      audioEngine.play('click');
+                      onSelectZone(zone.id);
+                    }
+                  }}
+                  disabled={!isUnlocked}
+                  className={cn(
+                    "relative group transition-all duration-500 ease-out outline-none mt-4",
+                    isUnlocked ? "cursor-pointer hover:scale-110 active:scale-95 hover:-translate-y-2" : "cursor-not-allowed opacity-80"
                   )}
-                  {isLockedByLevel ? (
-                    <Icons.Lock className="w-8 h-8" />
-                  ) : (
+                >
+                  {/* Glowing halo behind */}
+                  {isUnlocked && (
                     <motion.div
-                      animate={{ y: [0, -3, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
-                      className="relative z-10"
-                    >
-                      <IconComponent className="w-8 h-8 drop-shadow-md" />
-                    </motion.div>
+                      className="absolute -inset-8 bg-amber-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                  )}
+                  
+                  <div className="w-36 h-36 sm:w-48 sm:h-48 mx-auto relative z-10 flex items-center justify-center overflow-visible">
+                    {isLockedByLevel ? (
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-slate-900/80 border-4 border-slate-700 flex items-center justify-center backdrop-blur-sm shadow-xl" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+                        <Icons.Lock className="w-12 h-12 sm:w-16 sm:h-16 text-white/50 relative z-10" />
+                      </div>
+                    ) : zone.id === 'kingdom_1' ? (
+                      <KingdomNumberSenseNode unlocked={isUnlocked} />
+                    ) : zone.id === 'kingdom_2' ? (
+                      <KingdomLogicAlgebraNode unlocked={isUnlocked} />
+                    ) : (
+                      <KingdomGeometryMotionNode unlocked={isUnlocked} />
+                    )}
+                  </div>
+                </button>
+                
+                {/* Title & Stars below */}
+                <div className="mt-6 flex flex-col items-center">
+                  <h3 className="font-bold text-center text-amber-200 text-lg sm:text-xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight flex items-center justify-center gap-1">
+                    <Icons.Crown className="w-4 h-4 fill-amber-300 hidden sm:block text-amber-300" />
+                    {zone.name[language]}
+                    <Icons.Crown className="w-4 h-4 fill-amber-300 hidden sm:block text-amber-300" />
+                  </h3>
+                  
+                  {isUnlocked ? (
+                    <div className="flex justify-center gap-1.5 mt-2">
+                      {[1, 2, 3].map(star => (
+                        <Icons.Star 
+                          key={star} 
+                          className={cn(
+                            "w-5 h-5 sm:w-6 sm:h-6 transition-all",
+                            star <= stars ? "fill-amber-400 text-amber-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.8)] scale-110" : "fill-white/10 text-white/20"
+                          )} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] sm:text-xs text-center text-amber-500/80 font-bold mt-1 drop-shadow-md bg-black/40 px-3 py-1 rounded-full border border-amber-900/50">
+                      {t.map.locked} {zone.requiredLevel}
+                    </p>
                   )}
                 </div>
-                
-                <h3 className="font-bold text-center text-white text-lg drop-shadow-md relative z-10">{zone.name[language]}</h3>
-                
-                {isUnlocked ? (
-                  <div className="flex justify-center gap-1 mt-2 relative z-10">
-                    {[1, 2, 3].map(star => (
-                      <Icons.Star 
-                        key={star} 
-                        className={cn(
-                          "w-5 h-5",
-                          star <= stars ? "fill-yellow-400 text-yellow-300 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" : "fill-white/10 text-white/20"
-                        )} 
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-center text-red-400 font-bold mt-2 relative z-10 drop-shadow-md">
-                    {t.map.locked} {zone.requiredLevel}
-                  </p>
-                )}
-              </button>
+              </div>
             </motion.div>
           );
         })}
@@ -477,14 +675,26 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
 
       <div className="w-full max-w-lg relative mb-16">
         {/* Background path line */}
-        <div className="absolute top-0 bottom-0 left-1/2 w-4 bg-rose-950/40 -translate-x-1/2 rounded-full z-0 border border-rose-900/10" />
+        <div className="absolute top-16 bottom-16 left-0 right-0 z-0 opacity-40">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <path 
+              d={`M 50,0 L 50,100`} 
+              fill="none" 
+              stroke="rgba(225, 29, 72, 0.3)" 
+              strokeWidth="4" 
+              vectorEffect="non-scaling-stroke" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeDasharray="8 8"
+            />
+          </svg>
+        </div>
         
         {hellZones.map((zone, index) => {
           const isLockedByLevel = level < zone.requiredLevel;
           const isUnlocked = unlockedZones.includes(zone.id) || !isLockedByLevel;
           const IconComponent = (Icons as any)[zone.icon] || Icons.Flame;
           
-          const isEven = index % 2 === 0;
           const stars = completedLevels[zone.id] || 0;
 
           return (
@@ -493,77 +703,68 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={cn(
-                "relative z-10 flex w-full my-8",
-                isEven ? "justify-start pr-12" : "justify-end pl-12"
-              )}
+              className="relative z-10 flex w-full my-6 sm:my-8 justify-center"
             >
-              {/* Connector dot */}
-              <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-slate-950 border-4 border-rose-600/50 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg shadow-rose-600/20" />
-              <button
-                onClick={() => {
-                  if (isUnlocked) {
-                    audioEngine.play('click');
-                    onSelectZone(zone.id);
-                  }
-                }}
-                disabled={!isUnlocked}
-                className={cn(
-                  "w-3/4 rounded-[32px] p-4 transition-transform active:scale-95 relative overflow-hidden backdrop-blur-md shadow-xl border-2",
-                  isUnlocked 
-                    ? "bg-rose-950/40 border-rose-500/40 hover:bg-rose-950/60 cursor-pointer shadow-[0_0_30px_rgba(239,68,68,0.15)]" 
-                    : "bg-slate-900/60 border-slate-800/50 opacity-80 cursor-not-allowed"
-                )}
-              >
-                <div className={cn(
-                  "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(239,68,68,0.2)] border-4 border-white/10 ring-4 ring-rose-500/10 text-white z-10 relative bg-gradient-to-br",
-                  isUnlocked ? zone.color : "from-slate-800 to-slate-900 grayscale"
-                )}>
-                  {isUnlocked && (
-                    <motion.div 
-                      className="absolute inset-0 z-0"
-                      animate={{ opacity: [0.4, 0.9, 0.4] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <div className="absolute inset-0 bg-red-500/20 rounded-full blur-md"></div>
-                    </motion.div>
+              <div className="relative flex flex-col items-center w-56 sm:w-72 max-w-full overflow-visible">
+                {/* Connector dot */}
+                <div className="absolute top-[40%] left-1/2 w-8 h-8 bg-slate-950 border-4 border-rose-600/50 rounded-full -translate-x-1/2 -translate-y-1/2 z-0 shadow-lg shadow-rose-600/20" />
+                
+                <button
+                  onClick={() => {
+                    if (isUnlocked) {
+                      audioEngine.play('click');
+                      onSelectZone(zone.id);
+                    }
+                  }}
+                  disabled={!isUnlocked}
+                  className={cn(
+                    "relative group transition-all duration-500 ease-out outline-none mt-4",
+                    isUnlocked ? "cursor-pointer hover:scale-110 active:scale-95" : "cursor-not-allowed opacity-80 grayscale"
                   )}
-                  {isLockedByLevel ? (
-                    <Icons.Lock className="w-8 h-8" />
-                  ) : (
+                >
+                  {/* Fire aura */}
+                  {isUnlocked && (
                     <motion.div
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
-                      className="relative z-10 text-rose-100"
-                    >
-                      <IconComponent className="w-8 h-8 drop-shadow-[0_2px_8px_rgba(239,68,68,0.6)]" />
-                    </motion.div>
+                      className="absolute -inset-10 bg-rose-600/30 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
+                    />
+                  )}
+                  
+                  <div className="w-48 h-48 sm:w-64 sm:h-64 mx-auto relative z-10 flex items-center justify-center overflow-visible">
+                    {isLockedByLevel ? (
+                      <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-slate-950/80 border-4 border-rose-900 flex items-center justify-center backdrop-blur-sm shadow-[0_0_20px_rgba(225,29,72,0.2)]">
+                        <Icons.Lock className="w-14 h-14 sm:w-20 sm:h-20 text-white/50 relative z-10" />
+                      </div>
+                    ) : (
+                      <HellNode unlocked={isUnlocked} />
+                    )}
+                  </div>
+                </button>
+                
+                {/* Title & Stars */}
+                <div className="mt-6 flex flex-col items-center">
+                  <h3 className="font-black text-center text-rose-200 text-lg sm:text-xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 leading-tight uppercase tracking-wider">
+                    {zone.name[language]}
+                  </h3>
+                  
+                  {isUnlocked ? (
+                    <div className="flex justify-center gap-1.5 mt-2">
+                      {[1, 2, 3].map(star => (
+                        <Icons.Star 
+                          key={star} 
+                          className={cn(
+                            "w-5 h-5 sm:w-6 sm:h-6 transition-all",
+                            star <= stars ? "fill-rose-500 text-rose-400 drop-shadow-[0_0_12px_rgba(225,29,72,0.8)] scale-110" : "fill-white/5 text-white/10"
+                          )} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] sm:text-xs text-center text-rose-500/80 font-bold mt-1 drop-shadow-md bg-black/40 px-3 py-1 rounded-full border border-rose-900/50">
+                      {t.map.locked} {zone.requiredLevel}
+                    </p>
                   )}
                 </div>
-                
-                <h3 className="font-bold text-center text-white text-base sm:text-lg drop-shadow-md relative z-10">{zone.name[language]}</h3>
-                <p className="text-[10px] text-center text-rose-300/60 mt-1 relative z-10 line-clamp-1">
-                  {zone.description[language]}
-                </p>
-                
-                {isUnlocked ? (
-                  <div className="flex justify-center gap-1 mt-2 relative z-10">
-                    {[1, 2, 3].map(star => (
-                      <Icons.Star 
-                        key={star} 
-                        className={cn(
-                          "w-5 h-5",
-                          star <= stars ? "fill-rose-500 text-rose-400 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]" : "fill-white/5 text-white/10"
-                        )} 
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-center text-rose-400 font-bold mt-2 relative z-10 drop-shadow-md">
-                    {t.map.locked} {zone.requiredLevel}
-                  </p>
-                )}
-              </button>
+              </div>
             </motion.div>
           );
         })}
@@ -573,77 +774,113 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
       <AnimatePresence>
         {questActive && !showQuestModal && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 100 }}
+            initial={{ opacity: 0, scale: 0.5, x: 100 }}
             animate={{ 
               opacity: 1, 
               scale: 1, 
               x: 0,
-              y: [0, -8, 0]
+              y: [0, -6, 0]
             }}
-            exit={{ opacity: 0, scale: 0.8, x: 100 }}
+            exit={{ opacity: 0, scale: 0.5, x: 100 }}
             transition={{
               y: {
-                duration: 2.5,
+                duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut"
               },
               default: {
                 type: 'spring',
                 stiffness: 260,
-                damping: 20
+                damping: 22
               }
             }}
-            className="fixed bottom-24 right-4 md:right-8 z-50 cursor-pointer pointer-events-auto"
+            className="fixed bottom-24 right-4 md:right-8 z-50 cursor-pointer pointer-events-auto flex items-center select-none"
             onClick={() => {
               audioEngine.play('nav');
               setShowQuestModal(true);
             }}
           >
-            <div className="relative group bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 p-[2px] rounded-2xl shadow-[0_10px_30px_rgba(236,72,153,0.3)] hover:shadow-[0_15px_40px_rgba(236,72,153,0.5)] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 rounded-2xl blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
-              
-              <div className="relative bg-slate-950/95 backdrop-blur-xl rounded-2xl p-3.5 flex items-center gap-3.5 border border-white/10 w-72 max-w-sm">
-                
-                <div className="relative shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center shadow-lg">
-                  <Icons.HelpCircle className="w-7 h-7 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" />
-                  <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-yellow-500"></span>
-                  </span>
-                </div>
-
-                <div className="flex-1">
-                  <h4 className="font-black text-xs sm:text-sm text-amber-300 uppercase tracking-wide flex items-center gap-1">
-                    <Icons.Sparkles className="w-3.5 h-3.5 fill-amber-300 animate-pulse" />
-                    {language === 'en' ? "Secret Side Quest!" : "限時神秘任務！"}
-                  </h4>
-                  <p className="text-[10px] text-slate-400 font-medium">
-                    {language === 'en' ? "Tap to answer & win" : "點擊回答贏取"} <span className="text-yellow-400 font-bold">67 🪙</span>!
-                  </p>
-                  
-                  <div className="w-full h-1 bg-slate-800 rounded-full mt-2 overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-gradient-to-r from-amber-400 to-pink-500"
-                      initial={{ width: '100%' }}
-                      animate={{ width: `${(questTimeLeft / 15) * 100}%` }}
-                      transition={{ duration: 1, ease: 'linear' }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    audioEngine.play('click');
-                    setQuestActive(false);
-                  }}
-                  className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all shrink-0 cursor-pointer"
-                  aria-label="Dismiss quest"
-                >
-                  <Icons.X className="w-4 h-4" />
-                </button>
-
+            {/* Playful Game-Style Speech Bubble (Bounces gently on its own) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: 15 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                x: 0,
+                y: [0, -3, 0]
+              }}
+              transition={{
+                y: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+                default: { type: 'spring', stiffness: 300, damping: 15, delay: 0.2 }
+              }}
+              className="relative bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 p-[2.5px] rounded-2xl shadow-[0_8px_20px_rgba(236,72,153,0.3)] hover:shadow-[0_12px_25px_rgba(236,72,153,0.45)] transition-all duration-300 mr-2.5 max-w-[170px]"
+            >
+              <div className="bg-slate-950 text-white rounded-[13px] px-3 py-1.5 font-black flex flex-col items-center justify-center text-center">
+                <span className="text-[10px] text-amber-300 tracking-wider uppercase font-black flex items-center gap-1 animate-pulse">
+                  ✨ {language === 'en' ? "Magic Quest!" : "神秘任務！"} ✨
+                </span>
+                <span className="text-[9px] text-slate-300 font-bold mt-0.5 whitespace-nowrap">
+                  {language === 'en' ? "Tap me for " : "點擊賺取 "}<span className="text-yellow-400 font-black text-xs inline-flex items-center gap-0.5">67 🪙</span>!
+                </span>
               </div>
+              {/* Tail pointing right */}
+              <div className="absolute right-[-7px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-purple-600 z-0" />
+              <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[7px] border-l-slate-950 z-10" />
+            </motion.div>
+
+            {/* Glowing circular container wrapping the animated flying chest */}
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center bg-transparent group">
+              
+              {/* Circular Cooldown Arc (Spell circle ring) */}
+              <svg className="absolute inset-0 w-full h-full transform -rotate-90 overflow-visible pointer-events-none">
+                <circle
+                  cx="50%"
+                  cy="50%"
+                  r={32}
+                  fill="transparent"
+                  stroke="rgba(255, 255, 255, 0.08)"
+                  strokeWidth={3}
+                />
+                <motion.circle
+                  cx="50%"
+                  cy="50%"
+                  r={32}
+                  fill="transparent"
+                  stroke="url(#questRingGrad)"
+                  strokeWidth={3.5}
+                  strokeDasharray={201}
+                  strokeDashoffset={201 - (questTimeLeft / 15) * 201}
+                  strokeLinecap="round"
+                  animate={{ strokeDashoffset: 201 - (questTimeLeft / 15) * 201 }}
+                  transition={{ duration: 1, ease: 'linear' }}
+                />
+                <defs>
+                  <linearGradient id="questRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fbbf24" />
+                    <stop offset="50%" stopColor="#ec4899" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Bouncing flying chest mascot */}
+              <div className="relative z-10 transform group-hover:scale-110 group-active:scale-95 transition-all duration-300">
+                <MagicalFlyingChest />
+              </div>
+
+              {/* Little close candy balloon button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  audioEngine.play('click');
+                  setQuestActive(false);
+                }}
+                className="absolute top-0 right-0 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center border-2 border-slate-950 shadow-md cursor-pointer transform hover:scale-110 active:scale-90 transition-all z-20"
+                aria-label="Dismiss quest"
+              >
+                <Icons.X className="w-3.5 h-3.5 stroke-[3]" />
+              </button>
+
             </div>
           </motion.div>
         )}
@@ -664,26 +901,37 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                   setQuestActive(false);
                 }
               }}
-              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-950/85 backdrop-blur-md"
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ 
                 opacity: 1, 
                 scale: 1, 
                 y: 0,
                 x: isShaking ? [0, -10, 10, -10, 10, 0] : 0
               }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
               transition={{
                 x: { duration: 0.4 },
-                default: { type: 'spring', damping: 25, stiffness: 350 }
+                default: { type: 'spring', damping: 22, stiffness: 300 }
               }}
-              className="relative w-full max-w-md bg-slate-900 border border-amber-500/30 rounded-[32px] p-6 shadow-[0_20px_50px_rgba(245,158,11,0.2)] overflow-hidden z-10"
+              className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 border-4 border-yellow-400 rounded-[36px] p-7 shadow-[0_0_40px_rgba(245,158,11,0.4)] overflow-visible z-10"
             >
+              {/* Decorative magic stars floating in corners */}
+              <Icons.Sparkles className="absolute -top-3 -left-3 w-8 h-8 fill-yellow-400 text-yellow-300 animate-pulse" />
+              <Icons.Sparkles className="absolute -bottom-3 -right-3 w-8 h-8 fill-purple-400 text-purple-300 animate-pulse" style={{ animationDelay: '1s' }} />
+
               <div className="absolute -top-16 -left-16 w-36 h-36 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-16 -right-16 w-36 h-36 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Ribbon Banner Header */}
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-500 via-amber-400 to-orange-500 text-slate-950 font-black text-xs px-6 py-1.5 rounded-full uppercase tracking-wider shadow-lg border-2 border-yellow-300 flex items-center gap-1.5 whitespace-nowrap z-30 select-none">
+                <Icons.Sparkles className="w-3.5 h-3.5 fill-slate-950 text-slate-950 animate-spin" style={{ animationDuration: '3s' }} />
+                {language === 'en' ? "Sulan's Riddle Challenge" : "蘇蘭的神秘謎題"}
+                <Icons.Sparkles className="w-3.5 h-3.5 fill-slate-950 text-slate-950 animate-spin" style={{ animationDuration: '3s' }} />
+              </div>
 
               {questStatus !== 'correct' && (
                 <button
@@ -692,26 +940,24 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                     setShowQuestModal(false);
                     setQuestActive(false);
                   }}
-                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer z-20"
                 >
                   <Icons.X className="w-5 h-5" />
                 </button>
               )}
 
-              <div className="text-center mb-6">
-                <div className="inline-flex p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg shadow-amber-500/20 mb-3">
-                  <Icons.Scroll className="w-8 h-8 text-slate-950" />
-                </div>
-                <h3 className="text-2xl font-black text-white tracking-wide">
-                  {language === 'en' ? "Sulan's Secret Scroll" : "蘇蘭的神秘捲軸"}
+              <div className="text-center mt-3 mb-5 select-none relative">
+                <MagicalUnfoldedScroll />
+                <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 tracking-wide mt-2">
+                  {language === 'en' ? "The Secret Scroll Riddle" : "捲軸中的神秘字謎"}
                 </h3>
-                <p className="text-xs text-amber-400/80 font-bold tracking-widest uppercase mt-1">
-                  ✨ {language === 'en' ? "Side Quest Challenge" : "限時支線挑戰"} ✨
-                </p>
               </div>
 
-              <div className="bg-slate-950/60 border border-white/5 rounded-2xl p-5 mb-5 text-center">
-                <p className="text-base font-bold text-slate-200 leading-relaxed">
+              <div className="bg-amber-50/10 border-2 border-amber-400/30 rounded-2xl p-5 mb-5 text-center shadow-inner relative">
+                <div className="absolute top-0 left-4 -translate-y-1/2 bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  {language === 'en' ? "Read carefully..." : "仔細閱讀..."}
+                </div>
+                <p className="text-lg font-extrabold text-amber-100 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                   {currentQuest.question[language]}
                 </p>
               </div>
@@ -734,12 +980,12 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                           setQuestStatus('unanswered');
                         }
                       }}
-                      placeholder={language === 'en' ? "Type your answer..." : "請輸入你的答案..."}
+                      placeholder={language === 'en' ? "Type your magic answer..." : "請輸入你的神奇答案..."}
                       className={cn(
-                        "w-full px-5 py-4 bg-slate-950 border rounded-2xl text-center text-lg font-bold text-white focus:outline-none transition-all duration-300",
+                        "w-full px-5 py-4 bg-slate-950 border-3 rounded-2xl text-center text-xl font-black text-white focus:outline-none transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.3)]",
                         questStatus === 'wrong' 
-                          ? "border-red-500/80 shadow-[0_0_15px_rgba(239,68,68,0.2)] focus:border-red-500" 
-                          : "border-white/10 focus:border-amber-400 focus:shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+                          ? "border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] focus:border-red-400" 
+                          : "border-slate-800 focus:border-amber-400 focus:shadow-[0_0_20px_rgba(245,158,11,0.25)]"
                       )}
                       autoFocus
                     />
@@ -749,10 +995,10 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                     <motion.p 
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-sm text-red-400 font-black text-center flex items-center justify-center gap-1"
+                      className="text-sm text-red-400 font-black text-center flex items-center justify-center gap-1.5 bg-red-950/40 py-1.5 rounded-xl border border-red-500/20"
                     >
-                      <Icons.AlertCircle className="w-4 h-4" />
-                      {language === 'en' ? "Incorrect answer. Try again!" : "答案不正確，請再試一次！"}
+                      <Icons.AlertCircle className="w-4 h-4 text-red-400" />
+                      {language === 'en' ? "Wrong answer! Try again, adventurer!" : "密語不正確！勇者請再試一次！"}
                     </motion.p>
                   )}
 
@@ -764,7 +1010,7 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                         setShowQuestModal(false);
                         setQuestActive(false);
                       }}
-                      className="flex-1 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-2xl active:scale-95 transition-all cursor-pointer text-center text-sm"
+                      className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-extrabold rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-[4px] active:scale-95 transition-all cursor-pointer text-center text-sm"
                     >
                       {language === 'en' ? "Give Up" : "放棄"}
                     </button>
@@ -772,13 +1018,13 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                       type="submit"
                       disabled={!userAnswer.trim()}
                       className={cn(
-                        "flex-1 py-3.5 font-bold rounded-2xl active:scale-95 transition-all cursor-pointer text-center text-sm shadow-md",
+                        "flex-1 py-4 font-black text-base rounded-2xl active:scale-95 transition-all cursor-pointer text-center shadow-lg border-b-4",
                         userAnswer.trim() 
-                          ? "bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 hover:brightness-110 animate-pulse" 
-                          : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                          ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-500 text-slate-950 border-orange-600 hover:brightness-110 active:border-b-0 active:translate-y-[4px] active:scale-95" 
+                          : "bg-slate-800 text-slate-500 border-slate-900 cursor-not-allowed"
                       )}
                     >
-                      {language === 'en' ? "Submit Answer" : "提交答案"}
+                      {language === 'en' ? "Cast Spell" : "施放魔咒"}
                     </button>
                   </div>
                 </form>
@@ -786,25 +1032,94 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-4 flex flex-col items-center"
+                  className="text-center py-6 flex flex-col items-center relative overflow-visible"
                 >
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mb-4 animate-bounce">
-                    <Icons.Check className="w-9 h-9 text-emerald-400" />
+                  {/* Playful Floating Coins Shower */}
+                  {Array.from({ length: 14 }).map((_, idx) => {
+                    const coinX = (Math.sin(idx * 45) * 120) + (Math.cos(idx * 15) * 20);
+                    const coinY = (Math.cos(idx * 45) * 80) - 100;
+                    return (
+                      <motion.div
+                        key={`coin-${idx}`}
+                        initial={{ opacity: 0, x: 0, y: 50, scale: 0 }}
+                        animate={{ 
+                          opacity: [0, 1, 1, 0],
+                          x: coinX,
+                          y: coinY,
+                          scale: [0.4, 1.2, 1, 0.5],
+                          rotate: [0, 360 * 2]
+                        }}
+                        transition={{
+                          duration: 1.8,
+                          delay: idx * 0.12,
+                          ease: "easeOut",
+                          repeat: Infinity,
+                          repeatDelay: 0.6
+                        }}
+                        className="absolute pointer-events-none z-30"
+                      >
+                        <Icons.Coins className="w-7 h-7 fill-yellow-400 text-yellow-600 drop-shadow-[0_4px_8px_rgba(234,179,8,0.5)]" />
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* Magical Stars Burst */}
+                  {Array.from({ length: 16 }).map((_, idx) => {
+                    const starX = (Math.cos(idx * 30) * 150) + (Math.sin(idx * 10) * 30);
+                    const starY = (Math.sin(idx * 30) * 110) - 110;
+                    const colors = ['text-pink-400', 'text-yellow-300', 'text-cyan-300', 'text-purple-400', 'text-amber-400'];
+                    return (
+                      <motion.div
+                        key={`star-${idx}`}
+                        initial={{ opacity: 0, x: 0, y: 50, scale: 0 }}
+                        animate={{ 
+                          opacity: [0, 1, 0],
+                          x: starX,
+                          y: starY,
+                          scale: [0.3, 1, 0.3],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          delay: idx * 0.08,
+                          ease: "easeOut",
+                          repeat: Infinity,
+                          repeatDelay: 0.8
+                        }}
+                        className={`absolute pointer-events-none z-30 ${colors[idx % 5]}`}
+                      >
+                        <Icons.Sparkles className="w-5 h-5 fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]" />
+                      </motion.div>
+                    );
+                  })}
+
+                  <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-4 border-emerald-400 flex items-center justify-center mb-5 animate-bounce shadow-[0_0_20px_rgba(16,185,129,0.4)] relative z-10">
+                    <Icons.Check className="w-12 h-12 text-emerald-400 stroke-[3]" />
                   </div>
                   
-                  <h4 className="text-2xl font-black text-emerald-400 mb-1">
-                    {language === 'en' ? "Correct! 🎉" : "回答正確！🎉"}
+                  <h4 className="text-3xl font-black text-emerald-400 mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] relative z-10">
+                    {language === 'en' ? "CORRECT! 🎉" : "回答正確！🎉"}
                   </h4>
-                  <p className="text-sm text-slate-300 mb-4 px-4">
-                    {language === 'en' ? "67 Coins added directly to your balance!" : "67 枚金幣已直接存入您的餘額！"}
+                  <p className="text-sm text-slate-200 mb-5 px-4 font-bold relative z-10">
+                    {language === 'en' ? "The magic seal has broken!" : "古老的魔法封印已解除！"}
                   </p>
 
-                  <div className="bg-slate-950/60 border border-emerald-500/20 rounded-2xl p-4 w-full flex items-center justify-center gap-2">
-                    <span className="text-slate-400 text-sm font-medium">{language === 'en' ? "Added:" : "已加入："}</span>
-                    <span className="text-xl font-black text-yellow-400 flex items-center gap-1 drop-shadow-[0_0_10px_rgba(234,179,8,0.4)] animate-pulse">
-                      +67 <Icons.Coins className="w-5 h-5 fill-yellow-400 inline" />
+                  <div className="bg-slate-950/80 border-2 border-emerald-500/30 rounded-2xl p-4 w-full flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,0,0,0.4)] relative z-10">
+                    <span className="text-slate-300 text-sm font-black">{language === 'en' ? "CLAIMED:" : "已獲得："}</span>
+                    <span className="text-2xl font-black text-yellow-400 flex items-center gap-1.5 drop-shadow-[0_0_12px_rgba(234,179,8,0.5)] animate-pulse">
+                      +67 <Icons.Coins className="w-6 h-6 fill-yellow-400 inline" />
                     </span>
                   </div>
+
+                  <button
+                    onClick={() => {
+                      audioEngine.play('click');
+                      setShowQuestModal(false);
+                      setQuestActive(false);
+                    }}
+                    className="mt-6 px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-base rounded-2xl shadow-lg border-b-4 border-emerald-700 active:border-b-0 active:translate-y-[4px] transition-all cursor-pointer relative z-10"
+                  >
+                    {language === 'en' ? "Awesome!" : "太棒了！"}
+                  </button>
                 </motion.div>
               )}
             </motion.div>

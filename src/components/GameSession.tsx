@@ -180,6 +180,8 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   const [isFailed, setIsFailed] = useState(false);
   const [mistakes, setMistakes] = useState(0);
   const [isAlmost, setIsAlmost] = useState(false);
+  const [isNotepadOpen, setIsNotepadOpen] = useState(false);
+  const [completionStats, setCompletionStats] = useState({ xp: 0, coins: 0 });
   
   const currentQuestion = zoneQuestions[currentIndex];
 
@@ -302,11 +304,18 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       setTypedAnswer('');
       setIsAnswerChecked(false);
       setIsAlmost(false);
+      setIsNotepadOpen(false);
     } else {
       setIsCompleted(true);
       let stars = 3;
       if (mistakes === 1) stars = 2;
       else if (mistakes >= 2) stars = 1;
+      
+      const xp = isHell 
+        ? Math.floor(Math.random() * (150 - 67 + 1)) + 67 
+        : (isKingdom ? 50 : 100);
+      const coins = isHell ? 1000 : (isKingdom ? 150 : 10);
+      setCompletionStats({ xp, coins });
       
       completeLevel(zoneId, stars);
       handleFireConfetti();
@@ -315,8 +324,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   if (isCompleted) {
-    const completionXp = isHell ? 50 : (isKingdom ? 50 : 100);
-    const completionCoins = isHell ? 1000 : (isKingdom ? 150 : 10);
+    const { xp: completionXp, coins: completionCoins } = completionStats;
     
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center text-white relative z-20">
@@ -509,7 +517,22 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
                 )}
                 autoFocus
               />
-              <p className="text-xs text-white/50 text-center font-semibold">
+              
+              {!isAnswerChecked && (
+                <div className="flex flex-wrap justify-center gap-2 mt-1">
+                  {['²', '³', '°', 'π', '÷', '×', 'cm', 'm'].map(symbol => (
+                    <button
+                      key={symbol}
+                      onClick={() => setTypedAnswer(prev => prev + symbol)}
+                      className="h-10 sm:h-12 px-3 min-w-[2.5rem] bg-white/10 hover:bg-white/25 active:bg-white/40 border border-white/20 rounded-xl flex items-center justify-center font-bold text-lg sm:text-xl text-white transition-colors cursor-pointer"
+                    >
+                      {symbol}
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              <p className="text-xs text-white/50 text-center font-semibold mt-2">
                 {language === 'en' ? "Press Enter or click Check to submit" : "按下 Enter 或點擊檢查以提交"}
               </p>
             </div>
@@ -553,7 +576,12 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
           )}
         </div>
         
-        <Notepad key={currentIndex} />
+        <Notepad 
+          key={currentIndex} 
+          isOpen={isNotepadOpen} 
+          onOpen={() => setIsNotepadOpen(true)} 
+          onClose={() => setIsNotepadOpen(false)} 
+        />
       </div>
 
       {/* Footer Area */}

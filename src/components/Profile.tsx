@@ -83,11 +83,9 @@ export function Profile() {
       {/* Immersive Kimono Dancer Background Art - Only appears when all collectibles are purchased */}
       {hasAllCollectibles && (
         <div 
-          className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen mask-fade"
+          className="fixed inset-0 z-0 opacity-40 pointer-events-none bg-cover bg-no-repeat bg-center mix-blend-screen"
           style={{ 
             backgroundImage: `url('/src/assets/images/profile_bg_1783148219481.jpg')`,
-            backgroundPosition: 'center',
-            backgroundSize: 'cover'
           }}
         />
       )}

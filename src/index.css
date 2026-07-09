@@ -29,3 +29,725 @@ body::-webkit-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ==========================================================================
+   Night in the Forest CSS Theme (ForestCampIslandNode)
+   ========================================================================== */
+
+@keyframes stageBackground {
+  0%, 10%, 90%, 100% { 
+    background-color: #00B6BB;
+  }
+  25%, 75%  { 
+    background-color: #0094bd;
+  }
+}
+
+@keyframes earthRotation {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes sunrise {
+  0%, 10%, 90%, 100% { 
+    box-shadow: 
+      0 0 0 25px rgba(90, 214, 189, 1),
+      0 0 0 40px rgba(74, 206, 173, 1),
+      0 0 0 60px rgba(74, 206, 173, .6),
+      0 0 0 90px rgba(74, 206, 173, .3);
+  }
+  25%, 75%  { 
+    box-shadow: 
+      0 0 0 0 rgba(90, 214, 189, 1),
+      0 0 0 0 rgba(74, 206, 173, 1),
+      0 0 0 0 rgba(74, 206, 173, .6),
+      0 0 0 0 rgba(74, 206, 173, .3);
+  }
+}
+
+@keyframes moonOrbit {
+  25%{
+    transform: rotate(-60deg)
+  }
+  50%{ 
+    transform: rotate(-60deg);
+  }
+  75% { 
+    transform: rotate(-120deg);
+  }
+  0%,100% { 
+    transform: rotate(-180deg);
+  }
+}
+
+@keyframes nightTime{
+  0%, 90% { 
+    opacity: 0;
+  }
+  50%, 75% { 
+    opacity: 1;
+  }
+}
+
+@keyframes hotPan {
+  0%, 90% { 
+    background-color: #645a6d;
+  }
+  50%, 75%  { 
+    background-color: #b2241c;
+  }
+}
+
+@keyframes heat {
+  0%, 90% { 
+    box-shadow: inset 0 0 0 0 rgba(255, 255, 255, .3);
+  }
+  50%, 75%  { 
+    box-shadow: inset 0 -2px 0 0 rgba(255, 255, 255, 1);
+  }
+}
+
+@keyframes smoke {
+  0%, 50%, 90%, 100% { 
+    opacity: 0;
+  }
+  50%, 75%  { 
+    opacity: .7;
+  }
+}
+
+@keyframes fire {
+  0%, 90%, 100% { 
+    opacity: 0;
+  }
+  50%, 75%  { 
+    opacity: 1;
+  }
+}
+
+@keyframes treeShake {
+  0%  { transform: rotate(0deg); }
+  25% { transform: rotate(-2deg); }
+  40% { transform: rotate(4deg); }
+  50% { transform: rotate(-4deg); }
+  60% { transform: rotate(6deg); }
+  75% { transform: rotate(-6deg); }
+  100%{ transform: rotate(0deg); }
+}
+
+@keyframes fireParticles{
+  0%{
+    height: 30%;
+    opacity: 1;
+    top: 75%;
+  }
+  25%{
+    height: 25%;
+    opacity: .8;
+    top: 40%;
+  }
+  50%{
+    height: 15%;
+    opacity: .6;
+    top: 20%;
+  }
+  75%{
+    height: 10%;
+    opacity: .3;
+    top: 0;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
+@keyframes fireLines{
+  0%, 25%, 75%, 100%{
+    bottom: 0;
+  }
+  50%{
+    bottom: 5%;
+  }
+}
+
+.forest-scene-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forest-scene {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 400px;
+  height: 300px;
+  position: relative;
+  transform: scale(0.38);
+  transform-origin: center center;
+  overflow: visible;
+}
+
+@media (min-width: 640px) {
+  .forest-scene {
+    transform: scale(0.48);
+  }
+}
+
+.forest-scene .forest {
+  display: flex;
+  width: 75%;
+  height: 90%;
+  position: absolute;
+  bottom: 0;
+  left: 12.5%;
+}
+
+.forest-scene .tree {
+  display: block;
+  width: 50%;
+  position: absolute;
+  bottom: 0;
+  opacity: .85;
+}
+
+.forest-scene .tree .branch {
+  width: 80%;
+  height: 0;
+  margin: 0 auto;
+  padding-left: 40%;
+  padding-bottom: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.forest-scene .tree .branch::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  margin-left: -600px;
+  border-left: 600px solid transparent;
+  border-right: 600px solid transparent;
+  border-bottom: 950px solid #064e3b;
+}
+
+.forest-scene .tree .branch.branch-top {
+  transform-origin: 50% 100%;
+  animation: treeShake .5s linear infinite;
+}
+
+.forest-scene .tree .branch.branch-middle {
+  width: 90%;
+  padding-left: 45%;
+  padding-bottom: 65%;
+  margin: 0 auto;
+  margin-top: -25%;
+}
+
+.forest-scene .tree .branch.branch-bottom {
+  width: 100%;
+  padding-left: 50%;
+  padding-bottom: 80%;
+  margin: 0 auto;
+  margin-top: -40%;
+}
+
+.forest-scene .tree1 { width: 31%; }
+.forest-scene .tree1 .branch-top { animation-delay: .3s; }
+
+.forest-scene .tree2 { width: 39%; left: 9%; }
+.forest-scene .tree2 .branch-top { animation-delay: .4s; }
+
+.forest-scene .tree3 { width: 32%; left: 24%; }
+.forest-scene .tree3 .branch-top { animation-delay: .5s; }
+
+.forest-scene .tree4 { width: 37%; left: 34%; }
+.forest-scene .tree4 .branch-top { animation-delay: .6s; }
+
+.forest-scene .tree5 { width: 44%; left: 44%; }
+.forest-scene .tree5 .branch-top { animation-delay: .7s; }
+
+.forest-scene .tree6 { width: 34%; left: 61%; }
+.forest-scene .tree6 .branch-top { animation-delay: .2s; }
+
+.forest-scene .tree7 { width: 24%; left: 76%; }
+.forest-scene .tree7 .branch-top { animation-delay: .1s; }
+
+.forest-scene .tent {
+  width: 60%;
+  height: 25%;
+  position: absolute;
+  bottom: -.5%;
+  right: 15%;
+  z-index: 1;
+  text-align: right;
+}
+
+.forest-scene .roof {
+  display: inline-block;
+  width: 45%;
+  height: 100%;
+  margin-right: 10%;
+  position: relative;
+  z-index: 1;
+  border-top: 4px solid #4D4454;
+  border-right: 4px solid #4D4454;
+  border-left: 4px solid #4D4454;
+  border-top-right-radius: 6px;
+  transform: skew(30deg);
+  box-shadow: inset -3px 3px 0px 0px #F7B563;
+  background: #F6D484;
+}
+
+.forest-scene .roof::before {
+  content: '';
+  width: 70%;
+  height: 70%;
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  z-index: 0;
+  border-radius: 10%;
+  background-color: #E78C20;
+}
+
+.forest-scene .roof::after {
+  content: '';
+  height: 75%;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom, 
+    rgba(231,140,32,.4) 0%,
+    rgba(231,140,32,.4) 64%,
+    rgba(231,140,32,.8) 65%,
+    rgba(231,140,32,.8) 100%
+  );
+}
+
+.forest-scene .roof-border-left {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 1%;
+  height: 125%;
+  position: absolute;
+  top: 0;
+  left: 35.7%;
+  z-index: 1;
+  transform-origin: 50% 0%;
+  transform: rotate(35deg);
+}
+
+.forest-scene .roof-border-left .roof-border {
+  display: block;
+  width: 100%;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+}
+
+.forest-scene .roof-border-left .roof-border1 { height: 40%; }
+.forest-scene .roof-border-left .roof-border2 { height: 10%; }
+.forest-scene .roof-border-left .roof-border3 { height: 40%; }
+
+.forest-scene .door {
+  width: 55px;
+  height: 92px;
+  position: absolute;
+  bottom: 2%;
+  overflow: hidden;
+  z-index: 0;
+  transform-origin: 0 105%;
+}
+
+.forest-scene .left-door {
+  transform: rotate(35deg);
+  position: absolute;
+  left: 13.5%;
+  bottom: -3%;
+  z-index: 0;
+}
+
+.forest-scene .left-door .left-door-inner {
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 105%;
+  transform: rotate(-35deg);
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  background-color: #EDDDC2;
+}
+
+.forest-scene .left-door .left-door-inner::before {
+  content: '';
+  width: 15%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    #D4BC8B, 
+    #D4BC8B 4%,
+    #E0D2A8 5%,
+    #E0D2A8 10%
+  );
+}
+
+.forest-scene .left-door .left-door-inner::after {
+  content: '';
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  transform: rotate(25deg);
+  background-color: #fff;
+}
+
+.forest-scene .right-door {
+  height: 89px;
+  right: 21%;
+  transform-origin: 0 105%;
+  transform: rotate(-30deg) scaleX(-1);
+  position: absolute;
+  bottom: -3%;
+  z-index: 0;
+}
+
+.forest-scene .right-door .right-door-inner {
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 120%;
+  transform: rotate(-30deg);
+  position: absolute;
+  bottom: 0px;
+  overflow: hidden;
+  background-color: #EFE7CF;
+}
+
+.forest-scene .right-door .right-door-inner::before {
+  content: '';
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 15%;
+  right: -28%;
+  z-index: 1;
+  transform: rotate(15deg);
+  background-color: #524A5A;
+}
+
+.forest-scene .right-door .right-door-inner::after {
+  content: '';
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 15%;
+  right: -20%;
+  transform: rotate(20deg);
+  background-color: #fff;
+}
+
+.forest-scene .floor {
+  width: 80%;
+  position: absolute;
+  right: 10%;
+  bottom: 0;
+  z-index: 1;
+}
+
+.forest-scene .floor .ground {
+  position: absolute;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+  background-color: #2e2633;
+  height: 6px;
+  bottom: 0;
+}
+
+.forest-scene .floor .ground.ground1 {
+  width: 65%;
+  left: 0;
+}
+
+.forest-scene .floor .ground.ground2 {
+  width: 30%;
+  right: 0;
+}
+
+.forest-scene .fireplace {
+  display: block;
+  width: 24%;
+  height: 20%;
+  position: absolute;
+  left: 5%;
+  bottom: 0;
+}
+
+.forest-scene .fireplace::before {
+  content: '';
+  display: block;
+  width: 8%;
+  position: absolute;
+  bottom: -4px;
+  left: 2%;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+  background: #4D4454;
+}
+
+.forest-scene .fireplace .support {
+  display: block;
+  height: 105%;
+  width: 2px;
+  position: absolute;
+  bottom: -5%;
+  left: 10%;
+  border: 2px solid #4D4454;
+}
+
+.forest-scene .fireplace .support::before {
+  content: '';
+  width: 100%;
+  height: 15%;
+  position: absolute;
+  top: -18%;
+  left: -4px;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+  transform-origin: 100% 100%;
+  transform: rotate(45deg);
+}
+
+.forest-scene .fireplace .support::after {
+  content: '';
+  width: 100%;
+  height: 15%;
+  position: absolute;
+  top: -18%;
+  left: 0px;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+  transform-origin: 0 100%;
+  transform: rotate(-45deg);
+}
+
+.forest-scene .fireplace .support:nth-child(1) {
+  left: 85%;
+}
+
+.forest-scene .fireplace .bar {
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  border: 2px solid #4D4454;
+}
+
+.forest-scene .fireplace .hanger {
+  display: block;
+  width: 2px;
+  height: 25%;
+  margin-left: -4px;
+  position: absolute;
+  left: 50%;
+  border: 2px solid #4D4454;
+}
+
+.forest-scene .fireplace .pan {
+  display: block;
+  width: 25%;
+  height: 50%;
+  border-radius: 50%;
+  border: 4px solid #4D4454;
+  position: absolute;
+  top: 25%;
+  left: 35%;
+  overflow: hidden;
+  animation: heat 5s linear infinite;
+}
+
+.forest-scene .fireplace .pan::before {
+  content: '';
+  display: block;
+  height: 53%;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: -1;
+  border-top: 4px solid #4D4454;
+  background-color: #645a6d;
+  animation: hotPan 5s linear infinite;
+}
+
+.forest-scene .fireplace .smoke {
+  display: block;
+  width: 20%;
+  height: 25%;
+  position: absolute;
+  top: 25%;
+  left: 37%;
+  background-color: #fff;
+  filter: blur(5px);
+  animation: smoke 5s linear infinite;
+}
+
+.forest-scene .fireplace .fire {
+  display: block;
+  width: 25%;
+  height: 120%;
+  position: absolute;
+  bottom: 0;
+  left: 33%;
+  z-index: 1;
+  animation: fire 5s linear infinite;
+}
+
+.forest-scene .fireplace .fire::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  bottom: -4px;
+  z-index: 1;
+  border-radius: 2px;
+  border: 1px solid #efb54a;
+  background-color: #efb54a;
+}
+
+.forest-scene .fireplace .fire .line {
+  display: block;
+  width: 2px;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  animation: fireLines 1s linear infinite;
+}
+
+.forest-scene .fireplace .fire .line2 {
+  left: 50%;
+  margin-left: -1px;
+  animation-delay: .3s;
+}
+
+.forest-scene .fireplace .fire .line3 {
+  right: 0;
+  animation-delay: .5s;
+}
+
+.forest-scene .fireplace .fire .line .particle {
+  height: 10%;
+  position: absolute;
+  top: 100%;
+  z-index: 1;
+  border-radius: 2px;
+  border: 2px solid #efb54a;
+  animation: fireParticles .5s linear infinite;
+}
+
+.forest-scene .fireplace .fire .line .particle1 { animation-delay: .1s; }
+.forest-scene .fireplace .fire .line .particle2 { animation-delay: .3s; }
+.forest-scene .fireplace .fire .line .particle3 { animation-delay: .6s; }
+.forest-scene .fireplace .fire .line .particle4 { animation-delay: .9s; }
+
+.forest-scene .time-wrapper {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: visible;
+}
+
+.forest-scene .time {
+  display: block;
+  width: 100%;
+  height: 200%;
+  position: absolute;
+  transform-origin: 50% 50%;
+  transform: rotate(270deg);
+  animation: earthRotation 5s linear infinite;
+}
+
+.forest-scene .time .day {
+  display: block;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 20%;
+  left: 40%;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 0 25px rgba(90, 214, 189, 1),
+    0 0 0 40px rgba(74, 206, 173, 1),
+    0 0 0 60px rgba(74, 206, 173, .6),
+    0 0 0 90px rgba(74, 206, 173, .3);
+  animation: sunrise 5s ease-in-out infinite;
+  background-color: #ef9431;
+}
+
+.forest-scene .time .night {
+  animation: nightTime 5s ease-in-out infinite;
+}
+
+.forest-scene .time .night .star {
+  display: block;
+  width: 4px;
+  height: 4px;
+  position: absolute;
+  bottom: 10%;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.forest-scene .time .night .star-big {
+  width: 6px;
+  height: 6px;
+}
+
+.forest-scene .time .night .star1 { right: 23%; bottom: 25%; }
+.forest-scene .time .night .star2 { right: 35%; bottom: 18%; }
+.forest-scene .time .night .star3 { right: 47%; bottom: 25%; }
+.forest-scene .time .night .star4 { right: 22%; bottom: 20%; }
+.forest-scene .time .night .star5 { right: 18%; bottom: 30%; }
+.forest-scene .time .night .star6 { right: 60%; bottom: 20%; }
+.forest-scene .time .night .star7 { right: 70%; bottom: 23%; }
+
+.forest-scene .time .night .moon {
+  display: block;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  bottom: 22%;
+  right: 33%;
+  border-radius: 50%;
+  transform: rotate(-60deg);
+  box-shadow: 9px 9px 3px 0 rgba(255, 255, 255, 1);
+  filter: blur(1px);
+  animation: moonOrbit 5s ease-in-out infinite;
+}
+
+.forest-scene .time .night .moon::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: -9px;
+  left: 9px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, .05),
+    0 0 0 15px rgba(255, 255, 255, .05),
+    0 0 0 25px rgba(255, 255, 255, .05),
+    0 0 0 35px rgba(255, 255, 255, .05);
+  background-color: rgba(255, 255, 255, .2);
+}
+

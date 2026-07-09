@@ -7,7 +7,7 @@ import { useGame } from '../context/GameContext';
 type Point = { x: number; y: number };
 type Stroke = { points: Point[]; color: string; width: number };
 
-export function Notepad() {
+export function Notepad({ isOpen, onOpen, onClose }: { isOpen: boolean, onOpen: () => void, onClose: () => void }) {
   const { language } = useGame();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,7 +19,7 @@ export function Notepad() {
   // Drawing state
   const [color, setColor] = useState('#ffffff');
   const [isEraser, setIsEraser] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  
 
   useEffect(() => {
     if (!isOpen) return;
@@ -133,7 +133,7 @@ export function Notepad() {
     return (
       <div className="w-full max-w-2xl mx-auto mt-4 flex justify-end px-2 relative z-20">
         <button 
-          onClick={() => setIsOpen(true)}
+          onClick={() => onOpen()}
           className="flex items-center gap-2 px-4 py-2 bg-black/30 border border-white/20 rounded-full text-white/80 hover:bg-white/10 hover:text-white transition-all text-sm font-bold shadow-lg backdrop-blur-md"
         >
           <Pencil className="w-4 h-4" />
@@ -180,7 +180,7 @@ export function Notepad() {
         </div>
         
         <button 
-          onClick={() => setIsOpen(false)}
+          onClick={() => onClose()}
           className="px-4 py-1.5 bg-white/10 rounded-full text-xs font-bold text-white hover:bg-white/20 transition-all"
         >
           {language === 'en' ? 'Close' : '關閉'}
