@@ -252,7 +252,7 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
         <div className="absolute inset-0 bg-gradient-to-t from-blue-500/40 to-cyan-500/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
       )}
 
-      <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl max-w-lg">
+      <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl max-w-lg overflow-visible">
         <defs>
           <radialGradient id="skin" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
             <stop offset="0%" stopColor="#ffe6cc" />
