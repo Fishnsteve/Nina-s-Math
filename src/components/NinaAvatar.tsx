@@ -322,7 +322,7 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           <DragonPet 
             isBreathingFire={isBreathingFire} 
             triggerFireBreathing={triggerFireBreathing} 
-            x="-10" 
+            x="0" 
             y="-15" 
             width="220" 
             height="190" 
