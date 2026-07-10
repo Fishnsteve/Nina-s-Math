@@ -2,6 +2,218 @@ import React from 'react';
 import { useGame } from '../context/GameContext';
 import { motion } from 'motion/react';
 
+function DragonPet({ isBreathingFire, triggerFireBreathing, x = "132", y = "12", width = "65", height = "55" }: any) {
+  return (
+    <svg 
+      x={x} 
+      y={y} 
+      width={width} 
+      height={height} 
+      viewBox="0 0 686.98 586.1"
+      className={isBreathingFire ? "start-fire dragon-svg" : "dragon-svg"}
+      onClick={triggerFireBreathing}
+    >
+      <defs>
+        <style dangerouslySetInnerHTML={{ __html: `
+          .cls-1 { fill: #f60; fill-rule: evenodd; }
+          .cls-2 { fill: #ffbb1f; fill-rule: evenodd; }
+          .cls-3 { fill: #ff0; fill-rule: evenodd; }
+          .cls-4 { fill: #a29ed2; }
+          .cls-5 { fill: #787791; }
+          .cls-6 { fill: #fff; }
+          .cls-7 { fill: #ffc31a; }
+          .cls-8 { fill: #97ba04; }
+          .cls-9 { fill: #4a5600; }
+          .cls-10 { fill: #5f7500; }
+          .cls-11 { fill: #4e5600; }
+          .cls-12 { fill: #b9db2a; }
+          .cls-13 { fill: #8ca304; }
+          .cls-14 { fill: #e2ea36; }
+          .cls-15 { opacity: 0.4; fill: #fff; }
+
+          @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+          }
+          @keyframes burstNose {
+            0% { opacity: 0; }
+            50% { opacity: 1; transform: translate(-5%, 2px); }
+            99% { opacity: 0; transform: translate(-5%, 2px); }
+            100% { transform: translate(0, 0); }
+          }
+          @keyframes burst {
+            0% { opacity: 0; }
+            50% { opacity: 1; transform: translate(-30%, 15%); }
+            99% { opacity: 0; transform: translate(-30%, 15%); }
+            100% { transform: translate(0, 0); }
+          }
+          @keyframes burst2 {
+            0% { opacity: 0; }
+            50% { opacity: 1; transform: translate(-35%, 30%); }
+            99% { opacity: 0; transform: translate(-35%, 30%); }
+            100% { transform: translate(0, 0); }
+          }
+          @keyframes burst3 {
+            0% { opacity: 0; }
+            50% { opacity: 1; transform: translate(-40%, 10%); }
+            99% { opacity: 0; transform: translate(-40%, 10%); }
+            100% { transform: translate(0, 0); }
+          }
+          @keyframes burst4 {
+            0% { opacity: 0; }
+            50% { opacity: 1; transform: translate(-25%, 35%); }
+            99% { opacity: 0; transform: translate(-25%, 35%); }
+            100% { transform: translate(0, 0); }
+          }
+          @keyframes bottomOpenMouth {
+            0% { transform: translate(-319.81px, -91px) rotate(0deg); }
+            100% { transform: translate(-319.81px, -91px) rotate(-3deg); }
+          }
+          @keyframes openMouth {
+            0% { transform: rotate(0deg) translate(0px); }
+            100% { transform: rotate(10deg) translate(-70px, 18px); }
+          }
+
+          .dragon-svg {
+            overflow: visible;
+            animation: float 4s ease-in-out infinite;
+            cursor: pointer;
+          }
+          
+          .top-mouth {
+            transform-origin: center 100%;
+            transition: transform 0.2s ease;
+          }
+          .bottom-mouth {
+            transform-origin: right center;
+            transform: translate(-319.81px, -91px) rotate(0deg);
+            transition: transform 0.2s ease;
+          }
+          
+          .fire {
+            opacity: 0;
+          }
+          
+          /* Active Fire Breathing state classes */
+          .start-fire #NoseFireTiny,
+          .start-fire #NoseFireMain {
+            animation: burstNose 300ms 50ms ease infinite;
+          }
+          .start-fire .bottom-mouth {
+            animation: bottomOpenMouth 300ms ease infinite alternate;
+          }
+          .start-fire .top-mouth {
+            animation: openMouth 300ms ease infinite alternate;
+          }
+          .start-fire #MouthFireLarge {
+            animation: burst 300ms 50ms ease infinite;
+          }
+          .start-fire #MouthFireMedium {
+            animation: burst2 300ms 0ms ease infinite;
+          }
+          .start-fire #MouthFireSmall {
+            animation: burst3 300ms 60ms ease infinite;
+          }
+          .start-fire #MouthFireXS {
+            animation: burst4 300ms 70ms ease infinite;
+          }
+        ` }} />
+      </defs>
+      <g id="MouthFireLarge" className="fire">
+        <polygon className="cls-1" points="191.25 161.22 172.28 189.81 153.31 218.41 119.06 220.39 84.8 222.37 103.77 193.78 122.73 165.18 156.99 163.2 191.25 161.22" fillRule="evenodd" />
+        <polygon className="cls-2" points="164.63 176.51 155.15 190.81 145.67 205.1 128.54 206.09 111.42 207.08 120.9 192.79 130.38 178.5 147.51 177.5 164.63 176.51" fillRule="evenodd" />
+        <polygon className="cls-3" points="111.42 207.08 120.9 192.79 130.38 178.5 147.51 177.51 164.63 176.51 111.42 207.08" fillRule="evenodd" />
+      </g>
+      <g id="MouthFireMedium" className="fire">
+        <polygon className="cls-1" points="116.3 192.06 106.73 206.48 97.17 220.9 79.89 221.9 62.61 222.9 72.18 208.48 81.75 194.06 99.02 193.06 116.3 192.06" fillRule="evenodd" />
+        <polygon className="cls-2" points="102.88 199.77 98.09 206.98 93.31 214.19 84.68 214.69 76.04 215.19 80.82 207.98 85.6 200.77 94.24 200.27 102.88 199.77" fillRule="evenodd" />
+        <polygon className="cls-3" points="76.04 215.19 80.82 207.98 85.6 200.77 94.24 200.27 102.88 199.77 76.04 215.19" fillRule="evenodd" />
+      </g>
+      <g id="MouthFireSmall" className="fire">
+        <polygon className="cls-1" points="144.11 197.6 136.37 209.27 128.63 220.95 114.65 221.75 100.66 222.57 108.41 210.89 116.14 199.22 130.13 198.41 144.11 197.6" fillRule="evenodd" />
+        <polygon className="cls-2" points="133.25 203.84 129.38 209.68 125.51 215.51 118.52 215.92 111.53 216.32 115.4 210.49 119.27 204.65 126.26 204.25 133.25 203.84" fillRule="evenodd" />
+        <polygon className="cls-3" points="111.53 216.32 115.4 210.49 119.27 204.65 126.26 204.25 133.25 203.84 111.53 216.32" fillRule="evenodd" />
+      </g>
+      <g id="MouthFireXS" className="fire">
+        <polygon className="cls-1" points="141.98 183.75 136.26 192.37 130.54 200.99 120.22 201.59 109.89 202.18 115.61 193.56 121.33 184.94 131.65 184.34 141.98 183.75" fillRule="evenodd" />
+        <polygon className="cls-2" points="133.96 188.36 131.1 192.67 128.24 196.98 123.08 197.28 117.92 197.57 120.77 193.26 123.63 188.96 128.79 188.66 133.96 188.36" fillRule="evenodd" />
+        <polygon className="cls-3" points="117.92 197.58 120.77 193.26 123.63 188.96 128.79 188.66 133.96 188.36 117.92 197.58" fillRule="evenodd" />
+      </g>
+      <g id="NoseFireMain" className="fire">
+        <polygon className="cls-1" points="54.24 175.91 49.6 186.68 44.97 197.44 33.57 200.19 22.17 202.94 26.81 192.18 31.45 181.41 42.84 178.66 54.24 175.91" fillRule="evenodd" />
+        <polygon className="cls-2" points="46.22 182.67 43.9 188.05 41.58 193.44 35.89 194.81 30.19 196.18 32.51 190.8 34.83 185.42 40.52 184.04 46.22 182.67" fillRule="evenodd" />
+        <polygon className="cls-3" points="30.19 196.19 32.51 190.8 34.83 185.42 40.52 184.04 46.22 182.67 30.19 196.19" fillRule="evenodd" />
+      </g>
+      <g id="NoseFireTiny" className="fire">
+        <polygon className="cls-1" points="16.52 191.66 14.13 197.2 11.74 202.75 5.87 204.16 0 205.59 2.39 200.04 4.78 194.49 10.65 193.07 16.52 191.66" fillRule="evenodd" />
+        <polygon className="cls-2" points="12.39 195.14 11.19 197.91 10 200.68 7.06 201.4 4.13 202.1 5.32 199.33 6.52 196.56 9.45 195.85 12.39 195.14" fillRule="evenodd" />
+        <polygon className="cls-3" points="4.13 202.1 5.32 199.33 6.52 196.56 9.45 195.85 12.39 195.14 4.13 202.1" fillRule="evenodd" />
+      </g>
+      <polygon className="cls-4" points="148.05 471.51 38.75 471.51 130.06 555.02 236.65 513.27 275.98 586.11 352.42 523.95 485.92 586.11 508.76 509.36 686.98 471.51 148.05 471.51" />
+      <polygon id="shadow" className="cls-5" points="508.76 509.36 686.98 471.51 265.53 471.51 352.42 523.95 485.92 586.11 508.76 509.36" />
+      <path className="cls-6" d="M687.73,398.67s15.64-29.22,43.86-37.36,38.77-7.3,38.77-7.3l-20-64.56s-63.52,7.77-70.32,64.87C677.3,377.41,687.73,398.67,687.73,398.67Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M731.59,361.31c28.23-8.13,38.77-7.3,38.77-7.3l-11-35.56c-22.8,6.4-65.49,24.78-74.25,73.78,1.45,4,2.62,6.44,2.62,6.44S703.37,369.45,731.59,361.31Z" transform="translate(-319.81 -91)" />
+      <path className="cls-8" d="M759.41,428.47s-48.92-43.63,0-43.63,102.19,32.85,131.37,80.42,52,57.31,52,57.31H759.41Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M759.41,522.57H942.79s-22.83-9.74-52-57.31c-2.43-4-5-7.81-7.79-11.56H759.41Z" transform="translate(-319.81 -91)" />
+      <polygon className="cls-9" points="370.73 411.89 487.79 362.71 478.12 448.38 409.75 448.38 370.73 411.89" />
+      <polygon className="cls-7" points="109.58 48.26 138.07 76.74 155.72 59.09 109.58 48.26" />
+      <polygon className="cls-6" points="109.58 48.26 138.07 76.74 120.42 94.39 109.58 48.26" />
+      <polygon className="cls-7" points="220.81 0 205.73 37.35 228.88 46.69 220.81 0" />
+      <polygon className="cls-6" points="220.81 0 205.73 37.35 182.58 28 220.81 0" />
+      <polygon className="cls-7" points="261.6 15.91 253.31 55.32 277.74 60.46 261.6 15.91" />
+      <polygon className="cls-6" points="261.6 15.91 253.31 55.32 228.88 50.19 261.6 15.91" />
+      <polygon className="cls-7" points="319.07 40.27 301.11 76.32 323.46 87.46 319.07 40.27" />
+      <polygon className="cls-6" points="319.07 40.27 301.11 76.32 278.77 65.19 319.07 40.27" />
+      <polygon className="cls-7" points="368.36 77.59 337.92 103.97 354.27 122.84 368.36 77.59" />
+      <polygon className="cls-6" points="368.36 77.59 337.92 103.97 321.57 85.11 368.36 77.59" />
+      <polygon className="cls-7" points="396.11 151.26 355.86 152.63 356.71 177.58 396.11 151.26" />
+      <polygon className="cls-6" points="396.11 151.26 355.86 152.63 355.01 127.68 396.11 151.26" />
+      <polygon className="cls-7" points="378.64 210.01 342.92 191.41 331.38 213.56 378.64 210.01" />
+      <polygon className="cls-6" points="378.64 210.01 342.92 191.41 354.44 169.27 378.64 210.01" />
+      <polygon className="cls-7" points="145.22 16.54 170.86 42.18 188.51 24.52 145.22 16.54" />
+      <polygon className="cls-6" points="145.22 16.54 170.86 42.18 153.21 59.83 145.22 16.54" />
+      <polygon className="cls-9" points="210.42 405.04 265.02 408.02 265.02 448.38 199.49 448.38 210.42 405.04" />
+      <path className="cls-8" d="M446.14,255.29l-18-35.13S422.85,205,431,194.82s47.8-61.69,58.84-72.73,18.18-9.6,27.78,0,54.75,19.21,83.76,28.61,81.73,40,81.73,98.88c0,64.93-55.36,69.58-55.36,109.33,0,0,.42,25.79,23.25,25.79H759.27l11.42,74-11.28,63.85H573.12c-31.29,0-114.07-11.41-114.07-104S572.8,288.72,572.8,243.47s-20.72-42.71-20.72-42.71l-56.24,23.68Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M550.35,201.49c-12.09,1.78-22.29,5.59-26.61,9a22.38,22.38,0,0,0-3.12,3.52Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M573.12,522.55H759.41l11.28-26.85L729,453.7H598.58c-26.2,0-57.92-18.25-57.92-54.41,0-80.55,74.84-102.75,74.84-148.63,0-44.2-33.75-52.44-60.8-49.71,5.58,1.06,18.1,7.35,18.1,42.52,0,45.25-113.75,82.46-113.75,175.06S541.83,522.55,573.12,522.55Z" transform="translate(-319.81 -91)" />
+      <path className="bottom-mouth cls-10" d="M450.67,334.59a18,18,0,0,1-25.43,0h0a18,18,0,0,1,0-25.43l100.5-100.49a18,18,0,0,1,25.43,0h0a18,18,0,0,1,0,25.43Z" transform="translate(-319.81 -91)" />
+      <g className="top-mouth">
+        <path className="cls-8" d="M410.67,326.66a18,18,0,0,1-25.43.42h0a18,18,0,0,1-.42-25.43L499.35,183.31a18,18,0,0,1,25.43-.42h0a18,18,0,0,1,.41,25.43Z" transform="translate(-319.81 -91)" />
+        <path className="cls-8" d="M420.55,306.06A25.2,25.2,0,1,1,395,281.28,25.2,25.2,0,0,1,420.55,306.06Z" transform="translate(-319.81 -91)" />
+        <path className="cls-11" d="M401.88,300.15a6.31,6.31,0,1,1-6.41-6.2A6.3,6.3,0,0,1,401.88,300.15Z" transform="translate(-319.81 -91)" />
+      </g>
+      <path className="cls-12" d="M563.92,210.49a40.18,40.18,0,1,1-40.18-40.17A40.17,40.17,0,0,1,563.92,210.49Z" transform="translate(-319.81 -91)" />
+      <path className="cls-11" d="M472.12,215.09A11.19,11.19,0,1,1,460,204.87,11.17,11.17,0,0,1,472.12,215.09Z" transform="translate(-319.81 -91)" />
+      <path className="cls-11" d="M460,216.12a5.23,5.23,0,0,1-7.36.62h0a5.23,5.23,0,0,1-.62-7.36l26.62-31.52a5.23,5.23,0,0,1,7.36-.62h0a5.22,5.22,0,0,1,.62,7.35Z" transform="translate(-319.81 -91)" />
+      <path className="cls-8" d="M607.41,539.38H470.09a11.57,11.57,0,0,0-11.56,11.56H619A11.57,11.57,0,0,0,607.41,539.38Z" transform="translate(-319.81 -91)" />
+      <path className="cls-10" d="M458.53,550.94a11.57,11.57,0,0,0,11.56,11.57H607.41A11.57,11.57,0,0,0,619,550.94Z" transform="translate(-319.81 -91)" />
+      <path className="cls-10" d="M508.38,562.51a32,32,0,0,0-32-32v32Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M476.41,530.54a32,32,0,0,0-32,32h32Z" transform="translate(-319.81 -91)" />
+      <path className="cls-8" d="M822.49,539.38H660.37a11.56,11.56,0,0,0-11.56,11.56H834.06A11.57,11.57,0,0,0,822.49,539.38Z" transform="translate(-319.81 -91)" />
+      <path className="cls-10" d="M648.81,550.94a11.56,11.56,0,0,0,11.56,11.57H822.49a11.57,11.57,0,0,0,11.57-11.57Z" transform="translate(-319.81 -91)" />
+      <path className="cls-10" d="M698.67,562.51a32,32,0,0,0-32-32v32Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M666.7,530.54a32,32,0,0,0-32,32h32Z" transform="translate(-319.81 -91)" />
+      <polygon className="cls-8" points="327.22 416.03 278.77 448.38 213.24 448.38 236.62 378.5 327.22 416.03" />
+      <path className="cls-13" d="M647,432a53.06,53.06,0,0,0-75,0l37.53,37.53Z" transform="translate(-319.81 -91)" />
+      <path className="cls-14" d="M572,432A53.07,53.07,0,0,0,572,507l37.53-37.53Z" transform="translate(-319.81 -91)" />
+      <path className="cls-10" d="M572,507a53.06,53.06,0,0,0,75,0L609.51,469.5Z" transform="translate(-319.81 -91)" />
+      <path className="cls-14" d="M609.51,469.5,647,507A53.07,53.07,0,0,0,647,432Z" transform="translate(-319.81 -91)" />
+      <polygon className="cls-8" points="391.41 411.89 508.46 362.71 498.8 448.38 430.43 448.38 391.41 411.89" />
+      <path className="cls-10" d="M808.11,502.4a68.87,68.87,0,0,0,0-97.39l-48.7,48.7Z" transform="translate(-319.81 -91)" />
+      <path className="cls-14" d="M808.11,405a68.87,68.87,0,0,0-97.4,0l48.7,48.7Z" transform="translate(-319.81 -91)" />
+      <path className="cls-13" d="M710.71,405a68.87,68.87,0,0,0,0,97.39l48.7-48.69Z" transform="translate(-319.81 -91)" />
+      <path className="cls-14" d="M759.41,453.71l-48.7,48.69a68.87,68.87,0,0,0,97.4,0Z" transform="translate(-319.81 -91)" />
+      <path className="cls-6" d="M519.3,402.64a11,11,0,1,1-11-11A11,11,0,0,1,519.3,402.64Z" transform="translate(-319.81 -91)" />
+      <path className="cls-6" d="M662.18,231.16a11,11,0,1,1-11-11A11,11,0,0,1,662.18,231.16Z" transform="translate(-319.81 -91)" />
+      <path className="cls-6" d="M658.59,268.58a7.4,7.4,0,1,1-7.4-7.39A7.4,7.4,0,0,1,658.59,268.58Z" transform="translate(-319.81 -91)" />
+      <circle className="cls-6" cx="188.51" cy="359.61" r="19.89" />
+      <path className="cls-15" d="M549.72,203.07a21.52,21.52,0,1,1-21.51-21.52A21.52,21.52,0,0,1,549.72,203.07Z" transform="translate(-319.81 -91)" />
+      <path className="cls-7" d="M461.43,221.79a3.81,3.81,0,1,1-3.81-3.81A3.8,3.8,0,0,1,461.43,221.79Z" transform="translate(-319.81 -91)" />
+    </svg>
+  );
+}
+
 export function NinaAvatar({ className, interactive }: { className?: string, interactive?: boolean }) {
   const { equippedAvatar, equippedPet, equippedBackground } = useGame();
   const [isBreathingFire, setIsBreathingFire] = React.useState(false);
@@ -106,7 +318,19 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           </g>
         </defs>
 
+        {equippedPet === 'pet_dragon' && (
+          <DragonPet 
+            isBreathingFire={isBreathingFire} 
+            triggerFireBreathing={triggerFireBreathing} 
+            x="-10" 
+            y="-15" 
+            width="220" 
+            height="190" 
+          />
+        )}
+
         {/* --- BASE GIRL --- */}
+        <g id="nina-body" transform="translate(15, 27) scale(0.85)">
         {/* Back Hair - Sleek, straight shoulder-length cut in perfect proportion with the head */}
         <path d="M 70 28 C 80 20 120 20 130 28 C 134 32 135 85 135 145 L 65 145 C 65 85 66 32 70 28 Z" fill="url(#hairDark)" />
         
@@ -517,6 +741,7 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
             <path d="M 0 50 L -3 65 M 0 50 L 0 68 M 0 50 L 3 65" stroke="#cc0000" strokeWidth="1.5" />
           </g>
         )}
+        </g>
 
         {equippedPet === 'pet_cat' && (
           <g transform="translate(0, 175)">
@@ -592,215 +817,6 @@ export function NinaAvatar({ className, interactive }: { className?: string, int
           </g>
         )}
 
-        {equippedPet === 'pet_dragon' && (
-          <svg 
-            x="132" 
-            y="12" 
-            width="65" 
-            height="55" 
-            viewBox="0 0 686.98 586.1"
-            className={isBreathingFire ? "start-fire dragon-svg" : "dragon-svg"}
-            onClick={triggerFireBreathing}
-          >
-            <defs>
-              <style dangerouslySetInnerHTML={{ __html: `
-                .cls-1 { fill: #f60; fill-rule: evenodd; }
-                .cls-2 { fill: #ffbb1f; fill-rule: evenodd; }
-                .cls-3 { fill: #ff0; fill-rule: evenodd; }
-                .cls-4 { fill: #a29ed2; }
-                .cls-5 { fill: #787791; }
-                .cls-6 { fill: #fff; }
-                .cls-7 { fill: #ffc31a; }
-                .cls-8 { fill: #97ba04; }
-                .cls-9 { fill: #4a5600; }
-                .cls-10 { fill: #5f7500; }
-                .cls-11 { fill: #4e5600; }
-                .cls-12 { fill: #b9db2a; }
-                .cls-13 { fill: #8ca304; }
-                .cls-14 { fill: #e2ea36; }
-                .cls-15 { opacity: 0.4; fill: #fff; }
-
-                @keyframes float {
-                  0% { transform: translateY(0px); }
-                  50% { transform: translateY(-12px); }
-                  100% { transform: translateY(0px); }
-                }
-                @keyframes burstNose {
-                  0% { opacity: 0; }
-                  50% { opacity: 1; transform: translate(-5%, 2px); }
-                  99% { opacity: 0; transform: translate(-5%, 2px); }
-                  100% { transform: translate(0, 0); }
-                }
-                @keyframes burst {
-                  0% { opacity: 0; }
-                  50% { opacity: 1; transform: translate(-30%, 15%); }
-                  99% { opacity: 0; transform: translate(-30%, 15%); }
-                  100% { transform: translate(0, 0); }
-                }
-                @keyframes burst2 {
-                  0% { opacity: 0; }
-                  50% { opacity: 1; transform: translate(-35%, 30%); }
-                  99% { opacity: 0; transform: translate(-35%, 30%); }
-                  100% { transform: translate(0, 0); }
-                }
-                @keyframes burst3 {
-                  0% { opacity: 0; }
-                  50% { opacity: 1; transform: translate(-40%, 10%); }
-                  99% { opacity: 0; transform: translate(-40%, 10%); }
-                  100% { transform: translate(0, 0); }
-                }
-                @keyframes burst4 {
-                  0% { opacity: 0; }
-                  50% { opacity: 1; transform: translate(-25%, 35%); }
-                  99% { opacity: 0; transform: translate(-25%, 35%); }
-                  100% { transform: translate(0, 0); }
-                }
-                @keyframes bottomOpenMouth {
-                  0% { transform: translate(-319.81px, -91px) rotate(0deg); }
-                  100% { transform: translate(-319.81px, -91px) rotate(-3deg); }
-                }
-                @keyframes openMouth {
-                  0% { transform: rotate(0deg) translate(0px); }
-                  100% { transform: rotate(10deg) translate(-70px, 18px); }
-                }
-
-                .dragon-svg {
-                  overflow: visible;
-                  animation: float 4s ease-in-out infinite;
-                  cursor: pointer;
-                }
-                
-                .top-mouth {
-                  transform-origin: center 100%;
-                  transition: transform 0.2s ease;
-                }
-                .bottom-mouth {
-                  transform-origin: right center;
-                  transform: translate(-319.81px, -91px) rotate(0deg);
-                  transition: transform 0.2s ease;
-                }
-                
-                .fire {
-                  opacity: 0;
-                }
-                
-                /* Active Fire Breathing state classes */
-                .start-fire #NoseFireTiny,
-                .start-fire #NoseFireMain {
-                  animation: burstNose 300ms 50ms ease infinite;
-                }
-                .start-fire .bottom-mouth {
-                  animation: bottomOpenMouth 300ms ease infinite alternate;
-                }
-                .start-fire .top-mouth {
-                  animation: openMouth 300ms ease infinite alternate;
-                }
-                .start-fire #MouthFireLarge {
-                  animation: burst 300ms 50ms ease infinite;
-                }
-                .start-fire #MouthFireMedium {
-                  animation: burst2 300ms 0ms ease infinite;
-                }
-                .start-fire #MouthFireSmall {
-                  animation: burst3 300ms 60ms ease infinite;
-                }
-                .start-fire #MouthFireXS {
-                  animation: burst4 300ms 70ms ease infinite;
-                }
-              ` }} />
-            </defs>
-            <g id="MouthFireLarge" className="fire">
-              <polygon className="cls-1" points="191.25 161.22 172.28 189.81 153.31 218.41 119.06 220.39 84.8 222.37 103.77 193.78 122.73 165.18 156.99 163.2 191.25 161.22" fillRule="evenodd" />
-              <polygon className="cls-2" points="164.63 176.51 155.15 190.81 145.67 205.1 128.54 206.09 111.42 207.08 120.9 192.79 130.38 178.5 147.51 177.5 164.63 176.51" fillRule="evenodd" />
-              <polygon className="cls-3" points="111.42 207.08 120.9 192.79 130.38 178.5 147.51 177.51 164.63 176.51 111.42 207.08" fillRule="evenodd" />
-            </g>
-            <g id="MouthFireMedium" className="fire">
-              <polygon className="cls-1" points="116.3 192.06 106.73 206.48 97.17 220.9 79.89 221.9 62.61 222.9 72.18 208.48 81.75 194.06 99.02 193.06 116.3 192.06" fillRule="evenodd" />
-              <polygon className="cls-2" points="102.88 199.77 98.09 206.98 93.31 214.19 84.68 214.69 76.04 215.19 80.82 207.98 85.6 200.77 94.24 200.27 102.88 199.77" fillRule="evenodd" />
-              <polygon className="cls-3" points="76.04 215.19 80.82 207.98 85.6 200.77 94.24 200.27 102.88 199.77 76.04 215.19" fillRule="evenodd" />
-            </g>
-            <g id="MouthFireSmall" className="fire">
-              <polygon className="cls-1" points="144.11 197.6 136.37 209.27 128.63 220.95 114.65 221.75 100.66 222.57 108.41 210.89 116.14 199.22 130.13 198.41 144.11 197.6" fillRule="evenodd" />
-              <polygon className="cls-2" points="133.25 203.84 129.38 209.68 125.51 215.51 118.52 215.92 111.53 216.32 115.4 210.49 119.27 204.65 126.26 204.25 133.25 203.84" fillRule="evenodd" />
-              <polygon className="cls-3" points="111.53 216.32 115.4 210.49 119.27 204.65 126.26 204.25 133.25 203.84 111.53 216.32" fillRule="evenodd" />
-            </g>
-            <g id="MouthFireXS" className="fire">
-              <polygon className="cls-1" points="141.98 183.75 136.26 192.37 130.54 200.99 120.22 201.59 109.89 202.18 115.61 193.56 121.33 184.94 131.65 184.34 141.98 183.75" fillRule="evenodd" />
-              <polygon className="cls-2" points="133.96 188.36 131.1 192.67 128.24 196.98 123.08 197.28 117.92 197.57 120.77 193.26 123.63 188.96 128.79 188.66 133.96 188.36" fillRule="evenodd" />
-              <polygon className="cls-3" points="117.92 197.58 120.77 193.26 123.63 188.96 128.79 188.66 133.96 188.36 117.92 197.58" fillRule="evenodd" />
-            </g>
-            <g id="NoseFireMain" className="fire">
-              <polygon className="cls-1" points="54.24 175.91 49.6 186.68 44.97 197.44 33.57 200.19 22.17 202.94 26.81 192.18 31.45 181.41 42.84 178.66 54.24 175.91" fillRule="evenodd" />
-              <polygon className="cls-2" points="46.22 182.67 43.9 188.05 41.58 193.44 35.89 194.81 30.19 196.18 32.51 190.8 34.83 185.42 40.52 184.04 46.22 182.67" fillRule="evenodd" />
-              <polygon className="cls-3" points="30.19 196.19 32.51 190.8 34.83 185.42 40.52 184.04 46.22 182.67 30.19 196.19" fillRule="evenodd" />
-            </g>
-            <g id="NoseFireTiny" className="fire">
-              <polygon className="cls-1" points="16.52 191.66 14.13 197.2 11.74 202.75 5.87 204.16 0 205.59 2.39 200.04 4.78 194.49 10.65 193.07 16.52 191.66" fillRule="evenodd" />
-              <polygon className="cls-2" points="12.39 195.14 11.19 197.91 10 200.68 7.06 201.4 4.13 202.1 5.32 199.33 6.52 196.56 9.45 195.85 12.39 195.14" fillRule="evenodd" />
-              <polygon className="cls-3" points="4.13 202.1 5.32 199.33 6.52 196.56 9.45 195.85 12.39 195.14 4.13 202.1" fillRule="evenodd" />
-            </g>
-            <polygon className="cls-4" points="148.05 471.51 38.75 471.51 130.06 555.02 236.65 513.27 275.98 586.11 352.42 523.95 485.92 586.11 508.76 509.36 686.98 471.51 148.05 471.51" />
-            <polygon id="shadow" className="cls-5" points="508.76 509.36 686.98 471.51 265.53 471.51 352.42 523.95 485.92 586.11 508.76 509.36" />
-            <path className="cls-6" d="M687.73,398.67s15.64-29.22,43.86-37.36,38.77-7.3,38.77-7.3l-20-64.56s-63.52,7.77-70.32,64.87C677.3,377.41,687.73,398.67,687.73,398.67Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M731.59,361.31c28.23-8.13,38.77-7.3,38.77-7.3l-11-35.56c-22.8,6.4-65.49,24.78-74.25,73.78,1.45,4,2.62,6.44,2.62,6.44S703.37,369.45,731.59,361.31Z" transform="translate(-319.81 -91)" />
-            <path className="cls-8" d="M759.41,428.47s-48.92-43.63,0-43.63,102.19,32.85,131.37,80.42,52,57.31,52,57.31H759.41Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M759.41,522.57H942.79s-22.83-9.74-52-57.31c-2.43-4-5-7.81-7.79-11.56H759.41Z" transform="translate(-319.81 -91)" />
-            <polygon className="cls-9" points="370.73 411.89 487.79 362.71 478.12 448.38 409.75 448.38 370.73 411.89" />
-            <polygon className="cls-7" points="109.58 48.26 138.07 76.74 155.72 59.09 109.58 48.26" />
-            <polygon className="cls-6" points="109.58 48.26 138.07 76.74 120.42 94.39 109.58 48.26" />
-            <polygon className="cls-7" points="220.81 0 205.73 37.35 228.88 46.69 220.81 0" />
-            <polygon className="cls-6" points="220.81 0 205.73 37.35 182.58 28 220.81 0" />
-            <polygon className="cls-7" points="261.6 15.91 253.31 55.32 277.74 60.46 261.6 15.91" />
-            <polygon className="cls-6" points="261.6 15.91 253.31 55.32 228.88 50.19 261.6 15.91" />
-            <polygon className="cls-7" points="319.07 40.27 301.11 76.32 323.46 87.46 319.07 40.27" />
-            <polygon className="cls-6" points="319.07 40.27 301.11 76.32 278.77 65.19 319.07 40.27" />
-            <polygon className="cls-7" points="368.36 77.59 337.92 103.97 354.27 122.84 368.36 77.59" />
-            <polygon className="cls-6" points="368.36 77.59 337.92 103.97 321.57 85.11 368.36 77.59" />
-            <polygon className="cls-7" points="396.11 151.26 355.86 152.63 356.71 177.58 396.11 151.26" />
-            <polygon className="cls-6" points="396.11 151.26 355.86 152.63 355.01 127.68 396.11 151.26" />
-            <polygon className="cls-7" points="378.64 210.01 342.92 191.41 331.38 213.56 378.64 210.01" />
-            <polygon className="cls-6" points="378.64 210.01 342.92 191.41 354.44 169.27 378.64 210.01" />
-            <polygon className="cls-7" points="145.22 16.54 170.86 42.18 188.51 24.52 145.22 16.54" />
-            <polygon className="cls-6" points="145.22 16.54 170.86 42.18 153.21 59.83 145.22 16.54" />
-            <polygon className="cls-9" points="210.42 405.04 265.02 408.02 265.02 448.38 199.49 448.38 210.42 405.04" />
-            <path className="cls-8" d="M446.14,255.29l-18-35.13S422.85,205,431,194.82s47.8-61.69,58.84-72.73,18.18-9.6,27.78,0,54.75,19.21,83.76,28.61,81.73,40,81.73,98.88c0,64.93-55.36,69.58-55.36,109.33,0,0,.42,25.79,23.25,25.79H759.27l11.42,74-11.28,63.85H573.12c-31.29,0-114.07-11.41-114.07-104S572.8,288.72,572.8,243.47s-20.72-42.71-20.72-42.71l-56.24,23.68Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M550.35,201.49c-12.09,1.78-22.29,5.59-26.61,9a22.38,22.38,0,0,0-3.12,3.52Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M573.12,522.55H759.41l11.28-26.85L729,453.7H598.58c-26.2,0-57.92-18.25-57.92-54.41,0-80.55,74.84-102.75,74.84-148.63,0-44.2-33.75-52.44-60.8-49.71,5.58,1.06,18.1,7.35,18.1,42.52,0,45.25-113.75,82.46-113.75,175.06S541.83,522.55,573.12,522.55Z" transform="translate(-319.81 -91)" />
-            <path className="bottom-mouth cls-10" d="M450.67,334.59a18,18,0,0,1-25.43,0h0a18,18,0,0,1,0-25.43l100.5-100.49a18,18,0,0,1,25.43,0h0a18,18,0,0,1,0,25.43Z" transform="translate(-319.81 -91)" />
-            <g className="top-mouth">
-              <path className="cls-8" d="M410.67,326.66a18,18,0,0,1-25.43.42h0a18,18,0,0,1-.42-25.43L499.35,183.31a18,18,0,0,1,25.43-.42h0a18,18,0,0,1,.41,25.43Z" transform="translate(-319.81 -91)" />
-              <path className="cls-8" d="M420.55,306.06A25.2,25.2,0,1,1,395,281.28,25.2,25.2,0,0,1,420.55,306.06Z" transform="translate(-319.81 -91)" />
-              <path className="cls-11" d="M401.88,300.15a6.31,6.31,0,1,1-6.41-6.2A6.3,6.3,0,0,1,401.88,300.15Z" transform="translate(-319.81 -91)" />
-            </g>
-            <path className="cls-12" d="M563.92,210.49a40.18,40.18,0,1,1-40.18-40.17A40.17,40.17,0,0,1,563.92,210.49Z" transform="translate(-319.81 -91)" />
-            <path className="cls-11" d="M472.12,215.09A11.19,11.19,0,1,1,460,204.87,11.17,11.17,0,0,1,472.12,215.09Z" transform="translate(-319.81 -91)" />
-            <path className="cls-11" d="M460,216.12a5.23,5.23,0,0,1-7.36.62h0a5.23,5.23,0,0,1-.62-7.36l26.62-31.52a5.23,5.23,0,0,1,7.36-.62h0a5.22,5.22,0,0,1,.62,7.35Z" transform="translate(-319.81 -91)" />
-            <path className="cls-8" d="M607.41,539.38H470.09a11.57,11.57,0,0,0-11.56,11.56H619A11.57,11.57,0,0,0,607.41,539.38Z" transform="translate(-319.81 -91)" />
-            <path className="cls-10" d="M458.53,550.94a11.57,11.57,0,0,0,11.56,11.57H607.41A11.57,11.57,0,0,0,619,550.94Z" transform="translate(-319.81 -91)" />
-            <path className="cls-10" d="M508.38,562.51a32,32,0,0,0-32-32v32Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M476.41,530.54a32,32,0,0,0-32,32h32Z" transform="translate(-319.81 -91)" />
-            <path className="cls-8" d="M822.49,539.38H660.37a11.56,11.56,0,0,0-11.56,11.56H834.06A11.57,11.57,0,0,0,822.49,539.38Z" transform="translate(-319.81 -91)" />
-            <path className="cls-10" d="M648.81,550.94a11.56,11.56,0,0,0,11.56,11.57H822.49a11.57,11.57,0,0,0,11.57-11.57Z" transform="translate(-319.81 -91)" />
-            <path className="cls-10" d="M698.67,562.51a32,32,0,0,0-32-32v32Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M666.7,530.54a32,32,0,0,0-32,32h32Z" transform="translate(-319.81 -91)" />
-            <polygon className="cls-8" points="327.22 416.03 278.77 448.38 213.24 448.38 236.62 378.5 327.22 416.03" />
-            <path className="cls-13" d="M647,432a53.06,53.06,0,0,0-75,0l37.53,37.53Z" transform="translate(-319.81 -91)" />
-            <path className="cls-14" d="M572,432A53.07,53.07,0,0,0,572,507l37.53-37.53Z" transform="translate(-319.81 -91)" />
-            <path className="cls-10" d="M572,507a53.06,53.06,0,0,0,75,0L609.51,469.5Z" transform="translate(-319.81 -91)" />
-            <path className="cls-14" d="M609.51,469.5,647,507A53.07,53.07,0,0,0,647,432Z" transform="translate(-319.81 -91)" />
-            <polygon className="cls-8" points="391.41 411.89 508.46 362.71 498.8 448.38 430.43 448.38 391.41 411.89" />
-            <path className="cls-10" d="M808.11,502.4a68.87,68.87,0,0,0,0-97.39l-48.7,48.7Z" transform="translate(-319.81 -91)" />
-            <path className="cls-14" d="M808.11,405a68.87,68.87,0,0,0-97.4,0l48.7,48.7Z" transform="translate(-319.81 -91)" />
-            <path className="cls-13" d="M710.71,405a68.87,68.87,0,0,0,0,97.39l48.7-48.69Z" transform="translate(-319.81 -91)" />
-            <path className="cls-14" d="M759.41,453.71l-48.7,48.69a68.87,68.87,0,0,0,97.4,0Z" transform="translate(-319.81 -91)" />
-            <path className="cls-6" d="M519.3,402.64a11,11,0,1,1-11-11A11,11,0,0,1,519.3,402.64Z" transform="translate(-319.81 -91)" />
-            <path className="cls-6" d="M662.18,231.16a11,11,0,1,1-11-11A11,11,0,0,1,662.18,231.16Z" transform="translate(-319.81 -91)" />
-            <path className="cls-6" d="M658.59,268.58a7.4,7.4,0,1,1-7.4-7.39A7.4,7.4,0,0,1,658.59,268.58Z" transform="translate(-319.81 -91)" />
-            <circle className="cls-6" cx="188.51" cy="359.61" r="19.89" />
-            <path className="cls-15" d="M549.72,203.07a21.52,21.52,0,1,1-21.51-21.52A21.52,21.52,0,0,1,549.72,203.07Z" transform="translate(-319.81 -91)" />
-            <path className="cls-7" d="M461.43,221.79a3.81,3.81,0,1,1-3.81-3.81A3.8,3.8,0,0,1,461.43,221.79Z" transform="translate(-319.81 -91)" />
-          </svg>
-        )}
 
         {equippedPet === 'pet_phoenix' && (
           <g transform="translate(40, 40)">

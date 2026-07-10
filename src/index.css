@@ -189,14 +189,14 @@ body {
   width: 400px;
   height: 300px;
   position: relative;
-  transform: scale(0.38);
+  transform: scale(0.55) translateY(-36px);
   transform-origin: center center;
   overflow: visible;
 }
 
 @media (min-width: 640px) {
   .forest-scene {
-    transform: scale(0.48);
+    transform: scale(0.68) translateY(-42px);
   }
 }
 
