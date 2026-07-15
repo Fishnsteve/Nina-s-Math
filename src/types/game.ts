@@ -49,6 +49,7 @@ export interface GameState {
   equippedBackground: string;
   equippedPet: string;
   inventory: string[];
+  claimedAchievements?: string[];
 }
 
 export interface AvatarItem {

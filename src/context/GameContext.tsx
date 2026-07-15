@@ -17,7 +17,8 @@ const INITIAL_STATE: GameState = {
   equippedAvatar: 'hero_sulan',
   equippedBackground: 'bg_default',
   equippedPet: '',
-  inventory: ['hero_sulan', 'bg_default']
+  inventory: ['hero_sulan', 'bg_default'],
+  claimedAchievements: []
 };
 
 interface GameContextType extends GameState {
@@ -32,6 +33,7 @@ interface GameContextType extends GameState {
   completeLevel: (zoneId: string, starsEarned: number) => void;
   buyItem: (itemId: string, price: number, currency: 'coins' | 'gems') => boolean;
   equipItem: (itemId: string, type: 'character' | 'background' | 'pet') => void;
+  claimAchievement: (achievementId: string, rewardCoins: number, rewardGems: number) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -42,7 +44,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GameState>(() => {
     const saved = localStorage.getItem('mathQuestState');
     const parsed = saved ? JSON.parse(saved) : null;
-    return { ...INITIAL_STATE, ...parsed, language: parsed?.language || 'zh' };
+    return { 
+      ...INITIAL_STATE, 
+      ...parsed, 
+      language: parsed?.language || 'zh',
+      claimedAchievements: parsed?.claimedAchievements || []
+    };
   });
 
   useEffect(() => {
@@ -146,11 +153,24 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const claimAchievement = (achievementId: string, rewardCoins: number, rewardGems: number) => {
+    setState(p => {
+      const claimed = p.claimedAchievements || [];
+      if (claimed.includes(achievementId)) return p;
+      return {
+        ...p,
+        coins: p.coins + rewardCoins,
+        gems: p.gems + rewardGems,
+        claimedAchievements: [...claimed, achievementId]
+      };
+    });
+  };
+
   return (
     <GameContext.Provider value={{
       ...state,
       setLanguage, addXp, addCoins, addGems, loseHeart, incrementStreak, resetStreak,
-      unlockZone, completeLevel, buyItem, equipItem
+      unlockZone, completeLevel, buyItem, equipItem, claimAchievement
     }}>
       {children}
     </GameContext.Provider>

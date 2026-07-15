@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
-import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles } from 'lucide-react';
+import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
@@ -12,8 +12,85 @@ const COLLECTIBLE_IDS = [
   'bg_forest', 'bg_castle', 'bg_ocean', 'bg_cyber'
 ];
 
+interface AchievementItem {
+  id: string;
+  title: { en: string; zh: string };
+  description: { en: string; zh: string };
+  target: number;
+  current: (state: any) => number;
+  reward: { coins: number; gems: number; isLineAccess?: boolean };
+  rewardLabel: { en: string; zh: string };
+  icon: string;
+}
+
+const ACHIEVEMENTS: AchievementItem[] = [
+  {
+    id: 'first_steps',
+    title: { en: 'First Steps', zh: '初試啼聲' },
+    description: { en: 'Complete your first zone level', zh: '完成你的第一個關卡' },
+    target: 1,
+    current: (state: any) => Object.keys(state.completedLevels || {}).length,
+    reward: { coins: 50, gems: 0 },
+    rewardLabel: { en: '+50 Coins 🪙', zh: '+50 金幣 🪙' },
+    icon: '🏅',
+  },
+  {
+    id: 'star_chaser',
+    title: { en: 'Star Chaser', zh: '星星獵人' },
+    description: { en: 'Collect 3 stars from levels', zh: '從關卡中累積獲得 3 顆星星' },
+    target: 3,
+    current: (state: any) => state.stars || 0,
+    reward: { coins: 0, gems: 5 },
+    rewardLabel: { en: '+5 Gems 💎', zh: '+5 寶石 💎' },
+    icon: '⭐',
+  },
+  {
+    id: 'streak_master',
+    title: { en: 'Streak Master', zh: '每日狂熱' },
+    description: { en: 'Reach a 3-day active streak', zh: '達到 3 天以上的連續登入狀態' },
+    target: 3,
+    current: (state: any) => Math.max(state.currentStreak || 0, state.maxStreak || 0),
+    reward: { coins: 100, gems: 0 },
+    rewardLabel: { en: '+100 Coins 🪙', zh: '+100 金幣 🪙' },
+    icon: '🔥',
+  },
+  {
+    id: 'avid_shopper',
+    title: { en: 'Apprentice Shopper', zh: '時尚新星' },
+    description: { en: 'Own at least 3 items in your collection', zh: '在收藏庫中擁有至少 3 件服裝或寵物' },
+    target: 3,
+    current: (state: any) => state.inventory?.length || 0,
+    reward: { coins: 100, gems: 0 },
+    rewardLabel: { en: '+100 Coins 🪙', zh: '+100 金幣 🪙' },
+    icon: '🛍️',
+  },
+  {
+    id: 'ultimate_collector',
+    title: { en: 'Ultimate Collector', zh: '終極收藏大師' },
+    description: { en: 'Unlock exclusive profile backdrop by purchasing all 12 items', zh: '收集商店內全部 12 款限定服裝與寵物' },
+    target: 12,
+    current: (state: any) => state.inventory?.filter((id: string) => COLLECTIBLE_IDS.includes(id)).length || 0,
+    reward: { coins: 300, gems: 10 },
+    rewardLabel: { en: '+300 Coins 🪙 & +10 Gems 💎', zh: '+300 金幣 🪙 與 +10 寶石 💎' },
+    icon: '🔮',
+  },
+  {
+    id: 'steven_line',
+    title: { en: "Steven's Elite Circle", zh: 'Steven 的核心舞伴' },
+    description: { en: 'Reach Level 3 to unlock direct personal LINE chat access to Steven!', zh: '達到等級 3，即獲取 Steven 的個人 LINE 專屬好友通道！' },
+    target: 3,
+    current: (state: any) => state.level || 1,
+    reward: { coins: 200, gems: 5, isLineAccess: true },
+    rewardLabel: { en: '🔓 200 Coins, 5 Gems & Add Steven on LINE!', zh: '🔓 200 金幣、5 寶石 ＆ 開啟 Steven LINE 帳號！' },
+    icon: '✨',
+  }
+];
+
 export function Profile() {
-  const { xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar, inventory } = useGame();
+  const { 
+    xp, level, currentStreak, maxStreak, stars, completedLevels, language, equippedAvatar, inventory,
+    claimedAchievements = [], claimAchievement 
+  } = useGame();
   const t = translations[language];
 
   const purchasedCount = COLLECTIBLE_IDS.filter(id => inventory.includes(id)).length;
@@ -237,55 +314,181 @@ export function Profile() {
           )}
         </div>
 
-        {/* Achievements Placeholder */}
+        {/* Achievements Section */}
         <div className="bg-white/5 backdrop-blur-lg rounded-[32px] p-6 shadow-xl border border-white/10 mt-6">
           <h3 className="font-black text-sm uppercase tracking-widest text-pink-400 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-400" /> 
-            {t.profile.recentAchievements}
+            <Trophy className="w-5 h-5 text-amber-400 animate-bounce" /> 
+            {language === 'en' ? 'Quest Achievements' : '冒險成就與專屬獎勵'}
           </h3>
-          <div className="space-y-3">
-            {[1,2,3].map(i => (
-              <div key={i} className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5">
-                <div className="w-12 h-12 bg-pink-500/20 border border-pink-400/20 rounded-full flex items-center justify-center text-xl shadow-[0_0_15px_rgba(244,114,182,0.2)]">
-                  {i === 1 ? '🏅' : i === 2 ? '🔥' : '⭐'}
+          <p className="text-xs text-slate-300 mb-5 leading-relaxed">
+            {language === 'en' 
+              ? 'Complete learning milestones to earn exclusive coin rewards, gems, and access to Steven\'s LINE chat!' 
+              : '達成各項數學與學習里程碑，即可領取金幣、寶石，甚至解鎖 Steven 的個人專屬 LINE 帳號！'}
+          </p>
+
+          <div className="space-y-4">
+            {ACHIEVEMENTS.map(achievement => {
+              const currentVal = achievement.current({ 
+                completedLevels, 
+                stars, 
+                currentStreak, 
+                maxStreak, 
+                inventory, 
+                level 
+              });
+              const isCompleted = currentVal >= achievement.target;
+              const isClaimed = claimedAchievements.includes(achievement.id);
+              const progressPercent = Math.min(100, Math.floor((currentVal / achievement.target) * 100));
+
+              return (
+                <div 
+                  key={achievement.id} 
+                  className={`relative flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-2xl border transition-all duration-300 ${
+                    isClaimed 
+                      ? 'bg-emerald-950/20 border-emerald-500/20 opacity-90' 
+                      : isCompleted
+                      ? 'bg-pink-950/20 border-pink-400/40 shadow-[0_0_15px_rgba(244,114,182,0.15)]'
+                      : 'bg-white/5 border-white/5'
+                  }`}
+                >
+                  {/* Badge & Icon */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border transition-all ${
+                      isClaimed 
+                        ? 'bg-emerald-500/20 border-emerald-400/30' 
+                        : isCompleted
+                        ? 'bg-pink-500/30 border-pink-400/50 text-2xl animate-pulse shadow-[0_0_12px_rgba(244,114,182,0.3)]'
+                        : 'bg-slate-800/40 border-slate-700/30 grayscale'
+                    }`}>
+                      {achievement.icon}
+                    </div>
+                    
+                    {/* Small screen label */}
+                    <div className="md:hidden flex-1">
+                      <h4 className={`font-bold text-sm ${isCompleted ? 'text-pink-300 font-black' : 'text-white'}`}>
+                        {language === 'en' ? achievement.title.en : achievement.title.zh}
+                      </h4>
+                      <div className="text-[11px] font-bold text-pink-400/80 uppercase tracking-wider">
+                        {language === 'en' ? achievement.rewardLabel.en : achievement.rewardLabel.zh}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info and Progress Bar */}
+                  <div className="flex-1 min-w-0">
+                    {/* Title & Reward Info - Desktop Screen */}
+                    <div className="hidden md:flex md:items-center justify-between gap-2 mb-1">
+                      <h4 className={`font-bold text-base ${isCompleted ? 'text-pink-300 font-black' : 'text-white'}`}>
+                        {language === 'en' ? achievement.title.en : achievement.title.zh}
+                      </h4>
+                      <span className={`text-xs font-black px-2 py-0.5 rounded-md ${
+                        isClaimed 
+                          ? 'bg-emerald-500/10 text-emerald-400'
+                          : 'bg-pink-500/10 text-pink-300 animate-pulse'
+                      }`}>
+                        {language === 'en' ? achievement.rewardLabel.en : achievement.rewardLabel.zh}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed mb-2.5">
+                      {language === 'en' ? achievement.description.en : achievement.description.zh}
+                    </p>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-slate-400">
+                        <span>
+                          {isClaimed 
+                            ? (language === 'en' ? 'CLAIMED' : '已領取獎勵') 
+                            : isCompleted 
+                            ? (language === 'en' ? 'UNLOCKED' : '已達成') 
+                            : (language === 'en' ? 'IN PROGRESS' : '進行中')}
+                        </span>
+                        <span>{Math.min(achievement.target, currentVal)} / {achievement.target}</span>
+                      </div>
+                      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <motion.div 
+                          className={`h-full rounded-full ${
+                            isClaimed 
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                              : isCompleted 
+                              ? 'bg-gradient-to-r from-pink-500 to-rose-400' 
+                              : 'bg-gradient-to-r from-blue-500 to-cyan-400'
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progressPercent}%` }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions / Status Button */}
+                  <div className="shrink-0 mt-2 md:mt-0 flex flex-col gap-2 w-full md:w-auto">
+                    {isClaimed ? (
+                      <div className="flex flex-col gap-2 w-full">
+                        <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black rounded-xl flex items-center justify-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4" />
+                          {language === 'en' ? 'Claimed' : '已領取'}
+                        </div>
+                        {/* Once claimed, Steven's LINE remains permanently accessible */}
+                        {achievement.reward.isLineAccess && (
+                          <motion.a
+                            href="https://line.me/ti/p/JouU9u0l3j"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-[#06C755] hover:bg-[#05b04b] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(6,199,85,0.4)] border border-[#06C755]/20"
+                          >
+                            <MessageCircle className="w-4 h-4 fill-white text-[#06C755]" />
+                            <span>{language === 'en' ? "Steven's LINE" : "聯絡 Steven LINE"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                      </div>
+                    ) : isCompleted ? (
+                      <div className="flex flex-col gap-2 w-full">
+                        {/* Special interactive reward option */}
+                        {achievement.reward.isLineAccess && (
+                          <motion.a
+                            href="https://line.me/ti/p/JouU9u0l3j"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-[#06C755] hover:bg-[#05b04b] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(6,199,85,0.4)] border border-[#06C755]/20 animate-pulse"
+                          >
+                            <MessageCircle className="w-4 h-4 fill-white text-[#06C755]" />
+                            <span>{language === 'en' ? "Add Steven on LINE" : "加 Steven LINE"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                        
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            audioEngine.play('unlock');
+                            claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
+                          }}
+                          className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-amber-400/20 flex items-center justify-center gap-1"
+                        >
+                          <span>{language === 'en' ? 'CLAIM' : '領取獎勵'}</span>
+                        </motion.button>
+                      </div>
+                    ) : (
+                      <div className="px-4 py-2 bg-white/5 border border-white/5 text-slate-500 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5" />
+                        {language === 'en' ? 'Locked' : '尚未解鎖'}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm">
-                    {i === 1 ? (language === 'en' ? 'First Steps' : '初試啼聲') : 
-                     i === 2 ? (language === 'en' ? 'On Fire' : '火力全開') : 
-                     (language === 'en' ? 'Star Collector' : '星星收藏家')}
-                  </h4>
-                  <p className="text-[11px] text-pink-200/60 mt-0.5">{t.profile.unlockedYesterday}</p>
-                </div>
-              </div>
-            ))}
-            
-            {/* Secret Background Achievement */}
-            <div className={`flex items-center gap-4 p-3 rounded-2xl border transition-all duration-300 ${
-              hasAllCollectibles 
-                ? "bg-pink-500/10 border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.15)]" 
-                : "bg-white/5 border-white/5 opacity-80"
-            }`}>
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border shadow-[0_0_15px_rgba(244,114,182,0.1)] transition-all ${
-                hasAllCollectibles 
-                  ? "bg-pink-500/20 border-pink-400/30 text-2xl" 
-                  : "bg-slate-800/40 border-slate-700/30 grayscale"
-              }`}>
-                {hasAllCollectibles ? '🔮' : '🔒'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className={`font-bold text-sm truncate ${hasAllCollectibles ? "text-pink-300" : "text-white/70"}`}>
-                  {hasAllCollectibles 
-                    ? (language === 'en' ? 'Ultimate Collector' : '終極收藏家') 
-                    : (language === 'en' ? 'Ultimate Collector (Secret)' : '終極收藏家（隱藏挑戰）')}
-                </h4>
-                <p className="text-[11px] text-pink-200/60 mt-0.5">
-                  {hasAllCollectibles 
-                    ? (language === 'en' ? 'Unlocked the secret Profile Backdrop!' : '已成功解鎖專屬個人檔案背景！') 
-                    : (language === 'en' ? `Purchase all shop items (${purchasedCount}/${totalCount})` : `購買商店所有道具以解鎖隱藏背景 (${purchasedCount}/${totalCount})`)}
-                </p>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
 
