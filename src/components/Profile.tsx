@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
-import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle } from 'lucide-react';
+import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle, Instagram, Facebook, Gift } from 'lucide-react';
 import { motion } from 'motion/react';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
@@ -18,7 +18,14 @@ interface AchievementItem {
   description: { en: string; zh: string };
   target: number;
   current: (state: any) => number;
-  reward: { coins: number; gems: number; isLineAccess?: boolean };
+  reward: { 
+    coins: number; 
+    gems: number; 
+    isLineAccess?: boolean; 
+    isInstagramAccess?: boolean; 
+    isFacebookAccess?: boolean;
+    isMysteryGift?: boolean;
+  };
   rewardLabel: { en: string; zh: string };
   icon: string;
 }
@@ -33,6 +40,16 @@ const ACHIEVEMENTS: AchievementItem[] = [
     reward: { coins: 50, gems: 0 },
     rewardLabel: { en: '+50 Coins 🪙', zh: '+50 金幣 🪙' },
     icon: '🏅',
+  },
+  {
+    id: 'steven_instagram',
+    title: { en: "Steven's Inner Circle", zh: 'Steven 的潮流圈子' },
+    description: { en: 'Reach Level 15 to unlock direct Instagram access to Steven!', zh: '達到等級 15，解鎖並追蹤 Steven 的個人 Instagram 精彩生活！' },
+    target: 15,
+    current: (state: any) => state.level || 1,
+    reward: { coins: 150, gems: 2, isInstagramAccess: true },
+    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Follow Steven on IG!', zh: '🔓 150 金幣、2 寶石 & 追蹤 Steven IG！' },
+    icon: '📸',
   },
   {
     id: 'star_chaser',
@@ -55,6 +72,16 @@ const ACHIEVEMENTS: AchievementItem[] = [
     icon: '🔥',
   },
   {
+    id: 'steven_line',
+    title: { en: "Steven's Elite Circle", zh: 'Steven 的核心舞伴' },
+    description: { en: 'Reach Level 3 to unlock direct personal LINE chat access to Steven!', zh: '達到等級 3，即獲取 Steven 的個人 LINE 專屬好友通道！' },
+    target: 3,
+    current: (state: any) => state.level || 1,
+    reward: { coins: 200, gems: 5, isLineAccess: true },
+    rewardLabel: { en: '🔓 200 Coins, 5 Gems & Add Steven on LINE!', zh: '🔓 200 金幣、5 寶石 ＆ 開啟 Steven LINE 帳號！' },
+    icon: '✨',
+  },
+  {
     id: 'avid_shopper',
     title: { en: 'Apprentice Shopper', zh: '時尚新星' },
     description: { en: 'Own at least 3 items in your collection', zh: '在收藏庫中擁有至少 3 件服裝或寵物' },
@@ -65,24 +92,24 @@ const ACHIEVEMENTS: AchievementItem[] = [
     icon: '🛍️',
   },
   {
+    id: 'steven_facebook',
+    title: { en: "Steven's Global Network", zh: 'Steven 的全球好友網' },
+    description: { en: 'Collect all 36 stars from levels to unlock Steven\'s personal Facebook profile!', zh: '累積獲得全部 36 顆關卡星星，解鎖 Steven 的個人臉書，成為社群好友！' },
+    target: 36,
+    current: (state: any) => state.stars || 0,
+    reward: { coins: 150, gems: 2, isFacebookAccess: true },
+    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Add Steven on Facebook!', zh: '🔓 150 金幣、2 寶石 & 加 Steven 臉書好友！' },
+    icon: '🌐',
+  },
+  {
     id: 'ultimate_collector',
     title: { en: 'Ultimate Collector', zh: '終極收藏大師' },
     description: { en: 'Unlock exclusive profile backdrop by purchasing all 12 items', zh: '收集商店內全部 12 款限定服裝與寵物' },
     target: 12,
     current: (state: any) => state.inventory?.filter((id: string) => COLLECTIBLE_IDS.includes(id)).length || 0,
-    reward: { coins: 300, gems: 10 },
-    rewardLabel: { en: '+300 Coins 🪙 & +10 Gems 💎', zh: '+300 金幣 🪙 與 +10 寶石 💎' },
+    reward: { coins: 300, gems: 10, isMysteryGift: true },
+    rewardLabel: { en: '+300 Coins, +10 Gems & Mystery Gift 🎁', zh: '+300 金幣、+10 寶石 & 神秘實體禮物 🎁' },
     icon: '🔮',
-  },
-  {
-    id: 'steven_line',
-    title: { en: "Steven's Elite Circle", zh: 'Steven 的核心舞伴' },
-    description: { en: 'Reach Level 3 to unlock direct personal LINE chat access to Steven!', zh: '達到等級 3，即獲取 Steven 的個人 LINE 專屬好友通道！' },
-    target: 3,
-    current: (state: any) => state.level || 1,
-    reward: { coins: 200, gems: 5, isLineAccess: true },
-    rewardLabel: { en: '🔓 200 Coins, 5 Gems & Add Steven on LINE!', zh: '🔓 200 金幣、5 寶石 ＆ 開啟 Steven LINE 帳號！' },
-    icon: '✨',
   }
 ];
 
@@ -447,6 +474,44 @@ export function Profile() {
                             <ExternalLink className="w-3.5 h-3.5" />
                           </motion.a>
                         )}
+                        {achievement.reward.isInstagramAccess && (
+                          <motion.a
+                            href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(219,39,119,0.4)] border border-pink-500/20"
+                          >
+                            <Instagram className="w-4 h-4" />
+                            <span>{language === 'en' ? "Steven's Instagram" : "追蹤 Steven IG"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                        {achievement.reward.isFacebookAccess && (
+                          <motion.a
+                            href="https://www.facebook.com/steven.sixeleven/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(24,119,242,0.4)] border border-[#1877F2]/20"
+                          >
+                            <Facebook className="w-4 h-4 fill-white text-[#1877F2]" />
+                            <span>{language === 'en' ? "Steven's Facebook" : "加 Steven 臉書"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                        {achievement.reward.isMysteryGift && (
+                          <div className="px-4 py-2 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.5)] border border-yellow-300/30">
+                            <Gift className="w-4 h-4 animate-bounce" />
+                            <span className="text-center leading-tight">
+                              {language === 'en' ? "Exchange in real life for Mystery Gift!" : "可兌換神秘實體禮物！請出示此畫面"}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ) : isCompleted ? (
                       <div className="flex flex-col gap-2 w-full">
@@ -465,6 +530,44 @@ export function Profile() {
                             <span>{language === 'en' ? "Add Steven on LINE" : "加 Steven LINE"}</span>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </motion.a>
+                        )}
+                        {achievement.reward.isInstagramAccess && (
+                          <motion.a
+                            href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(219,39,119,0.4)] border border-pink-500/20 animate-pulse"
+                          >
+                            <Instagram className="w-4 h-4" />
+                            <span>{language === 'en' ? "Follow Steven on IG" : "追蹤 Steven IG"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                        {achievement.reward.isFacebookAccess && (
+                          <motion.a
+                            href="https://www.facebook.com/steven.sixeleven/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => audioEngine.play('click')}
+                            className="px-4 py-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(24,119,242,0.4)] border border-[#1877F2]/20 animate-pulse"
+                          >
+                            <Facebook className="w-4 h-4 fill-white text-[#1877F2]" />
+                            <span>{language === 'en' ? "Add Steven on Facebook" : "加 Steven 臉書"}</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </motion.a>
+                        )}
+                        {achievement.reward.isMysteryGift && (
+                          <div className="px-4 py-2 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.5)] border border-yellow-300/30 animate-pulse">
+                            <Gift className="w-4 h-4" />
+                            <span className="text-center leading-tight">
+                              {language === 'en' ? "Exchange in real life for Mystery Gift!" : "可兌換神秘實體禮物！請出示此畫面"}
+                            </span>
+                          </div>
                         )}
                         
                         <motion.button
