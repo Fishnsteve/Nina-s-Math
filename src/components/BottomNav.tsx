@@ -132,7 +132,7 @@ export function BottomNav({ currentTab, setTab }: BottomNavProps) {
       </div>
       {/* Discreet Developer Signature */}
       <div className="text-center pb-1 text-[9px] font-semibold text-slate-700/100 font-mono tracking-widest select-none pointer-events-none">
-        made by Steven, for gugugaga
+    
       </div>
     </div>
   );
