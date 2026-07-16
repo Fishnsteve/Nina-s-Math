@@ -350,8 +350,56 @@ const MagicalUnfoldedScroll = () => {
 };
 
 export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => void }) {
-  const { unlockedZones, level, completedLevels, language, addCoins } = useGame();
+  const { unlockedZones, level, completedLevels, completedDifficulties = {}, language, addCoins } = useGame();
   const t = translations[language];
+
+  const renderCrownBadge = (zoneId: string) => {
+    const diff = completedDifficulties[zoneId];
+    if (!diff) return null;
+
+    let badgeColor = "";
+    let text = "";
+    let icon = "";
+    let glow = "";
+
+    switch (diff) {
+      case 'Easy':
+        badgeColor = "from-amber-700 to-amber-900 border-amber-600/50 text-amber-100";
+        text = language === 'en' ? 'Bronze' : '青銅';
+        icon = "🥉";
+        glow = "shadow-[0_0_8px_rgba(180,83,9,0.3)]";
+        break;
+      case 'Normal':
+        badgeColor = "from-slate-400 to-slate-600 border-slate-300/50 text-slate-100";
+        text = language === 'en' ? 'Silver' : '白銀';
+        icon = "🥈";
+        glow = "shadow-[0_0_10px_rgba(203,213,225,0.4)]";
+        break;
+      case 'Hard':
+        badgeColor = "from-yellow-400 to-amber-500 border-yellow-300/60 text-white font-extrabold";
+        text = language === 'en' ? 'Gold' : '黃金';
+        icon = "🥇";
+        glow = "shadow-[0_0_15px_rgba(234,179,8,0.6)] animate-pulse border-yellow-400";
+        break;
+      case 'Extra':
+        badgeColor = "from-cyan-400 via-pink-500 to-purple-600 border-pink-400/80 text-white font-black";
+        text = language === 'en' ? 'Platinum' : '白金';
+        icon = "👑";
+        glow = "shadow-[0_0_20px_rgba(236,72,153,0.8)] animate-bounce border-pink-500";
+        break;
+    }
+
+    return (
+      <div className={cn(
+        "absolute -top-1 -right-2 z-30 flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black tracking-wide border bg-gradient-to-r select-none shadow-md",
+        badgeColor,
+        glow
+      )}>
+        <span>{icon}</span>
+        <span>{text}</span>
+      </div>
+    );
+  };
 
   const [questActive, setQuestActive] = useState(false);
   const [questTimeLeft, setQuestTimeLeft] = useState(0);
@@ -504,6 +552,8 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                     />
                   )}
                   
+                  {isUnlocked && renderCrownBadge(zone.id)}
+                  
                   <div className="w-36 h-36 sm:w-48 sm:h-48 mx-auto relative z-10 flex items-center justify-center overflow-visible">
                     {isLockedByLevel ? (
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-slate-800/80 border-4 border-slate-700 flex items-center justify-center backdrop-blur-sm shadow-xl">
@@ -617,6 +667,8 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                       className="absolute -inset-8 bg-amber-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     />
                   )}
+                  
+                  {isUnlocked && renderCrownBadge(zone.id)}
                   
                   <div className="w-36 h-36 sm:w-48 sm:h-48 mx-auto relative z-10 flex items-center justify-center overflow-visible">
                     {isLockedByLevel ? (
@@ -732,6 +784,8 @@ export function WorldMap({ onSelectZone }: { onSelectZone: (zoneId: string) => v
                       className="absolute -inset-10 bg-rose-600/30 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
                     />
                   )}
+                  
+                  {isUnlocked && renderCrownBadge(zone.id)}
                   
                   <div className="w-48 h-48 sm:w-64 sm:h-64 mx-auto relative z-10 flex items-center justify-center overflow-visible">
                     {isLockedByLevel ? (

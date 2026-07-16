@@ -135,8 +135,10 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   const isHell = zone?.type === 'hell';
   const totalQuestions = isHell ? 10 : (isKingdom ? 10 : 5);
   
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Normal' | 'Hard' | 'Extra' | null>(null);
+  
   const zoneQuestions = useMemo(() => {
-    if (!zone) return [];
+    if (!zone || !selectedDifficulty) return [];
     const questions: Question[] = [];
     const seenTexts = new Set<string>();
 
@@ -145,18 +147,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         ? zone.topic[Math.floor(Math.random() * zone.topic.length)] 
         : zone.topic;
         
-      let diff: 'Easy' | 'Normal' | 'Hard' | 'Extra' = 'Easy';
-      if (zone.type === 'hell') {
-        diff = idx < 2 ? 'Hard' : 'Extra';
-      } else if (isKingdom) {
-        if (idx < 3) diff = 'Normal';
-        else if (idx < 6) diff = 'Hard';
-        else diff = 'Extra';
-      } else {
-        if (idx < 2) diff = 'Easy';
-        else if (idx < 4) diff = 'Normal';
-        else diff = 'Hard';
-      }
+      const diff = selectedDifficulty;
 
       let attempts = 0;
       let q = generateQuestion(topic, diff);
@@ -169,7 +160,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       questions.push(q);
     }
     return questions;
-  }, [zone?.topic, totalQuestions, isKingdom, zone?.type]);
+  }, [zone?.topic, totalQuestions, selectedDifficulty]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -266,21 +257,22 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
         handleFireConfetti();
         incrementStreak();
         
+        const mult = selectedDifficulty === 'Easy' ? 0.8 : selectedDifficulty === 'Normal' ? 1.0 : selectedDifficulty === 'Hard' ? 1.35 : 1.7;
         if (isHell) {
           const baseCoins = 50;
           const streakBonus = Math.floor(currentStreak / 3) * 10;
-          addCoins(baseCoins + streakBonus);
-          addXp(10);
+          addCoins(Math.round((baseCoins + streakBonus) * mult));
+          addXp(Math.round(10 * mult));
         } else if (zone?.type === 'kingdom') {
           const baseCoins = 15;
           const streakBonus = Math.floor(currentStreak / 3) * 5;
-          addCoins(baseCoins + streakBonus);
-          addXp(20);
+          addCoins(Math.round((baseCoins + streakBonus) * mult));
+          addXp(Math.round(20 * mult));
         } else {
           const baseCoins = 2;
           const streakBonus = Math.floor(currentStreak / 3) * 1;
-          addCoins(baseCoins + streakBonus);
-          addXp(40);
+          addCoins(Math.round((baseCoins + streakBonus) * mult));
+          addXp(Math.round(40 * mult));
         }
       } else {
         audioEngine.play('wrong');
@@ -311,17 +303,133 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       if (mistakes === 1) stars = 2;
       else if (mistakes >= 2) stars = 1;
       
-      const xp = isHell 
+      const mult = selectedDifficulty === 'Easy' ? 0.8 : selectedDifficulty === 'Normal' ? 1.0 : selectedDifficulty === 'Hard' ? 1.35 : 1.7;
+      const xpBase = isHell 
         ? Math.floor(Math.random() * (150 - 67 + 1)) + 67 
         : (isKingdom ? 50 : 100);
-      const coins = isHell ? 1000 : (isKingdom ? 150 : 10);
-      setCompletionStats({ xp, coins });
+      const coinsBase = isHell ? 1000 : (isKingdom ? 150 : 10);
+      setCompletionStats({ 
+        xp: Math.round(xpBase * mult), 
+        coins: Math.round(coinsBase * mult) 
+      });
       
-      completeLevel(zoneId, stars);
+      completeLevel(zoneId, stars, selectedDifficulty);
       handleFireConfetti();
       handleFireConfetti();
     }
   };
+
+  if (!selectedDifficulty) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-y-auto z-20">
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <BackgroundVisuals bgId={equippedBackground} />
+        </div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-xl w-full bg-slate-900/90 border-2 border-white/15 p-6 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-2xl text-center space-y-6 relative z-10"
+        >
+          {/* Header */}
+          <div className="space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-rose-300 to-amber-300">
+              {language === 'en' ? 'CHOOSE DIFFICULTY' : '選擇挑戰難度'}
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 font-bold leading-relaxed px-2">
+              {language === 'en' 
+                ? 'Adjust the complexity of math problems. Higher difficulties grant greater rewards!' 
+                : '調整數學問題的複雜度。難度越高，獲得的獎勵越豐厚！'}
+            </p>
+          </div>
+
+          {/* Cards Container */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              {
+                id: 'Easy' as const,
+                title: { en: 'Easy Mode', zh: '簡單模式' },
+                badge: '80% XP / Coins',
+                desc: { en: 'Simple equations. Ideal for a relaxed warmup.', zh: '基礎數學問題。非常適合放鬆熱身。' },
+                color: 'from-emerald-500/20 to-teal-500/5 hover:border-emerald-400/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]',
+                badgeColor: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+                stars: '⭐️'
+              },
+              {
+                id: 'Normal' as const,
+                title: { en: 'Medium Mode', zh: '中等模式' },
+                badge: '100% XP / Coins',
+                desc: { en: 'Standard curriculum. A balanced math workout.', zh: '標準學術內容。平衡適中的數理鍛鍊。' },
+                color: 'from-blue-500/20 to-indigo-500/5 hover:border-blue-400/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]',
+                badgeColor: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
+                stars: '⭐️⭐️'
+              },
+              {
+                id: 'Hard' as const,
+                title: { en: 'Hard Mode', zh: '困難模式' },
+                badge: '135% XP / Coins',
+                desc: { en: 'Challenging puzzles for skilled math wizards.', zh: '具挑戰性的字謎，適合嫻熟的數學大師。' },
+                color: 'from-orange-500/20 to-red-500/5 hover:border-orange-400/50 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]',
+                badgeColor: 'bg-orange-500/15 text-orange-400 border border-orange-500/30',
+                stars: '⭐️⭐️⭐️'
+              },
+              {
+                id: 'Extra' as const,
+                title: { en: 'Extra Mode', zh: '終極極限' },
+                badge: '170% XP / Coins',
+                desc: { en: 'Extreme problems. Push your logic to the limit!', zh: '極限數理考驗。將你的邏輯思維逼至極限！' },
+                color: 'from-pink-500/20 to-fuchsia-500/5 hover:border-pink-400/50 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]',
+                badgeColor: 'bg-pink-500/15 text-pink-400 border border-pink-500/30',
+                stars: '⚡️⚡️⚡️⚡️'
+              }
+            ].map((diff) => (
+              <motion.button
+                key={diff.id}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  audioEngine.play('click');
+                  setSelectedDifficulty(diff.id);
+                }}
+                className={cn(
+                  "flex flex-col items-center justify-between p-4 bg-gradient-to-b rounded-3xl border border-white/10 text-center cursor-pointer transition-all duration-300",
+                  diff.color
+                )}
+              >
+                <div className="flex flex-col items-center gap-1.5 w-full">
+                  <span className="text-xl shrink-0">{diff.stars}</span>
+                  <h4 className="font-black text-white text-base sm:text-lg tracking-wide">
+                    {diff.title[language]}
+                  </h4>
+                  <span className={cn("text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider", diff.badgeColor)}>
+                    {diff.badge}
+                  </span>
+                  <p className="text-xs text-slate-300 font-bold leading-normal mt-2">
+                    {diff.desc[language]}
+                  </p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Cancel button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audioEngine.play('click');
+              onExit();
+            }}
+            className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm rounded-2xl border-b-4 border-slate-950 active:border-b-0 active:translate-y-[4px] transition-all cursor-pointer"
+          >
+            {language === 'en' ? 'Back to Map' : '返回地圖'}
+          </motion.button>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (isCompleted) {
     const { xp: completionXp, coins: completionCoins } = completionStats;

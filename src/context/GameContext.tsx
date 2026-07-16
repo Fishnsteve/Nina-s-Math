@@ -14,6 +14,7 @@ const INITIAL_STATE: GameState = {
   maxStreak: 0,
   unlockedZones: ['zone_1'],
   completedLevels: {},
+  completedDifficulties: {},
   equippedAvatar: 'hero_sulan',
   equippedBackground: 'bg_default',
   equippedPet: '',
@@ -30,7 +31,7 @@ interface GameContextType extends GameState {
   incrementStreak: () => void;
   resetStreak: () => void;
   unlockZone: (zoneId: string) => void;
-  completeLevel: (zoneId: string, starsEarned: number) => void;
+  completeLevel: (zoneId: string, starsEarned: number, difficulty: 'Easy' | 'Normal' | 'Hard' | 'Extra') => void;
   buyItem: (itemId: string, price: number, currency: 'coins' | 'gems') => boolean;
   equipItem: (itemId: string, type: 'character' | 'background' | 'pet') => void;
   claimAchievement: (achievementId: string, rewardCoins: number, rewardGems: number) => void;
@@ -48,7 +49,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       ...INITIAL_STATE, 
       ...parsed, 
       language: parsed?.language || 'zh',
-      claimedAchievements: parsed?.claimedAchievements || []
+      claimedAchievements: parsed?.claimedAchievements || [],
+      completedDifficulties: parsed?.completedDifficulties || {}
     };
   });
 
@@ -111,14 +113,26 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     unlockedZones: p.unlockedZones.includes(zoneId) ? p.unlockedZones : [...p.unlockedZones, zoneId]
   }));
 
-  const completeLevel = (zoneId: string, starsEarned: number) => setState(p => {
+  const completeLevel = (zoneId: string, starsEarned: number, difficulty: 'Easy' | 'Normal' | 'Hard' | 'Extra') => setState(p => {
     const currentStars = p.completedLevels[zoneId] || 0;
     const newStars = Math.max(currentStars, starsEarned);
     const totalStars = p.stars + (newStars - currentStars);
     
+    // Save difficulty
+    const prevDifficulties = p.completedDifficulties || {};
+    const currentDiff = prevDifficulties[zoneId];
+    
+    // Check if new difficulty is higher
+    const diffOrder = { 'Easy': 1, 'Normal': 2, 'Hard': 3, 'Extra': 4 };
+    const shouldUpdateDiff = !currentDiff || (diffOrder[difficulty] > diffOrder[currentDiff]);
+    const updatedDifficulties = shouldUpdateDiff 
+      ? { ...prevDifficulties, [zoneId]: difficulty }
+      : prevDifficulties;
+
     return {
       ...p,
       completedLevels: { ...p.completedLevels, [zoneId]: newStars },
+      completedDifficulties: updatedDifficulties,
       stars: totalStars,
       hearts: p.maxHearts // Restore hearts to full on level completion!
     };

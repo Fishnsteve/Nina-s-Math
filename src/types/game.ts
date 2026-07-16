@@ -45,6 +45,7 @@ export interface GameState {
   maxStreak: number;
   unlockedZones: string[];
   completedLevels: Record<string, number>; // zoneId -> stars
+  completedDifficulties?: Record<string, 'Easy' | 'Normal' | 'Hard' | 'Extra'>; // zoneId -> max difficulty cleared
   equippedAvatar: string;
   equippedBackground: string;
   equippedPet: string;

@@ -9,10 +9,22 @@ import { BackgroundVisuals } from './BackgroundVisuals';
 import { audioEngine } from '../utils/audio';
 
 export function DanceStudio() {
-  const { level, language, equippedAvatar, equippedPet, equippedBackground, equipItem, inventory, buyItem } = useGame();
+  const { level, language, equippedAvatar, equippedPet, equippedBackground, equipItem, inventory, buyItem, completedDifficulties = {} } = useGame();
   const t = translations[language];
   const [activeTab, setActiveTab] = useState<'outfits' | 'accessories' | 'backgrounds' | 'moves'>('outfits');
   const [isDancing, setIsDancing] = useState<string | null>(null);
+
+  const goldCrownsCount = Object.values(completedDifficulties).filter(d => d === 'Hard' || d === 'Extra').length;
+  const platinumCrownsCount = Object.values(completedDifficulties).filter(d => d === 'Extra').length;
+
+  const meetsCrown = (item: { crownReq?: { type: 'Gold' | 'Platinum', count: number } }) => {
+    if (!item.crownReq) return true;
+    if (item.crownReq.type === 'Gold') {
+      return goldCrownsCount >= item.crownReq.count;
+    } else {
+      return platinumCrownsCount >= item.crownReq.count;
+    }
+  };
 
   const outfits = [
     { id: 'hero_sulan', icon: '💃', level: 1, name: language === 'en' ? 'Sishu' : '喜樹', price: 0, currency: 'coins' as const },
@@ -20,7 +32,7 @@ export function DanceStudio() {
     { id: 'hero_ninja', icon: '🥷', level: 4, name: language === 'en' ? 'Ninja' : '忍者', price: 300, currency: 'coins' as const },
     { id: 'hero_flower', icon: '🌸', level: 6, name: language === 'en' ? 'Flower' : '花朵', price: 500, currency: 'coins' as const },
     { id: 'hero_princess', icon: '👑', level: 8, name: language === 'en' ? 'Princess' : '公主', price: 1000, currency: 'coins' as const },
-    { id: 'hero_cyber', icon: '🤖', level: 10, name: language === 'en' ? 'Cyber' : '賽博', price: 2000, currency: 'coins' as const },
+    { id: 'hero_cyber', icon: '🤖', level: 10, name: language === 'en' ? 'Cyber' : '賽博', price: 2000, currency: 'coins' as const, crownReq: { type: 'Gold' as const, count: 1 } },
   ];
 
   const accessories = [
@@ -29,7 +41,7 @@ export function DanceStudio() {
     { id: 'pet_cat', icon: '🐈', type: 'pet', name: language === 'en' ? 'Cat' : '貓咪', price: 600, currency: 'coins' as const },
     { id: 'pet_dog', icon: '🐕', type: 'pet', name: language === 'en' ? 'Dog' : '小狗', price: 800, currency: 'coins' as const },
     { id: 'pet_dragon', icon: '🐉', type: 'pet', name: language === 'en' ? 'Dragon' : '神龍', price: 1500, currency: 'coins' as const },
-    { id: 'pet_phoenix', icon: '🔥', type: 'pet', name: language === 'en' ? 'Phoenix' : '鳳凰', price: 3000, currency: 'coins' as const },
+    { id: 'pet_phoenix', icon: '🔥', type: 'pet', name: language === 'en' ? 'Phoenix' : '鳳凰', price: 3000, currency: 'coins' as const, crownReq: { type: 'Gold' as const, count: 2 } },
   ];
 
   const backgrounds = [
@@ -37,7 +49,7 @@ export function DanceStudio() {
     { id: 'bg_forest', icon: '🌲', type: 'background', name: language === 'en' ? 'Forest' : '森林', price: 200, currency: 'coins' as const },
     { id: 'bg_castle', icon: '🏰', type: 'background', name: language === 'en' ? 'Castle' : '城堡', price: 500, currency: 'coins' as const },
     { id: 'bg_ocean', icon: '🌊', type: 'background', name: language === 'en' ? 'Ocean' : '海洋', price: 1000, currency: 'coins' as const },
-    { id: 'bg_cyber', icon: '🏙️', type: 'background', name: language === 'en' ? 'Cyber' : '賽博城市', price: 2500, currency: 'coins' as const },
+    { id: 'bg_cyber', icon: '🏙️', type: 'background', name: language === 'en' ? 'Cyber' : '賽博城市', price: 2500, currency: 'coins' as const, crownReq: { type: 'Platinum' as const, count: 1 } },
   ];
 
   const moves = [
@@ -170,6 +182,7 @@ export function DanceStudio() {
             {activeTab === 'outfits' && outfits.map(outfit => {
               const isUnlocked = inventory.includes(outfit.id) || outfit.price === 0;
               const meetsLevel = level >= outfit.level;
+              const meetsCrowns = meetsCrown(outfit);
               const isEquipped = equippedAvatar === outfit.id;
               
               return (
@@ -179,7 +192,7 @@ export function DanceStudio() {
                       if (isUnlocked) {
                         audioEngine.play('equip');
                         equipItem(outfit.id, 'character');
-                      } else if (meetsLevel) {
+                      } else if (meetsLevel && meetsCrowns) {
                         audioEngine.play('unlock');
                         buyItem(outfit.id, outfit.price, outfit.currency);
                       } else {
@@ -204,7 +217,7 @@ export function DanceStudio() {
                         <Check className="w-2 h-2 stroke-[3]" />
                       </div>
                     )}
-                    {!isUnlocked && !meetsLevel && (
+                    {!isUnlocked && (!meetsLevel || !meetsCrowns) && (
                       <div className="absolute -bottom-0.5 -right-0.5 bg-slate-800 text-slate-400 rounded-full p-0.5 border border-white/10 shadow-md">
                         <Lock className="w-2 h-2" />
                       </div>
@@ -212,10 +225,14 @@ export function DanceStudio() {
                   </button>
                   
                   <div className="text-[9px] font-black text-white/90 leading-none text-center drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] truncate max-w-[50px]">
-                    {isUnlocked ? outfit.name : meetsLevel ? (
+                    {isUnlocked ? outfit.name : meetsLevel && meetsCrowns ? (
                       <span className="flex items-center justify-center gap-0.5 text-amber-300">
                         {outfit.price}
                         <Coins className="w-2 h-2 fill-amber-300" />
+                      </span>
+                    ) : !meetsCrowns ? (
+                      <span className="text-pink-400 font-extrabold flex items-center gap-0.5 justify-center">
+                        👑 x{outfit.crownReq?.count}{(outfit.crownReq?.type as any) === 'Gold' ? (language === 'en' ? 'G' : '金') : (language === 'en' ? 'P' : '白金')}
                       </span>
                     ) : (
                       <span className="text-slate-400">Lv {outfit.level}</span>
@@ -250,6 +267,7 @@ export function DanceStudio() {
                 {accessories.map(acc => {
                   const isUnlocked = inventory.includes(acc.id);
                   const isEquipped = equippedPet === acc.id;
+                  const meetsCrowns = meetsCrown(acc);
                   
                   return (
                     <div key={acc.id} className="flex flex-col items-center gap-1 shrink-0 snap-center">
@@ -258,9 +276,11 @@ export function DanceStudio() {
                           if (isUnlocked) {
                             audioEngine.play('equip');
                             equipItem(acc.id, 'pet');
-                          } else {
+                          } else if (meetsCrowns) {
                             audioEngine.play('unlock');
                             buyItem(acc.id, acc.price, acc.currency);
+                          } else {
+                            audioEngine.play('wrong');
                           }
                         }}
                         className={cn(
@@ -281,13 +301,22 @@ export function DanceStudio() {
                             <Check className="w-2 h-2 stroke-[3]" />
                           </div>
                         )}
+                        {!isUnlocked && !meetsCrowns && (
+                          <div className="absolute -bottom-0.5 -right-0.5 bg-slate-800 text-slate-400 rounded-full p-0.5 border border-white/10 shadow-md">
+                            <Lock className="w-2 h-2" />
+                          </div>
+                        )}
                       </button>
                       
                       <div className="text-[9px] font-black text-white/90 leading-none text-center drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] truncate max-w-[50px]">
-                        {isUnlocked ? acc.name : (
+                        {isUnlocked ? acc.name : meetsCrowns ? (
                           <span className="flex items-center justify-center gap-0.5 text-amber-300">
                             {acc.price}
                             <Coins className="w-2 h-2 fill-amber-300" />
+                          </span>
+                        ) : (
+                          <span className="text-pink-400 font-extrabold flex items-center gap-0.5 justify-center">
+                            👑 x{acc.crownReq?.count}{(acc.crownReq?.type as any) === 'Gold' ? (language === 'en' ? 'G' : '金') : (language === 'en' ? 'P' : '白金')}
                           </span>
                         )}
                       </div>
@@ -300,6 +329,7 @@ export function DanceStudio() {
             {activeTab === 'backgrounds' && backgrounds.map(bg => {
               const isUnlocked = inventory.includes(bg.id) || bg.id === 'bg_default';
               const isEquipped = equippedBackground === bg.id;
+              const meetsCrowns = meetsCrown(bg);
               
               return (
                 <div key={bg.id} className="flex flex-col items-center gap-1 shrink-0 snap-center">
@@ -308,9 +338,11 @@ export function DanceStudio() {
                       if (isUnlocked) {
                         audioEngine.play('equip');
                         equipItem(bg.id, 'background');
-                      } else {
+                      } else if (meetsCrowns) {
                         audioEngine.play('unlock');
                         buyItem(bg.id, bg.price, bg.currency);
+                      } else {
+                        audioEngine.play('wrong');
                       }
                     }}
                     className={cn(
@@ -331,13 +363,22 @@ export function DanceStudio() {
                         <Check className="w-2 h-2 stroke-[3]" />
                       </div>
                     )}
+                    {!isUnlocked && !meetsCrowns && (
+                      <div className="absolute -bottom-0.5 -right-0.5 bg-slate-800 text-slate-400 rounded-full p-0.5 border border-white/10 shadow-md">
+                        <Lock className="w-2 h-2" />
+                      </div>
+                    )}
                   </button>
                   
                   <div className="text-[9px] font-black text-white/90 leading-none text-center drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] truncate max-w-[50px]">
-                    {isUnlocked ? bg.name : (
+                    {isUnlocked ? bg.name : meetsCrowns ? (
                       <span className="flex items-center justify-center gap-0.5 text-amber-300">
                         {bg.price}
                         <Coins className="w-2 h-2 fill-amber-300" />
+                      </span>
+                    ) : (
+                      <span className="text-pink-400 font-extrabold flex items-center gap-0.5 justify-center">
+                        👑 x{bg.crownReq?.count}{(bg.crownReq?.type as any) === 'Gold' ? (language === 'en' ? 'G' : '金') : (language === 'en' ? 'P' : '白金')}
                       </span>
                     )}
                   </div>
