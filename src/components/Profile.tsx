@@ -400,14 +400,72 @@ export function Profile() {
       ctx.lineTo(420, sigLineY);
       ctx.stroke();
 
-      // Nina script signature
-      ctx.font = 'italic 32px "Brush Script MT", "Lucida Handwriting", "Georgia", cursive';
-      ctx.fillStyle = '#0F2C59'; // Blue ink
-      ctx.fillText("Nina Dancer", 300, sigLineY - 15);
+      // Nina hand-drawn signature (vector paths to match user's image exactly)
+      ctx.save();
+      ctx.strokeStyle = '#000000'; // Black ink as in the image
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const ninaSigX = 240;
+      const ninaSigY = sigLineY - 20;
+
+      // Draw N
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 25, ninaSigY - 25);
+      ctx.quadraticCurveTo(ninaSigX + 23, ninaSigY, ninaSigX + 28, ninaSigY + 25);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 27, ninaSigY - 18);
+      ctx.lineTo(ninaSigX + 42, ninaSigY + 23);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 38, ninaSigY + 23);
+      ctx.quadraticCurveTo(ninaSigX + 39, ninaSigY + 5, ninaSigX + 39, ninaSigY - 15);
+      ctx.stroke();
+
+      // Draw i
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 53, ninaSigY + 3);
+      ctx.quadraticCurveTo(ninaSigX + 54, ninaSigY + 14, ninaSigX + 56, ninaSigY + 24);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 49, ninaSigY - 5);
+      ctx.lineTo(ninaSigX + 54, ninaSigY - 7);
+      ctx.stroke();
+
+      // Draw n
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 62, ninaSigY + 5);
+      ctx.lineTo(ninaSigX + 63, ninaSigY + 24);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 62, ninaSigY + 9);
+      ctx.quadraticCurveTo(ninaSigX + 68, ninaSigY + 2, ninaSigX + 74, ninaSigY + 6);
+      ctx.lineTo(ninaSigX + 78, ninaSigY + 24);
+      ctx.stroke();
+
+      // Draw a
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 92, ninaSigY + 12);
+      ctx.bezierCurveTo(ninaSigX + 84, ninaSigY + 10, ninaSigX + 80, ninaSigY + 20, ninaSigX + 87, ninaSigY + 24);
+      ctx.bezierCurveTo(ninaSigX + 94, ninaSigY + 24, ninaSigX + 96, ninaSigY + 16, ninaSigX + 92, ninaSigY + 12);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ninaSigX + 92, ninaSigY + 13);
+      ctx.quadraticCurveTo(ninaSigX + 100, ninaSigY + 24, ninaSigX + 112, ninaSigY + 30);
+      ctx.stroke();
+
+      ctx.restore();
 
       ctx.font = 'bold 12px "Georgia", serif';
       ctx.fillStyle = '#2D3748';
-      ctx.fillText(language === 'en' ? "Nina, Chief Instructor" : "首席導師 Nina", 300, sigLineY + 18);
+      ctx.fillText("Nina", 300, sigLineY + 18);
 
       // Right: Steven (Game Creator)
       ctx.beginPath();
@@ -1120,11 +1178,25 @@ export function Profile() {
                     {/* Left: Nina's Signature */}
                     <div className="text-center space-y-1">
                       <div className="h-10 flex items-center justify-center">
-                        <span className="font-serif italic text-2xl text-[#0F2C59] select-none">Nina Dancer</span>
+                        <svg viewBox="0 0 120 80" className="h-12 w-32 object-contain text-slate-950 pointer-events-none drop-shadow-sm select-none">
+                          {/* N */}
+                          <path d="M 25 15 Q 23 40 28 65" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <path d="M 27 22 L 42 63" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <path d="M 38 63 Q 39 45 39 25" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          {/* i */}
+                          <path d="M 53 43 Q 54 54 56 64" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <path d="M 49 35 L 54 33" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+                          {/* n */}
+                          <path d="M 62 45 L 63 64" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <path d="M 62 49 Q 68 42 74 46 L 78 64" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          {/* a */}
+                          <path d="M 92 52 C 84 50 80 60 87 64 C 94 64 96 56 92 52 Z" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <path d="M 92 53 Q 100 64 112 70" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
                       </div>
                       <div className="w-40 border-t border-slate-400 mx-auto" />
                       <p className="text-[10px] font-bold text-slate-600">
-                        {language === 'en' ? 'Nina, Chief Instructor' : '首席導師 Nina'}
+                        Nina
                       </p>
                     </div>
 
