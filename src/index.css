@@ -37,6 +37,42 @@ body {
    Night in the Forest CSS Theme (ForestCampIslandNode)
    ========================================================================== */
 
+/* Custom Glow Variables based on Theme */
+.bg_default {
+  --glow-1: rgba(99, 102, 241, 0.9);
+  --glow-2: rgba(79, 70, 229, 0.7);
+  --glow-3: rgba(67, 56, 202, 0.45);
+  --glow-4: rgba(49, 46, 129, 0.25);
+}
+
+.bg_forest {
+  --glow-1: rgba(16, 185, 129, 0.9);
+  --glow-2: rgba(5, 150, 105, 0.7);
+  --glow-3: rgba(4, 120, 87, 0.45);
+  --glow-4: rgba(6, 95, 70, 0.25);
+}
+
+.bg_castle {
+  --glow-1: rgba(245, 158, 11, 0.9);
+  --glow-2: rgba(217, 119, 6, 0.7);
+  --glow-3: rgba(180, 83, 9, 0.45);
+  --glow-4: rgba(146, 64, 14, 0.25);
+}
+
+.bg_ocean {
+  --glow-1: rgba(6, 182, 212, 0.9);
+  --glow-2: rgba(8, 145, 178, 0.7);
+  --glow-3: rgba(15, 118, 110, 0.45);
+  --glow-4: rgba(21, 94, 117, 0.25);
+}
+
+.bg_cyber {
+  --glow-1: rgba(217, 70, 239, 0.9);
+  --glow-2: rgba(192, 38, 211, 0.7);
+  --glow-3: rgba(162, 28, 175, 0.45);
+  --glow-4: rgba(112, 26, 117, 0.25);
+}
+
 @keyframes stageBackground {
   0%, 10%, 90%, 100% { 
     background-color: #00B6BB;
@@ -54,17 +90,17 @@ body {
 @keyframes sunrise {
   0%, 10%, 90%, 100% { 
     box-shadow: 
-      0 0 0 25px rgba(90, 214, 189, 1),
-      0 0 0 40px rgba(74, 206, 173, 1),
-      0 0 0 60px rgba(74, 206, 173, .6),
-      0 0 0 90px rgba(74, 206, 173, .3);
+      0 0 0 25px var(--glow-1, rgba(99, 102, 241, 1)),
+      0 0 0 40px var(--glow-2, rgba(79, 70, 229, 1)),
+      0 0 0 60px var(--glow-3, rgba(67, 56, 202, .6)),
+      0 0 0 90px var(--glow-4, rgba(49, 46, 129, .3));
   }
   25%, 75%  { 
     box-shadow: 
-      0 0 0 0 rgba(90, 214, 189, 1),
-      0 0 0 0 rgba(74, 206, 173, 1),
-      0 0 0 0 rgba(74, 206, 173, .6),
-      0 0 0 0 rgba(74, 206, 173, .3);
+      0 0 0 0 var(--glow-1, rgba(99, 102, 241, 1)),
+      0 0 0 0 var(--glow-2, rgba(79, 70, 229, 1)),
+      0 0 0 0 var(--glow-3, rgba(67, 56, 202, .6)),
+      0 0 0 0 var(--glow-4, rgba(49, 46, 129, .3));
   }
 }
 
@@ -688,10 +724,10 @@ body {
   left: 40%;
   border-radius: 50%;
   box-shadow: 
-    0 0 0 25px rgba(90, 214, 189, 1),
-    0 0 0 40px rgba(74, 206, 173, 1),
-    0 0 0 60px rgba(74, 206, 173, .6),
-    0 0 0 90px rgba(74, 206, 173, .3);
+    0 0 0 25px var(--glow-1, rgba(99, 102, 241, 1)),
+    0 0 0 40px var(--glow-2, rgba(79, 70, 229, 1)),
+    0 0 0 60px var(--glow-3, rgba(67, 56, 202, .6)),
+    0 0 0 90px var(--glow-4, rgba(49, 46, 129, .3));
   animation: sunrise 5s ease-in-out infinite;
   background-color: #ef9431;
 }

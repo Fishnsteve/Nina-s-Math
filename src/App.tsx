@@ -131,7 +131,7 @@ function AppContent() {
   }
 
   return (
-    <div className={`font-sans text-slate-100 ${baseBg} h-screen relative overflow-hidden flex flex-col transition-colors duration-1000`}>
+    <div className={`font-sans text-slate-100 ${baseBg} ${equippedBackground} h-screen relative overflow-hidden flex flex-col transition-colors duration-1000`}>
       <div className="fixed inset-0 z-0 pointer-events-none">
         <BackgroundVisuals bgId={equippedBackground} scrollProgress={activeTab === 'map' ? scrollProgress : 0} />
       </div>

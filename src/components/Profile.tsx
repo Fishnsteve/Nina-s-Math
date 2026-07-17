@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
 import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle, Instagram, Facebook, Gift, X, FileDown } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -201,8 +201,47 @@ export function Profile() {
   };
 
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const containerWrapperRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    if (!showCertificateModal) return;
+
+    const timer = setTimeout(() => {
+      if (containerWrapperRef.current) {
+        const width = containerWrapperRef.current.getBoundingClientRect().width;
+        setScale(Math.min(1, Math.max(280, width) / 720));
+      }
+    }, 50);
+
+    const updateScale = () => {
+      if (containerWrapperRef.current) {
+        const width = containerWrapperRef.current.getBoundingClientRect().width;
+        setScale(Math.min(1, Math.max(280, width) / 720));
+      }
+    };
+
+    window.addEventListener('resize', updateScale);
+
+    let observer: ResizeObserver | null = null;
+    if (containerWrapperRef.current) {
+      observer = new ResizeObserver(() => {
+        updateScale();
+      });
+      observer.observe(containerWrapperRef.current);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateScale);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [showCertificateModal]);
   const [recipientName, setRecipientName] = useState(language === 'en' ? 'Ultimate Math Champ' : '終極數學大師');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState<'active' | 'claimed'>('active');
 
   const [ninaSigSrc, setNinaSigSrc] = useState('https://raw.githubusercontent.com/Fishnsteve/Logo/main/NinaSignature.png');
   const [ninaSigFailed, setNinaSigFailed] = useState(false);
@@ -595,6 +634,10 @@ export function Profile() {
 
   const totalQuestionsAnswered = Object.values(completedLevels).reduce((acc, curr) => acc + curr, 0) * 3; // Approx
 
+  const activeAchievements = ACHIEVEMENTS.filter(achievement => !claimedAchievements.includes(achievement.id));
+  const claimedList = ACHIEVEMENTS.filter(achievement => claimedAchievements.includes(achievement.id));
+  const displayAchievements = activeTab === 'active' ? activeAchievements : claimedList;
+
   return (
     <div className="w-full pb-32 pt-6 px-4 relative overflow-hidden flex flex-col">
       {/* Immersive Sulan Dancer Background Art - Only appears when all collectibles are purchased */}
@@ -607,292 +650,228 @@ export function Profile() {
         />
       )}
       
-      <div className="max-w-2xl mx-auto space-y-6 relative z-10">
+      <div className="max-w-2xl mx-auto w-full space-y-5 relative z-10">
         
-        {/* Header Avatar */}
-        <div className="bg-white/5 backdrop-blur-lg rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col items-center">
-          <div className="w-48 h-48 mb-4 relative">
-            <NinaAvatar />
-            <div className="absolute bottom-2 right-2 z-20 bg-gradient-to-tr from-pink-500 to-rose-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black border-2 border-white/20 shadow-lg text-lg">
-              {level}
+        {/* Unified Profile & Stats Dashboard */}
+        <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl p-5 md:p-6 border border-white/10 shadow-2xl relative overflow-hidden">
+          {/* Subtle light accent background reflection */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center text-center shrink-0">
+              <div className="w-28 h-28 md:w-32 md:h-32 relative mb-2">
+                <NinaAvatar />
+                <div className="absolute -bottom-1 -right-1 z-20 bg-gradient-to-tr from-pink-500 to-rose-500 text-white w-9 h-9 rounded-full flex items-center justify-center font-black border-2 border-slate-900 shadow-lg text-sm">
+                  {level}
+                </div>
+              </div>
+              <h2 className="text-xl md:text-2xl font-black text-white tracking-tight leading-tight">{profileTitle}</h2>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 mt-1.5 bg-pink-500/10 border border-pink-500/20 rounded-full">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                <span className="text-pink-300 font-extrabold text-[10px] tracking-wider uppercase">XP: {xp}</span>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="hidden md:block w-px h-28 bg-white/10" />
+
+            {/* Stats Grid Section */}
+            <div className="w-full grid grid-cols-2 gap-3">
+              {/* Day Streak */}
+              <div className="bg-white/[0.02] hover:bg-white/[0.05] p-3 rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                <div className="p-2 bg-orange-500/10 rounded-xl text-orange-400 border border-orange-500/20">
+                  <Flame className="w-4 h-4 fill-orange-400" />
+                </div>
+                <div>
+                  <div className="text-base md:text-lg font-black text-white">{currentStreak}</div>
+                  <div className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t.profile.dayStreak}</div>
+                </div>
+              </div>
+
+              {/* Total Stars */}
+              <div className="bg-white/[0.02] hover:bg-white/[0.05] p-3 rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                  <Star className="w-4 h-4 fill-amber-400" />
+                </div>
+                <div>
+                  <div className="text-base md:text-lg font-black text-white">{stars}</div>
+                  <div className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t.profile.totalStars}</div>
+                </div>
+              </div>
+
+              {/* Questions Answered */}
+              <div className="bg-white/[0.02] hover:bg-white/[0.05] p-3 rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+                  <Target className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-base md:text-lg font-black text-white">{totalQuestionsAnswered}</div>
+                  <div className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t.profile.questions}</div>
+                </div>
+              </div>
+
+              {/* Best Streak */}
+              <div className="bg-white/[0.02] hover:bg-white/[0.05] p-3 rounded-2xl border border-white/5 transition-all flex items-center gap-3">
+                <div className="p-2 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
+                  <Trophy className="w-4 h-4 text-purple-400" />
+                </div>
+                <div>
+                  <div className="text-base md:text-lg font-black text-white">{maxStreak}</div>
+                  <div className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t.profile.bestStreak}</div>
+                </div>
+              </div>
             </div>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight">{profileTitle}</h2>
-          <p className="text-pink-300/80 font-bold text-sm tracking-widest uppercase mt-1">XP: {xp}</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-white/5 backdrop-blur-lg p-4 rounded-[24px] border border-white/10 shadow-lg flex items-center gap-4">
-            <div className="p-3 bg-orange-500/20 rounded-2xl text-orange-400 border border-orange-500/30">
-              <Flame className="w-6 h-6 fill-orange-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">{currentStreak}</div>
-              <div className="text-xs text-blue-200/60 font-bold uppercase tracking-wider">{t.profile.dayStreak}</div>
-            </div>
-          </motion.div>
-          
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-white/5 backdrop-blur-lg p-4 rounded-[24px] border border-white/10 shadow-lg flex items-center gap-4">
-            <div className="p-3 bg-amber-500/20 rounded-2xl text-amber-400 border border-amber-500/30">
-              <Star className="w-6 h-6 fill-amber-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">{stars}</div>
-              <div className="text-xs text-blue-200/60 font-bold uppercase tracking-wider">{t.profile.totalStars}</div>
-            </div>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-white/5 backdrop-blur-lg p-4 rounded-[24px] border border-white/10 shadow-lg flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/20 rounded-2xl text-emerald-400 border border-emerald-500/30">
-              <Target className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">{totalQuestionsAnswered}</div>
-              <div className="text-xs text-blue-200/60 font-bold uppercase tracking-wider">{t.profile.questions}</div>
-            </div>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-white/5 backdrop-blur-lg p-4 rounded-[24px] border border-white/10 shadow-lg flex items-center gap-4">
-            <div className="p-3 bg-purple-500/20 rounded-2xl text-purple-400 border border-purple-500/30">
-              <Trophy className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">{maxStreak}</div>
-              <div className="text-xs text-blue-200/60 font-bold uppercase tracking-wider">{t.profile.bestStreak}</div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* PWA Home Screen Installation Section */}
-        <div className="bg-gradient-to-br from-pink-600/20 to-purple-600/5 backdrop-blur-lg rounded-[32px] p-6 shadow-xl border border-pink-500/20 mt-6 relative overflow-hidden">
-          {/* Decorative glowing background item */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl -z-10 pointer-events-none" />
-          
-          <h3 className="font-black text-sm uppercase tracking-widest text-pink-300 mb-3 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-pink-400 animate-pulse" />
-            {language === 'en' ? 'Install to Home Screen' : '安裝至主畫面'}
-          </h3>
-
-          {isStandalone ? (
-            <div className="flex items-start gap-4 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
-              <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-emerald-300 text-sm">
-                  {language === 'en' ? 'Already Installed!' : '已成功安裝！'}
-                </h4>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  {language === 'en' 
-                    ? "Nina's Math Quest is running directly from your home screen as an immersive full-screen application." 
-                    : "《Nina's Math Quest》已成功安裝，您正直接從主畫面啟動此全螢幕沉浸式遊戲。"}
-                </p>
-              </div>
-            </div>
-          ) : canInstall ? (
-            <div className="space-y-4">
-              <p className="text-xs text-slate-200 leading-relaxed">
+        {/* PWA Home Screen Installation Row */}
+        {!isStandalone && (
+          <div className="bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/5 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
+            <div className="space-y-0.5">
+              <h3 className="font-extrabold text-xs text-pink-300 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                {language === 'en' ? 'Install App Shortcut' : '將遊戲新增至主畫面'}
+              </h3>
+              <p className="text-[11px] text-slate-400 max-w-md leading-relaxed">
                 {language === 'en' 
-                  ? "Launch Nina's Quest directly from your home screen! Tap install to save the app with our high-definition Pink Sulan Nina icon." 
-                  : "直接從主畫面啟動 Nina 的冒險！點擊下方安裝，即可使用專屬粉紅素蘭 Nina 高畫質圖示快速啟動遊戲。"}
+                  ? "Launch in full-screen with high-definition Pink Sulan Nina icon from your home screen." 
+                  : "解鎖沉浸式全螢幕滿版視野，使用專屬粉紅素蘭 Nina 圖示快速啟動冒險。"}
               </p>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleInstallClick}
-                className="w-full py-3 px-6 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-sm rounded-2xl shadow-[0_4px_20px_rgba(244,63,94,0.3)] hover:shadow-[0_4px_25px_rgba(244,63,94,0.45)] transition-all flex items-center justify-center gap-2 border border-pink-400/20"
-              >
-                <Download className="w-4 h-4" />
-                {language === 'en' ? 'Install Nina\'s Math Quest' : '立即安裝遊戲'}
-              </motion.button>
             </div>
-          ) : isIOS ? (
-            <div className="space-y-3">
-              <p className="text-xs text-slate-200 leading-relaxed">
-                {language === 'en' 
-                  ? "iOS devices don't support one-click installations, but you can easily add Nina to your home screen:" 
-                  : "iOS 系統不支援一鍵自動安裝，但您可以透過以下簡單步驟將 Nina 新增至主畫面："}
-              </p>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 space-y-2.5 text-xs text-slate-300">
-                <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 bg-pink-500/20 text-pink-300 font-bold rounded-full flex items-center justify-center text-xs shrink-0">1</span>
-                  <span className="leading-relaxed">
-                    {language === 'en' ? 'Tap the Share button ' : '點擊瀏覽器下方的分享按鈕 '}
-                    <Share2 className="w-4 h-4 inline mx-1 text-pink-400" />
-                    {language === 'en' ? 'in your Safari bar.' : '（在 Safari 工具列中）。'}
-                  </span>
+            
+            <div className="shrink-0 flex items-center w-full sm:w-auto">
+              {canInstall ? (
+                <button
+                  onClick={handleInstallClick}
+                  className="w-full sm:w-auto py-2 px-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 border border-pink-400/20"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  {language === 'en' ? 'Install' : '立即安裝'}
+                </button>
+              ) : isIOS ? (
+                <div className="w-full text-center sm:text-left text-[11px] font-semibold text-slate-300 bg-white/5 rounded-xl px-3 py-2 border border-white/5 flex items-center justify-center gap-1.5">
+                  <Share2 className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                  <span>{language === 'en' ? "Tap Share → Add to Home" : "請點選分享 → 加入主畫面"}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 bg-pink-500/20 text-pink-300 font-bold rounded-full flex items-center justify-center text-xs shrink-0">2</span>
-                  <span className="leading-relaxed">
-                    {language === 'en' ? 'Scroll down and select ' : '向下捲動選單並選擇 '}
-                    <span className="font-bold text-white flex items-center gap-1 inline-flex bg-white/10 px-2 py-0.5 rounded text-[11px] align-middle">
-                      <PlusSquare className="w-3.5 h-3.5 text-pink-400" />
-                      {language === 'en' ? 'Add to Home Screen' : '加入主畫面'}
-                    </span>
-                  </span>
+              ) : (
+                <div className="w-full text-center sm:text-left text-[11px] font-semibold text-slate-300 bg-white/5 rounded-xl px-3 py-2 border border-white/5 flex items-center justify-center gap-1.5">
+                  <span className="text-pink-400 font-bold">⋮</span>
+                  <span>{language === 'en' ? "Menu → Install App" : "選單 → 安裝或新增捷徑"}</span>
                 </div>
-              </div>
+              )}
             </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-xs text-slate-200 leading-relaxed">
-                {language === 'en' 
-                  ? "Launch directly from your home screen with a full-screen display and our custom Nina with Pink Sulan icon!" 
-                  : "在手機或電腦主畫面建立捷徑，享受滿版全螢幕視野與粉紅素蘭 Nina 專屬的高清遊戲圖示！"}
-              </p>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-xs text-slate-300 space-y-2">
-                <p className="font-semibold text-pink-300">
-                  {language === 'en' ? 'Quick Install Tip:' : '如何手動安裝：'}
-                </p>
-                <p className="leading-relaxed">
-                  {language === 'en' 
-                    ? "Click the browser menu (usually three dots ⋮ or a direct install icon ⊕ in the address bar) and select 'Install' or 'Add to Home Screen' to save." 
-                    : "點選瀏覽器選單（右上角的三個點 ⋮ 或網址列右側的 ⊕ 圖示），接著選擇「安裝」或「新增至主畫面」即可完成。"}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Real-Life Mystery Gift Voucher (Completion Symbol) */}
+        {/* Real-Life Mystery Gift Voucher (Completion Symbol - Slim, Compact, Classy, Fully Golden!) */}
         {purchasedCount >= 12 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 100 }}
-            className="p-8 bg-gradient-to-br from-amber-500 via-yellow-400 to-orange-500 rounded-[36px] border-4 border-amber-300 shadow-2xl text-slate-950 space-y-6 relative overflow-hidden"
-            style={{
-              boxShadow: "0 0 40px rgba(245, 158, 11, 0.5)",
-            }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4.5 bg-gradient-to-br from-[#FFF5C3] via-[#E0B034] to-[#8A6405] rounded-3xl border-2 border-[#FFF5C3] shadow-[0_8px_30px_rgba(224,176,52,0.35)] relative overflow-hidden flex flex-col sm:flex-row items-center gap-4 text-slate-950"
           >
-            {/* Holographic glowing stripes */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 -translate-x-full animate-pulse pointer-events-none" />
+            {/* Elegant luxury gold corner accents */}
+            <div className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 border-[#785108]/30" />
+            <div className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 border-[#785108]/30" />
+            <div className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 border-[#785108]/30" />
+            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 border-[#785108]/30" />
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-950/20 pb-4">
-              <span className="text-[11px] font-black tracking-widest bg-slate-950 text-amber-400 px-4 py-1.5 rounded-full uppercase self-start sm:self-auto">
-                {language === 'en' ? '🏆 OFFICIAL GOLD AWARD CERTIFICATE' : '🏆 官方黃金認證榮譽'}
-              </span>
-              <div className="flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-slate-950 animate-bounce" />
-                <Award className="w-6 h-6 text-slate-950" />
-              </div>
+            {/* Shimmer overlay effect */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 pointer-events-none animate-pulse" style={{ animationDuration: '4s' }} />
+
+            {/* Glowing Golden Holographic Seal (Compact, elegant stamp) */}
+            <div className="w-14 h-14 rounded-full bg-slate-950/15 border-2 border-[#785108]/30 flex items-center justify-center text-2xl shrink-0 shadow-[0_4px_15px_rgba(0,0,0,0.15)] relative">
+              <span className="animate-bounce" style={{ animationDuration: '3s' }}>🎁</span>
+              <div className="absolute inset-1 rounded-full border border-dashed border-[#785108]/20" />
             </div>
 
-            <div className="space-y-3">
-              <h3 className="text-3xl font-black tracking-tight leading-tight uppercase flex items-center gap-2">
-                <Gift className="w-7 h-7 fill-slate-950 stroke-[2.5]" />
-                {language === 'en' ? 'ULTIMATE MYSTERY GIFT' : '終極神秘實體大禮'}
-              </h3>
-              <p className="text-sm font-extrabold text-slate-900 leading-relaxed">
+            {/* Core Info */}
+            <div className="flex-1 text-center sm:text-left space-y-0.5 z-10">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-center sm:justify-start">
+                <h3 className="text-sm font-black tracking-wider text-slate-950 uppercase">
+                  {language === 'en' ? 'Ultimate Mystery Gift Unlocked' : '已解鎖：終極神秘實體大禮'}
+                </h3>
+                <span className="inline-flex items-center gap-1 text-[9px] font-black text-white bg-red-600 px-2 py-0.5 rounded-full uppercase tracking-widest border border-red-400/30 self-center sm:self-auto shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  {language === 'en' ? 'Valid' : '有效'}
+                </span>
+              </div>
+              <p className="text-xs text-[#3D2C04] font-bold leading-normal max-w-xl">
                 {language === 'en' 
-                  ? 'Outstanding! You have claimed all dancer items in the studio. We have minted a premium Certificate of Supremacy for you. Present this certificate or download the official image to claim your physical mystery gift from Steven!' 
-                  : '太震撼了！您已成功收集舞蹈工作室全部限定舞伴道具。系統已為您鑄造專屬白金勳章證書，在現實生活中向 Steven 出示證書或直接下載官方認證圖片，即可兌換神秘實體禮物！'}
+                  ? 'Congratulations! Present your official Certificate of Supremacy to claim your physical reward from Steven.' 
+                  : '恭喜！您已收集全部商城道具。請自訂您的官方認證證書，向 Steven 兌換神秘實體大禮。'}
               </p>
             </div>
 
-            {/* Glowing Golden Holographic Seal (The Completion Symbol) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-6 p-5 bg-slate-950/10 rounded-2xl border border-slate-950/10">
-              <div className="md:col-span-4 flex items-center justify-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-600 border-2 border-slate-950 flex items-center justify-center shadow-lg relative animate-[spin_20s_linear_infinite] shrink-0">
-                  <span className="text-4xl select-none">🏆</span>
-                  <div className="absolute inset-0 rounded-full border border-dashed border-slate-950/40 m-1.5" />
-                </div>
-                <div className="w-12 h-12 rounded-full bg-slate-950/5 flex items-center justify-center border border-dashed border-slate-950/20 text-2xl">
-                  👑
-                </div>
-              </div>
-
-              <div className="md:col-span-4 space-y-1 text-center md:text-left">
-                <div className="font-mono text-sm font-black tracking-widest text-slate-950">
-                  REF: MQ-COLLECT-2026
-                </div>
-                <div className="text-[11px] font-black text-slate-800 uppercase tracking-widest flex items-center justify-center md:justify-start gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                  {language === 'en' ? 'STATUS: VALID FOR EXCHANGE' : '狀態：有效且可兌換'}
-                </div>
-              </div>
-
-              {/* Authorized Logo Signature on Card */}
-              <div className="md:col-span-4 flex flex-col items-center md:items-end justify-center border-t md:border-t-0 md:border-l border-slate-950/10 pt-4 md:pt-0 md:pl-4">
-                <span className="text-[9px] font-black uppercase tracking-widest text-slate-800/80 mb-1">
-                  {language === 'en' ? 'Authorized Signature' : '官方手寫簽名認證'}
-                </span>
-                <div className="relative h-10 flex items-center justify-center">
-                  <img 
-                    src="https://raw.githubusercontent.com/Fishnsteve/Logo/main/BlackSignature.png" 
-                    alt="Steven Signature" 
-                    className="h-10 object-contain pointer-events-none drop-shadow-sm select-none" 
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                      const parent = (e.target as HTMLElement).parentElement;
-                      if (parent) {
-                        const fallback = document.createElement('span');
-                        fallback.className = "font-serif italic font-bold text-lg text-slate-950 select-none";
-                        fallback.innerText = "Steven";
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
-                </div>
-                <span className="text-[9px] font-black text-slate-900 mt-1">
-                  Steven, Game Creator
-                </span>
-              </div>
-            </div>
-
-            {/* Interactive Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            {/* Compact Actions */}
+            <div className="shrink-0 w-full sm:w-auto z-10">
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   audioEngine.play('click');
                   setShowCertificateModal(true);
                 }}
-                className="flex-1 py-3.5 px-6 bg-slate-950 text-amber-400 hover:text-amber-300 font-black text-sm rounded-2xl shadow-xl border border-slate-800 hover:border-amber-400/30 flex items-center justify-center gap-2 transition-all"
+                className="w-full sm:w-auto py-2.5 px-5 bg-slate-950 text-amber-300 hover:bg-slate-900 font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_4px_15px_rgba(0,0,0,0.25)] border border-[#D4AF37]/30 transition-all cursor-pointer"
               >
-                <Award className="w-4 h-4 animate-spin-slow" />
-                <span>{language === 'en' ? 'View & Customise Award' : '自訂與預覽官方證書'}</span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={downloadCertificate}
-                disabled={isGenerating}
-                className="flex-1 py-3.5 px-6 bg-slate-900 text-white font-black text-sm rounded-2xl shadow-xl hover:bg-slate-800 border border-white/10 flex items-center justify-center gap-2 transition-all disabled:opacity-55"
-              >
-                {isGenerating ? (
-                  <>
-                    <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                    <span>{language === 'en' ? 'Generating Image...' : '正在繪製證書...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <FileDown className="w-4 h-4 text-amber-400" />
-                    <span>{language === 'en' ? 'Fast Download PNG' : '快速下載證書圖檔'}</span>
-                  </>
-                )}
+                <Award className="w-3.5 h-3.5 text-amber-300" />
+                <span>{language === 'en' ? 'Open Pass' : '打開並自訂證書'}</span>
               </motion.button>
             </div>
           </motion.div>
         )}
 
         {/* Achievements Section */}
-        <div className="bg-white/5 backdrop-blur-lg rounded-[32px] p-6 shadow-xl border border-white/10 mt-6">
-          <h3 className="font-black text-sm uppercase tracking-widest text-pink-400 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-400 animate-bounce" /> 
-            {language === 'en' ? 'Quest Achievements' : '冒險成就與專屬獎勵'}
-          </h3>
-          <p className="text-xs text-slate-300 mb-5 leading-relaxed">
-            {language === 'en' 
-              ? 'Complete learning milestones to earn exclusive coin rewards, gems, and access to Steven\'s LINE chat!' 
-              : '達成各項數學與學習里程碑，即可領取金幣、寶石，甚至解鎖 Steven 的個人專屬 LINE 帳號！'}
-          </p>
+        <div className="bg-slate-900/40 backdrop-blur-xl rounded-3xl p-4 md:p-5 border border-white/5 shadow-xl">
+          <div className="flex items-center gap-2 mb-3.5">
+            <Trophy className="w-5 h-5 text-amber-400 fill-amber-400/10 shrink-0" /> 
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-pink-300">
+              {language === 'en' ? 'Quest Achievements' : '冒險成就與專屬獎勵'}
+            </h3>
+          </div>
 
-          <div className="space-y-4">
-            {ACHIEVEMENTS.map(achievement => {
+          {/* Tab Switcher */}
+          <div className="flex p-1 bg-white/[0.03] rounded-xl border border-white/5 mb-4">
+            <button
+              onClick={() => {
+                audioEngine.play('click');
+                setActiveTab('active');
+              }}
+              className={`flex-1 py-1.5 px-3 text-xs font-black rounded-lg transition-all flex items-center justify-center gap-2 ${
+                activeTab === 'active'
+                  ? 'bg-pink-500/10 text-pink-300 border border-pink-500/20 shadow-sm'
+                  : 'text-slate-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <Target className="w-3.5 h-3.5" />
+              <span>{language === 'en' ? 'Active Quests' : '進行中任務'}</span>
+              <span className="px-1.5 py-0.5 bg-pink-500/20 text-pink-300 text-[10px] font-black rounded-full leading-none">
+                {activeAchievements.length}
+              </span>
+            </button>
+            
+            <button
+              onClick={() => {
+                audioEngine.play('click');
+                setActiveTab('claimed');
+              }}
+              className={`flex-1 py-1.5 px-3 text-xs font-black rounded-lg transition-all flex items-center justify-center gap-2 ${
+                activeTab === 'claimed'
+                  ? 'bg-pink-500/10 text-pink-300 border border-pink-500/20 shadow-sm'
+                  : 'text-slate-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{language === 'en' ? 'Claimed' : '已領取獎勵'}</span>
+              <span className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[10px] font-black rounded-full leading-none">
+                {claimedList.length}
+              </span>
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {displayAchievements.map(achievement => {
               const currentVal = achievement.current({ 
                 completedLevels, 
                 completedDifficulties,
@@ -909,205 +888,155 @@ export function Profile() {
               return (
                 <div 
                   key={achievement.id} 
-                  className={`relative flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-2xl border transition-all duration-300 ${
+                  className={`flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
                     isClaimed 
-                      ? 'bg-emerald-950/20 border-emerald-500/20 opacity-90' 
+                      ? 'bg-emerald-950/5 border-emerald-500/10 opacity-75' 
                       : isCompleted
-                      ? 'bg-pink-950/20 border-pink-400/40 shadow-[0_0_15px_rgba(244,114,182,0.15)]'
-                      : 'bg-white/5 border-white/5'
+                      ? 'bg-pink-950/10 border-pink-500/20 shadow-[0_0_15px_rgba(244,114,182,0.05)]'
+                      : 'bg-white/[0.02] border-white/5'
                   }`}
                 >
-                  {/* Badge & Icon */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border transition-all ${
+                  {/* Left row / top section of item */}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {/* Badge & Icon */}
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg border shrink-0 transition-all ${
                       isClaimed 
-                        ? 'bg-emerald-500/20 border-emerald-400/30' 
+                        ? 'bg-emerald-500/10 border-emerald-400/20' 
                         : isCompleted
-                        ? 'bg-pink-500/30 border-pink-400/50 text-2xl animate-pulse shadow-[0_0_12px_rgba(244,114,182,0.3)]'
-                        : 'bg-slate-800/40 border-slate-700/30 grayscale'
+                        ? 'bg-pink-500/20 border-pink-400/30 text-xl animate-pulse'
+                        : 'bg-white/5 border-white/5 grayscale opacity-60'
                     }`}>
                       {achievement.icon}
                     </div>
-                    
-                    {/* Small screen label */}
-                    <div className="md:hidden flex-1">
-                      <h4 className={`font-bold text-sm ${isCompleted ? 'text-pink-300 font-black' : 'text-white'}`}>
-                        {language === 'en' ? achievement.title.en : achievement.title.zh}
-                      </h4>
-                      <div className="text-[11px] font-bold text-pink-400/80 uppercase tracking-wider">
-                        {language === 'en' ? achievement.rewardLabel.en : achievement.rewardLabel.zh}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Info and Progress Bar */}
-                  <div className="flex-1 min-w-0">
-                    {/* Title & Reward Info - Desktop Screen */}
-                    <div className="hidden md:flex md:items-center justify-between gap-2 mb-1">
-                      <h4 className={`font-bold text-base ${isCompleted ? 'text-pink-300 font-black' : 'text-white'}`}>
-                        {language === 'en' ? achievement.title.en : achievement.title.zh}
-                      </h4>
-                      <span className={`text-xs font-black px-2 py-0.5 rounded-md ${
-                        isClaimed 
-                          ? 'bg-emerald-500/10 text-emerald-400'
-                          : 'bg-pink-500/10 text-pink-300 animate-pulse'
-                      }`}>
-                        {language === 'en' ? achievement.rewardLabel.en : achievement.rewardLabel.zh}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-300 leading-relaxed mb-2.5">
-                      {language === 'en' ? achievement.description.en : achievement.description.zh}
-                    </p>
-
-                    {/* Progress Bar */}
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-slate-400">
-                        <span>
-                          {isClaimed 
-                            ? (language === 'en' ? 'CLAIMED' : '已領取獎勵') 
-                            : isCompleted 
-                            ? (language === 'en' ? 'UNLOCKED' : '已達成') 
-                            : (language === 'en' ? 'IN PROGRESS' : '進行中')}
+                    {/* Info and Progress Bar */}
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h4 className={`font-extrabold text-xs truncate ${isCompleted && !isClaimed ? 'text-pink-300' : 'text-white'}`}>
+                          {language === 'en' ? achievement.title.en : achievement.title.zh}
+                        </h4>
+                        <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                          {Math.min(achievement.target, currentVal)}/{achievement.target}
                         </span>
-                        <span>{Math.min(achievement.target, currentVal)} / {achievement.target}</span>
                       </div>
-                      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                        <motion.div 
-                          className={`h-full rounded-full ${
-                            isClaimed 
-                              ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                              : isCompleted 
-                              ? 'bg-gradient-to-r from-pink-500 to-rose-400' 
-                              : 'bg-gradient-to-r from-blue-500 to-cyan-400'
-                          }`}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progressPercent}%` }}
-                          transition={{ duration: 0.5, ease: 'easeOut' }}
-                        />
+                      
+                      <p className="text-[11px] text-slate-400 leading-normal line-clamp-1">
+                        {language === 'en' ? achievement.description.en : achievement.description.zh}
+                      </p>
+
+                      {/* Progress Bar & Reward Label */}
+                      <div className="flex items-center gap-3 pt-0.5">
+                        <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            className={`h-full rounded-full ${
+                              isClaimed 
+                                ? 'bg-emerald-500'
+                                : isCompleted 
+                                ? 'bg-pink-500' 
+                                : 'bg-blue-500'
+                            }`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progressPercent}%` }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </div>
+                        <span className={`text-[9px] font-black uppercase tracking-wider shrink-0 ${isCompleted && !isClaimed ? 'text-pink-300 animate-pulse' : 'text-slate-400'}`}>
+                          {language === 'en' ? achievement.rewardLabel.en : achievement.rewardLabel.zh}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions / Status Button */}
-                  <div className="shrink-0 mt-2 md:mt-0 flex flex-col gap-2 w-full md:w-auto">
+                  {/* Actions Button */}
+                  <div className="shrink-0 flex items-center justify-end sm:pl-2 w-full sm:w-auto border-t sm:border-0 border-white/5 pt-2 sm:pt-0">
                     {isClaimed ? (
-                      <div className="flex flex-col gap-2 w-full">
-                        <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black rounded-xl flex items-center justify-center gap-1.5">
-                          <CheckCircle2 className="w-4 h-4" />
-                          {language === 'en' ? 'Claimed' : '已領取'}
+                      <div className="flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto">
+                        {/* Small claimed badge */}
+                        <div className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>{language === 'en' ? 'Claimed' : '已領取'}</span>
                         </div>
-                        {/* Once claimed, Steven's LINE remains permanently accessible */}
-                        {achievement.reward.isLineAccess && (
-                          <motion.a
-                            href="https://line.me/ti/p/JouU9u0l3j"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-[#06C755] hover:bg-[#05b04b] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(6,199,85,0.4)] border border-[#06C755]/20"
-                          >
-                            <MessageCircle className="w-4 h-4 fill-white text-[#06C755]" />
-                            <span>{language === 'en' ? "Steven's LINE" : "聯絡 Steven LINE"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isInstagramAccess && (
-                          <motion.a
-                            href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(219,39,119,0.4)] border border-pink-500/20"
-                          >
-                            <Instagram className="w-4 h-4" />
-                            <span>{language === 'en' ? "Steven's Instagram" : "追蹤 Steven IG"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isFacebookAccess && (
-                          <motion.a
-                            href="https://www.facebook.com/steven.sixeleven/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(24,119,242,0.4)] border border-[#1877F2]/20"
-                          >
-                            <Facebook className="w-4 h-4 fill-white text-[#1877F2]" />
-                            <span>{language === 'en' ? "Steven's Facebook" : "加 Steven 臉書"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isMysteryGift && (
-                          <div className="px-4 py-2 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.5)] border border-yellow-300/30">
-                            <Gift className="w-4 h-4 animate-bounce" />
-                            <span className="text-center leading-tight">
-                              {language === 'en' ? "Exchange in real life for Mystery Gift!" : "可兌換神秘實體禮物！請出示此畫面"}
-                            </span>
-                          </div>
-                        )}
+                        {/* Links if available */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {achievement.reward.isLineAccess && (
+                            <a
+                              href="https://line.me/ti/p/JouU9u0l3j"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>LINE</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                          {achievement.reward.isInstagramAccess && (
+                            <a
+                              href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>IG</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                          {achievement.reward.isFacebookAccess && (
+                            <a
+                              href="https://www.facebook.com/steven.sixeleven/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>FB</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     ) : isCompleted ? (
-                      <div className="flex flex-col gap-2 w-full">
-                        {/* Special interactive reward option */}
-                        {achievement.reward.isLineAccess && (
-                          <motion.a
-                            href="https://line.me/ti/p/JouU9u0l3j"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-[#06C755] hover:bg-[#05b04b] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(6,199,85,0.4)] border border-[#06C755]/20 animate-pulse"
-                          >
-                            <MessageCircle className="w-4 h-4 fill-white text-[#06C755]" />
-                            <span>{language === 'en' ? "Add Steven on LINE" : "加 Steven LINE"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isInstagramAccess && (
-                          <motion.a
-                            href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(219,39,119,0.4)] border border-pink-500/20 animate-pulse"
-                          >
-                            <Instagram className="w-4 h-4" />
-                            <span>{language === 'en' ? "Follow Steven on IG" : "追蹤 Steven IG"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isFacebookAccess && (
-                          <motion.a
-                            href="https://www.facebook.com/steven.sixeleven/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => audioEngine.play('click')}
-                            className="px-4 py-2 bg-[#1877F2] hover:bg-[#166fe5] text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(24,119,242,0.4)] border border-[#1877F2]/20 animate-pulse"
-                          >
-                            <Facebook className="w-4 h-4 fill-white text-[#1877F2]" />
-                            <span>{language === 'en' ? "Add Steven on Facebook" : "加 Steven 臉書"}</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </motion.a>
-                        )}
-                        {achievement.reward.isMysteryGift && (
-                          <div className="px-4 py-2 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.5)] border border-yellow-300/30 animate-pulse">
-                            <Gift className="w-4 h-4" />
-                            <span className="text-center leading-tight">
-                              {language === 'en' ? "Exchange in real life for Mystery Gift!" : "可兌換神秘實體禮物！請出示此畫面"}
-                            </span>
-                          </div>
-                        )}
+                      <div className="w-full sm:w-auto flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center">
+                        {/* Unclaimed bonus access links */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {achievement.reward.isLineAccess && (
+                            <a
+                              href="https://line.me/ti/p/JouU9u0l3j"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>LINE</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                          {achievement.reward.isInstagramAccess && (
+                            <a
+                              href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>IG</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                          {achievement.reward.isFacebookAccess && (
+                            <a
+                              href="https://www.facebook.com/steven.sixeleven/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => audioEngine.play('click')}
+                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>FB</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                        </div>
                         
                         <motion.button
                           whileHover={{ scale: 1.05 }}
@@ -1116,21 +1045,31 @@ export function Profile() {
                             audioEngine.play('unlock');
                             claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
                           }}
-                          className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-amber-400/20 flex items-center justify-center gap-1"
+                          className="py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] rounded-lg shadow-md border border-amber-400/20 flex items-center gap-0.5 shrink-0"
                         >
-                          <span>{language === 'en' ? 'CLAIM' : '領取獎勵'}</span>
+                          <span>{language === 'en' ? 'CLAIM' : '領取'}</span>
                         </motion.button>
                       </div>
                     ) : (
-                      <div className="px-4 py-2 bg-white/5 border border-white/5 text-slate-500 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5" />
-                        {language === 'en' ? 'Locked' : '尚未解鎖'}
+                      <div className="w-full sm:w-auto text-right flex items-center justify-end">
+                        <div className="text-[10px] font-bold text-slate-500 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg flex items-center justify-center gap-1 w-full sm:w-auto">
+                          <Lock className="w-3 h-3" />
+                          <span>{language === 'en' ? 'Locked' : '鎖定'}</span>
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
               );
             })}
+            
+            {displayAchievements.length === 0 && (
+              <div className="text-center py-8 text-slate-400 text-xs">
+                {activeTab === 'active'
+                  ? (language === 'en' ? '🎉 Amazing! You completed all quests!' : '🎉 太棒了！您已完成所有任務！')
+                  : (language === 'en' ? 'No achievements claimed yet. Complete quests to claim rewards!' : '尚未領取任何獎勵。完成任務並點擊領取吧！')}
+              </div>
+            )}
           </div>
         </div>
 
@@ -1179,8 +1118,18 @@ export function Profile() {
               </div>
 
               {/* Certificate Canvas Mock Visual representation (Matches downloaded file 100%!) */}
-              <div className="w-full overflow-x-auto rounded-2xl border border-white/10 shadow-2xl">
-                <div className="min-w-[680px] bg-[#FCFAF2] text-slate-950 p-10 rounded-2xl relative flex flex-col justify-between aspect-[1.5/1] overflow-hidden select-none border-[8px] border-[#B38B32] m-0.5">
+              <div 
+                ref={containerWrapperRef}
+                className="w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex justify-center bg-slate-950/40 p-2 relative"
+                style={{ height: `${453 * scale}px` }}
+              >
+                <div 
+                  style={{ 
+                    transform: `scale(${scale})`, 
+                    transformOrigin: 'top center',
+                  }}
+                  className="w-[680px] h-[453px] bg-[#FCFAF2] text-slate-950 p-8 rounded-2xl relative flex flex-col justify-between select-none border-[8px] border-[#B38B32] shrink-0"
+                >
                   {/* Decorative gold double accent frame */}
                   <div className="absolute inset-4 border border-[#D4AF37] pointer-events-none" />
                   <div className="absolute inset-5 border border-dashed border-[#AA8226]/40 pointer-events-none" />
@@ -1192,26 +1141,26 @@ export function Profile() {
                   <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-[#B38B32] pointer-events-none" />
 
                   {/* Header */}
-                  <div className="text-center space-y-1.5 z-10">
-                    <p className="font-serif tracking-[0.15em] text-xs font-bold text-slate-600">NINA'S MATH QUEST</p>
+                  <div className="text-center space-y-1 z-10">
+                    <p className="font-serif tracking-[0.15em] text-[10px] font-bold text-slate-600">NINA'S MATH QUEST</p>
                     <div className="h-0.5 w-32 bg-[#D4AF37] mx-auto" />
-                    <h4 className="font-serif text-xl sm:text-2xl font-black text-[#856404] tracking-tight uppercase mt-2">
+                    <h4 className="font-serif text-lg font-black text-[#856404] tracking-tight uppercase mt-1.5">
                       {language === 'en' ? 'Certificate of Ultimate Supremacy' : '終極數學大師暨全舞伴收藏勳章'}
                     </h4>
-                    <p className="font-serif italic text-xs text-slate-500">
+                    <p className="font-serif italic text-[11px] text-slate-500">
                       {language === 'en' ? 'This prestigious award is officially presented to:' : '此最高殊榮特此頒發予傑出冒險家：'}
                     </p>
                   </div>
 
                   {/* Custom Recipient Name Display */}
-                  <div className="text-center my-4 z-10">
-                    <span className="font-serif text-3xl font-bold text-[#92400E] border-b-2 border-[#B38B32] px-10 pb-1 uppercase tracking-wide inline-block max-w-[90%] truncate">
+                  <div className="text-center my-2 z-10">
+                    <span className="font-serif text-2xl font-bold text-[#92400E] border-b-2 border-[#B38B32] px-8 pb-0.5 uppercase tracking-wide inline-block max-w-[90%] truncate">
                       {recipientName || "THE MATH CHAMPION"}
                     </span>
                   </div>
 
                   {/* Certificate Body text */}
-                  <div className="text-center space-y-1.5 text-xs text-slate-700 leading-relaxed max-w-xl mx-auto z-10 font-serif">
+                  <div className="text-center space-y-1 text-[11px] text-slate-700 leading-relaxed max-w-xl mx-auto z-10 font-serif">
                     <p>
                       {language === 'en' 
                         ? 'For displaying exceptional mathematical intelligence, outstanding logical reasoning, and unbreakable perseverance.' 
@@ -1230,7 +1179,7 @@ export function Profile() {
                   </div>
 
                   {/* Seals & Signatures Row */}
-                  <div className="grid grid-cols-3 items-end pt-6 z-10 font-serif">
+                  <div className="grid grid-cols-3 items-end pt-4 z-10 font-serif">
                     {/* Left: Nina's Signature */}
                     <div className="text-center space-y-1">
                       <div className="h-10 flex items-center justify-center">
@@ -1238,12 +1187,12 @@ export function Profile() {
                           <img 
                             src={ninaSigSrc} 
                             alt="Nina Signature" 
-                            className="h-12 object-contain pointer-events-none drop-shadow-sm select-none" 
+                            className="h-10 object-contain pointer-events-none drop-shadow-sm select-none" 
                             referrerPolicy="no-referrer"
                             onError={() => setNinaSigFailed(true)}
                           />
                         ) : (
-                          <svg viewBox="0 0 120 80" className="h-12 w-32 object-contain text-slate-950 pointer-events-none drop-shadow-sm select-none">
+                          <svg viewBox="0 0 120 80" className="h-10 w-28 object-contain text-slate-950 pointer-events-none drop-shadow-sm select-none">
                             {/* N */}
                             <path d="M 25 15 Q 23 40 28 65" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                             <path d="M 27 22 L 42 63" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -1260,8 +1209,8 @@ export function Profile() {
                           </svg>
                         )}
                       </div>
-                      <div className="w-40 border-t border-slate-400 mx-auto" />
-                      <p className="text-[10px] font-bold text-slate-600">
+                      <div className="w-32 border-t border-slate-400 mx-auto" />
+                      <p className="text-[9px] font-bold text-slate-600">
                         Nina
                       </p>
                     </div>
@@ -1269,13 +1218,13 @@ export function Profile() {
                     {/* Middle: Golden Foil Seal with Ribbons */}
                     <div className="relative flex flex-col items-center justify-center">
                       {/* Ribbon tails */}
-                      <div className="absolute top-2 w-16 h-12 flex justify-between pointer-events-none">
-                        <div className="w-5 h-16 bg-[#9B1C1C] origin-top rotate-[-15deg] shadow-sm" />
-                        <div className="w-5 h-16 bg-[#5B21B6] origin-top rotate-[15deg] shadow-sm" />
+                      <div className="absolute top-2 w-14 h-10 flex justify-between pointer-events-none">
+                        <div className="w-4.5 h-12 bg-[#9B1C1C] origin-top rotate-[-15deg] shadow-sm" />
+                        <div className="w-4.5 h-12 bg-[#5B21B6] origin-top rotate-[15deg] shadow-sm" />
                       </div>
                       {/* Round gold medal stamp */}
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-200 via-amber-400 to-yellow-600 border border-amber-300 flex items-center justify-center shadow-lg relative z-20 m-1">
-                        <span className="text-2xl">🏆</span>
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-yellow-200 via-amber-400 to-yellow-600 border border-amber-300 flex items-center justify-center shadow-lg relative z-20 m-1">
+                        <span className="text-xl">🏆</span>
                         <div className="absolute inset-1 rounded-full border border-dashed border-slate-950/20" />
                       </div>
                     </div>
@@ -1286,29 +1235,29 @@ export function Profile() {
                         <img 
                           src="https://raw.githubusercontent.com/Fishnsteve/Logo/main/BlackSignature.png" 
                           alt="Steven Signature" 
-                          className="h-12 object-contain pointer-events-none drop-shadow-sm select-none" 
+                          className="h-10 object-contain pointer-events-none drop-shadow-sm select-none" 
                           referrerPolicy="no-referrer"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
                             const parent = (e.target as HTMLElement).parentElement;
                             if (parent) {
                               const fallback = document.createElement('span');
-                              fallback.className = "font-serif italic text-2xl text-slate-950 select-none";
+                              fallback.className = "font-serif italic text-xl text-slate-950 select-none";
                               fallback.innerText = "Steven";
                               parent.appendChild(fallback);
                             }
                           }}
                         />
                       </div>
-                      <div className="w-40 border-t border-slate-400 mx-auto" />
-                      <p className="text-[10px] font-bold text-slate-600">
+                      <div className="w-32 border-t border-slate-400 mx-auto" />
+                      <p className="text-[9px] font-bold text-slate-600">
                         {language === 'en' ? 'Steven, Game Creator' : '創作者 Steven'}
                       </p>
                     </div>
                   </div>
 
                   {/* Bottom Metadata bar */}
-                  <div className="flex justify-between items-center text-[9px] text-slate-400 pt-6 font-mono">
+                  <div className="flex justify-between items-center text-[8px] text-slate-400 pt-4 font-mono">
                     <span>REF: MQ-COMP-2026-NINA</span>
                     <span>
                       {language === 'en' ? 'Date Issued: ' : '頒發日期：'}

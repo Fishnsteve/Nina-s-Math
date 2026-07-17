@@ -2,8 +2,54 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { cn } from '../../lib/utils';
 import { OrbitingOrbs } from '../ZoneNodes';
+import { useGame } from '../../context/GameContext';
 
 export const ForestCampIslandNode = ({ unlocked, colors, duration = 6 }: any) => {
+  const { equippedBackground } = useGame();
+
+  // Map the equipped background to custom CSS variables for the sun/star's glowing shadow
+  const getGlowStyles = () => {
+    switch (equippedBackground) {
+      case 'bg_forest':
+        return {
+          '--glow-1': 'rgba(16, 185, 129, 0.9)',
+          '--glow-2': 'rgba(5, 150, 105, 0.7)',
+          '--glow-3': 'rgba(4, 120, 87, 0.45)',
+          '--glow-4': 'rgba(6, 95, 70, 0.25)',
+        } as React.CSSProperties;
+      case 'bg_castle':
+        return {
+          '--glow-1': 'rgba(245, 158, 11, 0.9)',
+          '--glow-2': 'rgba(217, 119, 6, 0.7)',
+          '--glow-3': 'rgba(180, 83, 9, 0.45)',
+          '--glow-4': 'rgba(146, 64, 14, 0.25)',
+        } as React.CSSProperties;
+      case 'bg_ocean':
+        return {
+          '--glow-1': 'rgba(6, 182, 212, 0.9)',
+          '--glow-2': 'rgba(8, 145, 178, 0.7)',
+          '--glow-3': 'rgba(15, 118, 110, 0.45)',
+          '--glow-4': 'rgba(21, 94, 117, 0.25)',
+        } as React.CSSProperties;
+      case 'bg_cyber':
+        return {
+          '--glow-1': 'rgba(217, 70, 239, 0.9)',
+          '--glow-2': 'rgba(192, 38, 211, 0.7)',
+          '--glow-3': 'rgba(162, 28, 175, 0.45)',
+          '--glow-4': 'rgba(112, 26, 117, 0.25)',
+        } as React.CSSProperties;
+      case 'bg_default':
+      default:
+        // Deep indigo/purple matching the default dark cosmic slate theme
+        return {
+          '--glow-1': 'rgba(99, 102, 241, 0.9)',
+          '--glow-2': 'rgba(79, 70, 229, 0.7)',
+          '--glow-3': 'rgba(67, 56, 202, 0.45)',
+          '--glow-4': 'rgba(49, 46, 129, 0.25)',
+        } as React.CSSProperties;
+    }
+  };
+
   return (
     <div className="relative w-full h-full flex items-center justify-center p-2">
       {unlocked && <OrbitingOrbs color={colors.orbColor} duration={duration * 2} />}
@@ -110,7 +156,7 @@ export const ForestCampIslandNode = ({ unlocked, colors, duration = 6 }: any) =>
             
             <div className="time-wrapper">
               <div className="time">
-                <div className="day"></div>
+                <div className="day" style={getGlowStyles()}></div>
                 <div className="night">
                   <div className="moon"></div>
                   <div className="star star1 star-big"></div>

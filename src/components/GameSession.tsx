@@ -215,18 +215,18 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
   };
 
   const handleSubtleCelebrate = () => {
-    // Elegant, single-shot gentle burst of tiny green & gold particles
-    // radiating upwards from the bottom portion of the screen
+    // Elegant, single-shot extremely gentle burst of tiny green & gold sparkles
+    // radiating upwards with very low particle count
     confetti({
-      particleCount: 24,
+      particleCount: 8,
       angle: 90,
-      spread: 50,
-      origin: { x: 0.5, y: 0.8 },
-      colors: ['#10B981', '#34D399', '#6EE7B7', '#FBBF24'], // Emerald greens and soft gold
-      startVelocity: 25,
-      gravity: 1.3,
-      ticks: 80,
-      scalar: 0.7, // smaller, neat particles
+      spread: 40,
+      origin: { x: 0.5, y: 0.7 },
+      colors: ['#34D399', '#FBBF24'], // Emerald green and soft gold
+      startVelocity: 18,
+      gravity: 1.2,
+      ticks: 50,
+      scalar: 0.5, // tiny, elegant particles
       zIndex: 100,
     });
   };
