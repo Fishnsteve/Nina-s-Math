@@ -214,6 +214,23 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
     }, 250);
   };
 
+  const handleSubtleCelebrate = () => {
+    // Elegant, single-shot gentle burst of tiny green & gold particles
+    // radiating upwards from the bottom portion of the screen
+    confetti({
+      particleCount: 24,
+      angle: 90,
+      spread: 50,
+      origin: { x: 0.5, y: 0.8 },
+      colors: ['#10B981', '#34D399', '#6EE7B7', '#FBBF24'], // Emerald greens and soft gold
+      startVelocity: 25,
+      gravity: 1.3,
+      ticks: 80,
+      scalar: 0.7, // smaller, neat particles
+      zIndex: 100,
+    });
+  };
+
   const handleCheckAnswer = () => {
     let correct = false;
     let almost = false;
@@ -254,7 +271,7 @@ export function GameSession({ zoneId, onExit }: { zoneId: string, onExit: () => 
       
       if (correct) {
         audioEngine.play('correct');
-        handleFireConfetti();
+        handleSubtleCelebrate();
         incrementStreak();
         
         const mult = selectedDifficulty === 'Easy' ? 0.8 : selectedDifficulty === 'Normal' ? 1.0 : selectedDifficulty === 'Hard' ? 1.35 : 1.7;
