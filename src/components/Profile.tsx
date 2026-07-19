@@ -242,6 +242,15 @@ export function Profile() {
   const [recipientName, setRecipientName] = useState(language === 'en' ? 'Ultimate Math Champ' : '終極數學大師');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<'active' | 'claimed'>('active');
+  const [pendingSocialLink, setPendingSocialLink] = useState<{ url: string, platform: string } | null>(null);
+  const [momSignature, setMomSignature] = useState('');
+
+  const handleOpenSocialLink = (e: React.MouseEvent, url: string, platform: string) => {
+    e.preventDefault();
+    audioEngine.play('click');
+    setPendingSocialLink({ url, platform });
+    setMomSignature('');
+  };
 
   const [ninaSigSrc, setNinaSigSrc] = useState('https://raw.githubusercontent.com/Fishnsteve/Logo/main/NinaSignature.png');
   const [ninaSigFailed, setNinaSigFailed] = useState(false);
@@ -959,40 +968,31 @@ export function Profile() {
                         {/* Links if available */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           {achievement.reward.isLineAccess && (
-                            <a
-                              href="https://line.me/ti/p/JouU9u0l3j"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
                               className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
                             >
                               <span>LINE</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                           {achievement.reward.isInstagramAccess && (
-                            <a
-                              href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
                               className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
                             >
                               <span>IG</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                           {achievement.reward.isFacebookAccess && (
-                            <a
-                              href="https://www.facebook.com/steven.sixeleven/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
                               className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
                             >
                               <span>FB</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -1001,40 +1001,31 @@ export function Profile() {
                         {/* Unclaimed bonus access links */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           {achievement.reward.isLineAccess && (
-                            <a
-                              href="https://line.me/ti/p/JouU9u0l3j"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
                               className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
                             >
                               <span>LINE</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                           {achievement.reward.isInstagramAccess && (
-                            <a
-                              href="https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
                               className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
                             >
                               <span>IG</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                           {achievement.reward.isFacebookAccess && (
-                            <a
-                              href="https://www.facebook.com/steven.sixeleven/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => audioEngine.play('click')}
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
                               className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
                             >
                               <span>FB</span>
                               <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            </button>
                           )}
                         </div>
                         
@@ -1292,6 +1283,73 @@ export function Profile() {
                       <span>{language === 'en' ? 'Download High-Res PNG Image' : '下載高解析度 PNG 證書圖檔'}</span>
                     </>
                   )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Parental Consent Modal */}
+        {pendingSocialLink && (
+          <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-slate-900 rounded-[28px] p-6 max-w-sm w-full border border-white/10 shadow-2xl relative"
+            >
+              <button
+                onClick={() => {
+                  audioEngine.play('click');
+                  setPendingSocialLink(null);
+                }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="text-center space-y-3 mb-6 mt-2">
+                <div className="w-12 h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto text-rose-400">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  {language === 'en' ? 'Parental Approval Required' : '需要家長同意'}
+                </h3>
+                <p className="text-sm text-slate-300">
+                  {language === 'en' 
+                    ? `Ask Mom to sign below to approve adding Steven on ${pendingSocialLink.platform}.`
+                    : `請媽媽在下方簽名，同意在 ${pendingSocialLink.platform} 上添加 Steven 為好友。`}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">
+                    {language === 'en' ? "Mom's Signature" : "媽媽的簽名"}
+                  </label>
+                  <input
+                    type="text"
+                    value={momSignature}
+                    onChange={(e) => setMomSignature(e.target.value)}
+                    placeholder={language === 'en' ? "Type signature here..." : "請在此輸入簽名..."}
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-rose-500 text-white px-4 py-3 rounded-xl outline-none transition-colors font-serif italic text-lg"
+                    autoFocus
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (momSignature.trim()) {
+                      audioEngine.play('correct');
+                      window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
+                      setPendingSocialLink(null);
+                    } else {
+                      audioEngine.play('wrong');
+                    }
+                  }}
+                  disabled={!momSignature.trim()}
+                  className="w-full py-3.5 bg-rose-500 hover:bg-rose-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl transition-colors"
+                >
+                  {language === 'en' ? 'Approve & Open Link' : '同意並開啟連結'}
                 </button>
               </div>
             </motion.div>
