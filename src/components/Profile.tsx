@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
-import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, Gift, X, FileDown } from 'lucide-react';
+import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle, Instagram, Facebook, Gift, X, FileDown } from 'lucide-react';
 import { motion } from 'motion/react';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
@@ -21,6 +21,9 @@ interface AchievementItem {
   reward: { 
     coins: number; 
     gems: number; 
+    isLineAccess?: boolean; 
+    isInstagramAccess?: boolean; 
+    isFacebookAccess?: boolean;
     isMysteryGift?: boolean;
   };
   rewardLabel: { en: string; zh: string };
@@ -37,6 +40,16 @@ const ACHIEVEMENTS: AchievementItem[] = [
     reward: { coins: 50, gems: 0 },
     rewardLabel: { en: '+50 Coins 🪙', zh: '+50 金幣 🪙' },
     icon: '🏅',
+  },
+  {
+    id: 'steven_instagram',
+    title: { en: "Steven's Inner Circle", zh: 'Steven 的潮流圈子' },
+    description: { en: 'Reach Level 15 to unlock direct Instagram access to Steven!', zh: '達到等級 15，解鎖並追蹤 Steven 的個人 Instagram 精彩生活！' },
+    target: 15,
+    current: (state: any) => state.level || 1,
+    reward: { coins: 150, gems: 2, isInstagramAccess: true },
+    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Follow Steven on IG!', zh: '🔓 150 金幣、2 寶石 & 追蹤 Steven IG！' },
+    icon: '📸',
   },
   {
     id: 'star_chaser',
@@ -59,6 +72,16 @@ const ACHIEVEMENTS: AchievementItem[] = [
     icon: '🔥',
   },
   {
+    id: 'steven_line',
+    title: { en: "Steven's Elite Circle", zh: 'Steven 的核心舞伴' },
+    description: { en: 'Reach Level 3 to unlock direct personal LINE chat access to Steven!', zh: '達到等級 3，即獲取 Steven 的個人 LINE 專屬好友通道！' },
+    target: 3,
+    current: (state: any) => state.level || 1,
+    reward: { coins: 200, gems: 5, isLineAccess: true },
+    rewardLabel: { en: '🔓 200 Coins, 5 Gems & Add Steven on LINE!', zh: '🔓 200 金幣、5 寶石 ＆ 開啟 Steven LINE 帳號！' },
+    icon: '✨',
+  },
+  {
     id: 'avid_shopper',
     title: { en: 'Apprentice Shopper', zh: '時尚新星' },
     description: { en: 'Own at least 3 items in your collection', zh: '在收藏庫中擁有至少 3 件服裝或寵物' },
@@ -67,6 +90,16 @@ const ACHIEVEMENTS: AchievementItem[] = [
     reward: { coins: 100, gems: 0 },
     rewardLabel: { en: '+100 Coins 🪙', zh: '+100 金幣 🪙' },
     icon: '🛍️',
+  },
+  {
+    id: 'steven_facebook',
+    title: { en: "Steven's Global Network", zh: 'Steven 的全球好友網' },
+    description: { en: 'Collect all 36 stars from levels to unlock Steven\'s personal Facebook profile!', zh: '累積獲得全部 36 顆關卡星星，解鎖 Steven 的個人臉書，成為社群好友！' },
+    target: 36,
+    current: (state: any) => state.stars || 0,
+    reward: { coins: 150, gems: 2, isFacebookAccess: true },
+    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Add Steven on Facebook!', zh: '🔓 150 金幣、2 寶石 & 加 Steven 臉書好友！' },
+    icon: '🌐',
   },
   {
     id: 'ultimate_collector',
@@ -209,6 +242,15 @@ export function Profile() {
   const [recipientName, setRecipientName] = useState(language === 'en' ? 'Ultimate Math Champ' : '終極數學大師');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<'active' | 'claimed'>('active');
+  const [pendingSocialLink, setPendingSocialLink] = useState<{ url: string, platform: string } | null>(null);
+  const [momSignature, setMomSignature] = useState('');
+
+  const handleOpenSocialLink = (e: React.MouseEvent, url: string, platform: string) => {
+    e.preventDefault();
+    audioEngine.play('click');
+    setPendingSocialLink({ url, platform });
+    setMomSignature('');
+  };
 
   const [ninaSigSrc, setNinaSigSrc] = useState('https://raw.githubusercontent.com/Fishnsteve/Logo/main/NinaSignature.png');
   const [ninaSigFailed, setNinaSigFailed] = useState(false);
@@ -917,22 +959,88 @@ export function Profile() {
                   {/* Actions Button */}
                   <div className="shrink-0 flex items-center justify-end sm:pl-2 w-full sm:w-auto border-t sm:border-0 border-white/5 pt-2 sm:pt-0">
                     {isClaimed ? (
-                      <div className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>{language === 'en' ? 'Claimed' : '已領取'}</span>
+                      <div className="flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto">
+                        {/* Small claimed badge */}
+                        <div className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>{language === 'en' ? 'Claimed' : '已領取'}</span>
+                        </div>
+                        {/* Links if available */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {achievement.reward.isLineAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
+                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>LINE</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                          {achievement.reward.isInstagramAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
+                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>IG</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                          {achievement.reward.isFacebookAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
+                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                            >
+                              <span>FB</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ) : isCompleted ? (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => {
-                          audioEngine.play('unlock');
-                          claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
-                        }}
-                        className="py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] rounded-lg shadow-md border border-amber-400/20 flex items-center gap-0.5 shrink-0"
-                      >
-                        <span>{language === 'en' ? 'CLAIM' : '領取'}</span>
-                      </motion.button>
+                      <div className="w-full sm:w-auto flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center">
+                        {/* Unclaimed bonus access links */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {achievement.reward.isLineAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
+                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>LINE</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                          {achievement.reward.isInstagramAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
+                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>IG</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                          {achievement.reward.isFacebookAccess && (
+                            <button
+                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
+                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                            >
+                              <span>FB</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
+                        
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            audioEngine.play('unlock');
+                            claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
+                          }}
+                          className="py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] rounded-lg shadow-md border border-amber-400/20 flex items-center gap-0.5 shrink-0"
+                        >
+                          <span>{language === 'en' ? 'CLAIM' : '領取'}</span>
+                        </motion.button>
+                      </div>
                     ) : (
                       <div className="w-full sm:w-auto text-right flex items-center justify-end">
                         <div className="text-[10px] font-bold text-slate-500 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg flex items-center justify-center gap-1 w-full sm:w-auto">
@@ -1175,6 +1283,73 @@ export function Profile() {
                       <span>{language === 'en' ? 'Download High-Res PNG Image' : '下載高解析度 PNG 證書圖檔'}</span>
                     </>
                   )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Parental Consent Modal */}
+        {pendingSocialLink && (
+          <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-slate-900 rounded-[28px] p-6 max-w-sm w-full border border-white/10 shadow-2xl relative"
+            >
+              <button
+                onClick={() => {
+                  audioEngine.play('click');
+                  setPendingSocialLink(null);
+                }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="text-center space-y-3 mb-6 mt-2">
+                <div className="w-12 h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto text-rose-400">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  {language === 'en' ? 'Parental Approval Required' : '需要家長同意'}
+                </h3>
+                <p className="text-sm text-slate-300">
+                  {language === 'en' 
+                    ? `Ask Mom to sign below to approve adding Steven on ${pendingSocialLink.platform}.`
+                    : `請媽媽在下方簽名，同意在 ${pendingSocialLink.platform} 上添加 Steven 為好友。`}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">
+                    {language === 'en' ? "Mom's Signature" : "媽媽的簽名"}
+                  </label>
+                  <input
+                    type="text"
+                    value={momSignature}
+                    onChange={(e) => setMomSignature(e.target.value)}
+                    placeholder={language === 'en' ? "Type signature here..." : "請在此輸入簽名..."}
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-rose-500 text-white px-4 py-3 rounded-xl outline-none transition-colors font-serif italic text-lg"
+                    autoFocus
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (momSignature.trim()) {
+                      audioEngine.play('correct');
+                      window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
+                      setPendingSocialLink(null);
+                    } else {
+                      audioEngine.play('wrong');
+                    }
+                  }}
+                  disabled={!momSignature.trim()}
+                  className="w-full py-3.5 bg-rose-500 hover:bg-rose-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl transition-colors"
+                >
+                  {language === 'en' ? 'Approve & Open Link' : '同意並開啟連結'}
                 </button>
               </div>
             </motion.div>
