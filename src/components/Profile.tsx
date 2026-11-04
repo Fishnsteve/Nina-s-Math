@@ -243,13 +243,15 @@ export function Profile() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<'active' | 'claimed'>('active');
   const [pendingSocialLink, setPendingSocialLink] = useState<{ url: string, platform: string } | null>(null);
-  const [momSignature, setMomSignature] = useState('');
+  const [parentalCode, setParentalCode] = useState('');
+  const [parentalCodeError, setParentalCodeError] = useState('');
 
   const handleOpenSocialLink = (e: React.MouseEvent, url: string, platform: string) => {
     e.preventDefault();
     audioEngine.play('click');
     setPendingSocialLink({ url, platform });
-    setMomSignature('');
+    setParentalCode('');
+    setParentalCodeError('');
   };
 
   const [ninaSigSrc, setNinaSigSrc] = useState('https://raw.githubusercontent.com/Fishnsteve/Logo/main/NinaSignature.png');
@@ -970,8 +972,10 @@ export function Profile() {
                           {achievement.reward.isLineAccess && (
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
-                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>LINE</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -979,8 +983,10 @@ export function Profile() {
                           {achievement.reward.isInstagramAccess && (
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
-                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>IG</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -988,8 +994,10 @@ export function Profile() {
                           {achievement.reward.isFacebookAccess && (
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
-                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
+                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>FB</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -1004,7 +1012,9 @@ export function Profile() {
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
                               className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>LINE</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -1013,7 +1023,9 @@ export function Profile() {
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
                               className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>IG</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -1022,7 +1034,9 @@ export function Profile() {
                             <button
                               onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
                               className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
+                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
                             >
+                              <Lock className="w-2.5 h-2.5 text-white/90" />
                               <span>FB</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </button>
@@ -1289,68 +1303,129 @@ export function Profile() {
           </div>
         )}
 
-        {/* Parental Consent Modal */}
+        {/* Parental Security Code Lock Modal */}
         {pendingSocialLink && (
           <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-slate-900 rounded-[28px] p-6 max-w-sm w-full border border-white/10 shadow-2xl relative"
+              className="bg-slate-900 rounded-[28px] p-6 max-w-sm w-full border border-rose-500/30 shadow-2xl relative"
             >
               <button
                 onClick={() => {
                   audioEngine.play('click');
                   setPendingSocialLink(null);
+                  setParentalCode('');
+                  setParentalCodeError('');
                 }}
                 className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="text-center space-y-3 mb-6 mt-2">
-                <div className="w-12 h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto text-rose-400">
-                  <Lock className="w-6 h-6" />
+              <div className="text-center space-y-3 mb-5 mt-1">
+                <div className="w-14 h-14 bg-rose-500/20 border border-rose-500/30 rounded-full flex items-center justify-center mx-auto text-rose-400 shadow-inner">
+                  <Lock className="w-7 h-7" />
                 </div>
-                <h3 className="text-xl font-bold text-white">
-                  {language === 'en' ? 'Parental Approval Required' : '需要家長同意'}
+                <div className="inline-block bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full">
+                  {language === 'en' ? 'Parental Lock' : '家長安全鎖'}
+                </div>
+                <h3 className="text-xl font-black text-white">
+                  {language === 'en' ? 'Social Media Blocked' : '社群連結已永久鎖定'}
                 </h3>
-                <p className="text-sm text-slate-300">
-                  {language === 'en' 
-                    ? `Ask Mom to sign below to approve adding Steven on ${pendingSocialLink.platform}.`
-                    : `請媽媽在下方簽名，同意在 ${pendingSocialLink.platform} 上添加 Steven 為好友。`}
-                </p>
+                <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 leading-relaxed text-left space-y-2">
+                  <p>
+                    {language === 'en'
+                      ? 'Nina, all social media links are permanently locked for safety.'
+                      : 'Nina，為了保護妳的上網安全，所有社群媒體已設為永久鎖定。'}
+                  </p>
+                  <p className="text-rose-300 font-semibold">
+                    {language === 'en'
+                      ? '👉 Please ask your parents for the parental code. (Parents receive this secret code from Steven, the game maker).'
+                      : '👉 請向爸爸媽媽索取家長解鎖密碼。（家長可向遊戲製作者 Steven 取得密碼）。'}
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">
-                    {language === 'en' ? "Mom's Signature" : "媽媽的簽名"}
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5 ml-1">
+                    {language === 'en' ? 'Enter 4-Digit Parental Code' : '請輸入 4 位數家長密碼'}
                   </label>
                   <input
-                    type="text"
-                    value={momSignature}
-                    onChange={(e) => setMomSignature(e.target.value)}
-                    placeholder={language === 'en' ? "Type signature here..." : "請在此輸入簽名..."}
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-rose-500 text-white px-4 py-3 rounded-xl outline-none transition-colors font-serif italic text-lg"
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={parentalCode}
+                    onChange={(e) => {
+                      setParentalCode(e.target.value.replace(/\D/g, ''));
+                      if (parentalCodeError) setParentalCodeError('');
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && parentalCode.trim() === '6767') {
+                        audioEngine.play('correct');
+                        window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
+                        setPendingSocialLink(null);
+                        setParentalCode('');
+                        setParentalCodeError('');
+                      } else if (e.key === 'Enter') {
+                        audioEngine.play('wrong');
+                        setParentalCodeError(language === 'en' ? 'Incorrect parental code. Nina, ask parents for the code!' : '家長密碼錯誤！Nina，請向爸爸媽媽索取密碼！');
+                      }
+                    }}
+                    placeholder="••••"
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-rose-500 text-white px-4 py-3 rounded-xl outline-none transition-colors text-center font-mono tracking-widest text-2xl placeholder:text-slate-600"
                     autoFocus
                   />
+                  {parentalCodeError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-rose-400 font-bold mt-1.5 text-center"
+                    >
+                      {parentalCodeError}
+                    </motion.p>
+                  )}
                 </div>
 
-                <button
-                  onClick={() => {
-                    if (momSignature.trim()) {
-                      audioEngine.play('correct');
-                      window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      audioEngine.play('click');
                       setPendingSocialLink(null);
-                    } else {
-                      audioEngine.play('wrong');
-                    }
-                  }}
-                  disabled={!momSignature.trim()}
-                  className="w-full py-3.5 bg-rose-500 hover:bg-rose-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl transition-colors"
-                >
-                  {language === 'en' ? 'Approve & Open Link' : '同意並開啟連結'}
-                </button>
+                      setParentalCode('');
+                      setParentalCodeError('');
+                    }}
+                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm rounded-xl transition-colors"
+                  >
+                    {language === 'en' ? 'Cancel' : '取消'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (parentalCode.trim() === '6767') {
+                        audioEngine.play('correct');
+                        window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
+                        setPendingSocialLink(null);
+                        setParentalCode('');
+                        setParentalCodeError('');
+                      } else {
+                        audioEngine.play('wrong');
+                        setParentalCodeError(
+                          language === 'en'
+                            ? 'Incorrect parental code. Nina, ask parents for the code!'
+                            : '家長密碼錯誤！Nina，請向爸爸媽媽索取密碼！'
+                        );
+                      }
+                    }}
+                    disabled={!parentalCode.trim()}
+                    className="flex-1 py-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-900/30 transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <Unlock className="w-4 h-4" />
+                    <span>{language === 'en' ? 'Unlock Link' : '解鎖連結'}</span>
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
