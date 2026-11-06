@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
-import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, MessageCircle, Instagram, Facebook, Gift, X, FileDown } from 'lucide-react';
+import { Trophy, Flame, Star, Target, Download, Share2, PlusSquare, CheckCircle2, Sparkles, Lock, Unlock, ExternalLink, Award, Gift, X, FileDown } from 'lucide-react';
 import { motion } from 'motion/react';
 import { translations } from '../i18n';
 import { NinaAvatar } from './NinaAvatar';
@@ -21,9 +21,6 @@ interface AchievementItem {
   reward: { 
     coins: number; 
     gems: number; 
-    isLineAccess?: boolean; 
-    isInstagramAccess?: boolean; 
-    isFacebookAccess?: boolean;
     isMysteryGift?: boolean;
   };
   rewardLabel: { en: string; zh: string };
@@ -40,16 +37,6 @@ const ACHIEVEMENTS: AchievementItem[] = [
     reward: { coins: 50, gems: 0 },
     rewardLabel: { en: '+50 Coins 🪙', zh: '+50 金幣 🪙' },
     icon: '🏅',
-  },
-  {
-    id: 'steven_instagram',
-    title: { en: "Steven's Inner Circle", zh: 'Steven 的潮流圈子' },
-    description: { en: 'Reach Level 15 to unlock direct Instagram access to Steven!', zh: '達到等級 15，解鎖並追蹤 Steven 的個人 Instagram 精彩生活！' },
-    target: 15,
-    current: (state: any) => state.level || 1,
-    reward: { coins: 150, gems: 2, isInstagramAccess: true },
-    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Follow Steven on IG!', zh: '🔓 150 金幣、2 寶石 & 追蹤 Steven IG！' },
-    icon: '📸',
   },
   {
     id: 'star_chaser',
@@ -72,16 +59,6 @@ const ACHIEVEMENTS: AchievementItem[] = [
     icon: '🔥',
   },
   {
-    id: 'steven_line',
-    title: { en: "Steven's Elite Circle", zh: 'Steven 的核心舞伴' },
-    description: { en: 'Reach Level 3 to unlock direct personal LINE chat access to Steven!', zh: '達到等級 3，即獲取 Steven 的個人 LINE 專屬好友通道！' },
-    target: 3,
-    current: (state: any) => state.level || 1,
-    reward: { coins: 200, gems: 5, isLineAccess: true },
-    rewardLabel: { en: '🔓 200 Coins, 5 Gems & Add Steven on LINE!', zh: '🔓 200 金幣、5 寶石 ＆ 開啟 Steven LINE 帳號！' },
-    icon: '✨',
-  },
-  {
     id: 'avid_shopper',
     title: { en: 'Apprentice Shopper', zh: '時尚新星' },
     description: { en: 'Own at least 3 items in your collection', zh: '在收藏庫中擁有至少 3 件服裝或寵物' },
@@ -90,16 +67,6 @@ const ACHIEVEMENTS: AchievementItem[] = [
     reward: { coins: 100, gems: 0 },
     rewardLabel: { en: '+100 Coins 🪙', zh: '+100 金幣 🪙' },
     icon: '🛍️',
-  },
-  {
-    id: 'steven_facebook',
-    title: { en: "Steven's Global Network", zh: 'Steven 的全球好友網' },
-    description: { en: 'Collect all 36 stars from levels to unlock Steven\'s personal Facebook profile!', zh: '累積獲得全部 36 顆關卡星星，解鎖 Steven 的個人臉書，成為社群好友！' },
-    target: 36,
-    current: (state: any) => state.stars || 0,
-    reward: { coins: 150, gems: 2, isFacebookAccess: true },
-    rewardLabel: { en: '🔓 150 Coins, 2 Gems & Add Steven on Facebook!', zh: '🔓 150 金幣、2 寶石 & 加 Steven 臉書好友！' },
-    icon: '🌐',
   },
   {
     id: 'ultimate_collector',
@@ -242,17 +209,6 @@ export function Profile() {
   const [recipientName, setRecipientName] = useState(language === 'en' ? 'Ultimate Math Champ' : '終極數學大師');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<'active' | 'claimed'>('active');
-  const [pendingSocialLink, setPendingSocialLink] = useState<{ url: string, platform: string } | null>(null);
-  const [parentalCode, setParentalCode] = useState('');
-  const [parentalCodeError, setParentalCodeError] = useState('');
-
-  const handleOpenSocialLink = (e: React.MouseEvent, url: string, platform: string) => {
-    e.preventDefault();
-    audioEngine.play('click');
-    setPendingSocialLink({ url, platform });
-    setParentalCode('');
-    setParentalCodeError('');
-  };
 
   const [ninaSigSrc, setNinaSigSrc] = useState('https://raw.githubusercontent.com/Fishnsteve/Logo/main/NinaSignature.png');
   const [ninaSigFailed, setNinaSigFailed] = useState(false);
@@ -961,100 +917,22 @@ export function Profile() {
                   {/* Actions Button */}
                   <div className="shrink-0 flex items-center justify-end sm:pl-2 w-full sm:w-auto border-t sm:border-0 border-white/5 pt-2 sm:pt-0">
                     {isClaimed ? (
-                      <div className="flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto">
-                        {/* Small claimed badge */}
-                        <div className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
-                          <CheckCircle2 className="w-3 h-3" />
-                          <span>{language === 'en' ? 'Claimed' : '已領取'}</span>
-                        </div>
-                        {/* Links if available */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {achievement.reward.isLineAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
-                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>LINE</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                          {achievement.reward.isInstagramAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
-                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>IG</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                          {achievement.reward.isFacebookAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
-                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90 transition-opacity"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>FB</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                        </div>
+                      <div className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>{language === 'en' ? 'Claimed' : '已領取'}</span>
                       </div>
                     ) : isCompleted ? (
-                      <div className="w-full sm:w-auto flex flex-row sm:flex-col gap-1.5 items-center sm:items-end justify-between sm:justify-center">
-                        {/* Unclaimed bonus access links */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {achievement.reward.isLineAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://line.me/ti/p/JouU9u0l3j", "LINE")}
-                              className="text-[10px] font-black text-white bg-[#06C755] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>LINE</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                          {achievement.reward.isInstagramAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://www.instagram.com/steven611com?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", "IG")}
-                              className="text-[10px] font-black text-white bg-gradient-to-r from-purple-600 to-pink-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>IG</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                          {achievement.reward.isFacebookAccess && (
-                            <button
-                              onClick={(e) => handleOpenSocialLink(e, "https://www.facebook.com/steven.sixeleven/", "FB")}
-                              className="text-[10px] font-black text-white bg-[#1877F2] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm animate-pulse"
-                              title={language === 'en' ? 'Parental Code Protected' : '家長密碼保護'}
-                            >
-                              <Lock className="w-2.5 h-2.5 text-white/90" />
-                              <span>FB</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          )}
-                        </div>
-                        
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            audioEngine.play('unlock');
-                            claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
-                          }}
-                          className="py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] rounded-lg shadow-md border border-amber-400/20 flex items-center gap-0.5 shrink-0"
-                        >
-                          <span>{language === 'en' ? 'CLAIM' : '領取'}</span>
-                        </motion.button>
-                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          audioEngine.play('unlock');
+                          claimAchievement(achievement.id, achievement.reward.coins, achievement.reward.gems);
+                        }}
+                        className="py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] rounded-lg shadow-md border border-amber-400/20 flex items-center gap-0.5 shrink-0"
+                      >
+                        <span>{language === 'en' ? 'CLAIM' : '領取'}</span>
+                      </motion.button>
                     ) : (
                       <div className="w-full sm:w-auto text-right flex items-center justify-end">
                         <div className="text-[10px] font-bold text-slate-500 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg flex items-center justify-center gap-1 w-full sm:w-auto">
@@ -1298,134 +1176,6 @@ export function Profile() {
                     </>
                   )}
                 </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Parental Security Code Lock Modal */}
-        {pendingSocialLink && (
-          <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-slate-900 rounded-[28px] p-6 max-w-sm w-full border border-rose-500/30 shadow-2xl relative"
-            >
-              <button
-                onClick={() => {
-                  audioEngine.play('click');
-                  setPendingSocialLink(null);
-                  setParentalCode('');
-                  setParentalCodeError('');
-                }}
-                className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="text-center space-y-3 mb-5 mt-1">
-                <div className="w-14 h-14 bg-rose-500/20 border border-rose-500/30 rounded-full flex items-center justify-center mx-auto text-rose-400 shadow-inner">
-                  <Lock className="w-7 h-7" />
-                </div>
-                <div className="inline-block bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full">
-                  {language === 'en' ? 'Parental Lock' : '家長安全鎖'}
-                </div>
-                <h3 className="text-xl font-black text-white">
-                  {language === 'en' ? 'Social Media Blocked' : '社群連結已永久鎖定'}
-                </h3>
-                <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 leading-relaxed text-left space-y-2">
-                  <p>
-                    {language === 'en'
-                      ? 'Nina, all social media links are permanently locked for safety.'
-                      : 'Nina，為了保護妳的上網安全，所有社群媒體已設為永久鎖定。'}
-                  </p>
-                  <p className="text-rose-300 font-semibold">
-                    {language === 'en'
-                      ? '👉 Please ask your parents for the parental code. (Parents receive this secret code from Steven, the game maker).'
-                      : '👉 請向爸爸媽媽索取家長解鎖密碼。（家長可向遊戲製作者 Steven 取得密碼）。'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5 ml-1">
-                    {language === 'en' ? 'Enter 4-Digit Parental Code' : '請輸入 4 位數家長密碼'}
-                  </label>
-                  <input
-                    type="password"
-                    inputMode="numeric"
-                    maxLength={4}
-                    value={parentalCode}
-                    onChange={(e) => {
-                      setParentalCode(e.target.value.replace(/\D/g, ''));
-                      if (parentalCodeError) setParentalCodeError('');
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && parentalCode.trim() === '6767') {
-                        audioEngine.play('correct');
-                        window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
-                        setPendingSocialLink(null);
-                        setParentalCode('');
-                        setParentalCodeError('');
-                      } else if (e.key === 'Enter') {
-                        audioEngine.play('wrong');
-                        setParentalCodeError(language === 'en' ? 'Incorrect parental code. Nina, ask parents for the code!' : '家長密碼錯誤！Nina，請向爸爸媽媽索取密碼！');
-                      }
-                    }}
-                    placeholder="••••"
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-rose-500 text-white px-4 py-3 rounded-xl outline-none transition-colors text-center font-mono tracking-widest text-2xl placeholder:text-slate-600"
-                    autoFocus
-                  />
-                  {parentalCodeError && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-rose-400 font-bold mt-1.5 text-center"
-                    >
-                      {parentalCodeError}
-                    </motion.p>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      audioEngine.play('click');
-                      setPendingSocialLink(null);
-                      setParentalCode('');
-                      setParentalCodeError('');
-                    }}
-                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm rounded-xl transition-colors"
-                  >
-                    {language === 'en' ? 'Cancel' : '取消'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (parentalCode.trim() === '6767') {
-                        audioEngine.play('correct');
-                        window.open(pendingSocialLink.url, '_blank', 'noopener,noreferrer');
-                        setPendingSocialLink(null);
-                        setParentalCode('');
-                        setParentalCodeError('');
-                      } else {
-                        audioEngine.play('wrong');
-                        setParentalCodeError(
-                          language === 'en'
-                            ? 'Incorrect parental code. Nina, ask parents for the code!'
-                            : '家長密碼錯誤！Nina，請向爸爸媽媽索取密碼！'
-                        );
-                      }
-                    }}
-                    disabled={!parentalCode.trim()}
-                    className="flex-1 py-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-900/30 transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <Unlock className="w-4 h-4" />
-                    <span>{language === 'en' ? 'Unlock Link' : '解鎖連結'}</span>
-                  </button>
-                </div>
               </div>
             </motion.div>
           </div>
